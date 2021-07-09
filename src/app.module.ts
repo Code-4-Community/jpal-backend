@@ -6,18 +6,23 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import * as dotenv from 'dotenv';
 import TypeOrmConfig from '../ormconfig';
-import { AuthMiddleware } from './auth/middleware/auth.middleware';
+import { AuthenticationMiddleware } from './auth/middleware/authentication.middleware';
 import { UtilModule } from './util/util.module';
 
 dotenv.config();
 
 @Module({
-  imports: [TypeOrmModule.forRoot(TypeOrmConfig), UsersModule, AuthModule, UtilModule],
+  imports: [
+    TypeOrmModule.forRoot(TypeOrmConfig),
+    UsersModule,
+    AuthModule,
+    UtilModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(AuthMiddleware).forRoutes('*');
+    consumer.apply(AuthenticationMiddleware).forRoutes('*');
   }
 }
