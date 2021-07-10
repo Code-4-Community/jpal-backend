@@ -1,20 +1,15 @@
-import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post } from '@nestjs/common';
 import { LoginRequestDto } from './dto/login-request.dto';
 import { AuthService } from './auth.service';
 import { LoginResponseDto } from './dto/login-response.dto';
 import {
   ApiAcceptedResponse,
-  ApiBearerAuth,
-  ApiConsumes,
   ApiNotFoundResponse,
   ApiOperation,
-  ApiProduces,
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { DefinitelyAuthorizedRequest } from './types/authorized-request';
 import { User } from '../users/types/user.entity';
-import RolesGuard from './guards/roles.guard';
 import { Roles } from '../users/types/roles';
 import { ReqUser } from './decorators/user.decorator';
 import { Auth } from './decorators/auth.decorator';

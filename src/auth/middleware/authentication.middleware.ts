@@ -17,6 +17,7 @@ export class AuthenticationMiddleware implements NestMiddleware {
       const user = await this.authService.verifyJwt(token);
       req.user = user;
     } catch (e) {
+      console.log(e);
       return next();
     }
     next();
