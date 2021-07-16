@@ -26,10 +26,11 @@ describe('AuthController (e2e)', () => {
     app = moduleFixture.createNestApplication();
 
     await app.init();
+    await users.save(initialUser);
     // await users.clear();
   });
 
-  test('POST /auth', async () => {
+  test('POST /auth/', async () => {
     await request(app.getHttpServer())
       .post('/auth')
       .send({

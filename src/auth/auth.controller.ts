@@ -25,9 +25,6 @@ export class AuthController {
       'Logs in with a correct email and password. Returns the user and token for' +
       ' accessing protected routes.',
   })
-  @ApiAcceptedResponse({
-    type: LoginResponseDto,
-  })
   @ApiNotFoundResponse({
     description: 'User with given email does not exist',
   })
