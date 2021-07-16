@@ -1,6 +1,7 @@
 # compiled output
 /dist
 /node_modules
+/pact/swagger-spec.yml
 
 # Logs
 logs

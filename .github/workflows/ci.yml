@@ -87,7 +87,7 @@ jobs:
         run: |
           docker run --rm \
               pactfoundation/pact-cli:latest \
-              broker create-version-tag \
+              broker can-i-deploy \
               --broker-base-url=${PACT_BROKER_BASE_URL} \
               --broker-token ${PACT_BROKER_TOKEN} \
               --pacticipant ${PACT_PACTICIPANT} \
