@@ -1,7 +1,8 @@
 import { Body, Controller, Get, Post } from '@nestjs/common';
 import {
-  ApiBadRequestResponse, ApiTags,
-  ApiUnauthorizedResponse
+  ApiBadRequestResponse,
+  ApiTags,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { Roles } from '../users/types/roles';
 import { User } from '../users/types/user.entity';
