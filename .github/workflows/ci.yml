@@ -75,7 +75,7 @@ jobs:
               --broker-token ${PACT_BROKER_TOKEN} \
               --pacticipant ${PACT_PACTICIPANT} \
               --version ${GIT_COMMIT} \
-              --tag-with-git-branch      
+              --tag ${GITHUB_REF:11}   
 
   can-i-deploy:
     runs-on: ubuntu-latest
