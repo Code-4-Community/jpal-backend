@@ -92,7 +92,7 @@ jobs:
               --broker-token ${PACT_BROKER_TOKEN} \
               --pacticipant ${PACT_PACTICIPANT} \
               --version ${GIT_COMMIT} \
-              --latest prod
+              --to prod
       
   #TODO: write a real deploy script
   deploy:
