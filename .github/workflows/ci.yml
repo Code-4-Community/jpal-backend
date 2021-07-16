@@ -56,8 +56,9 @@ jobs:
       - run: npm ci
       - run: npm run check
       - run: npm run test
+      - run: npm run build
+      - run: npm run migration
       - run: npm run test:e2e
-      - run: npm run build --if-present
       # Publish pact to pactflow
       - run: npm run publish:pact
       # Tag with branch name
