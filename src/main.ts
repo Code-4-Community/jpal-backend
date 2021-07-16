@@ -14,15 +14,7 @@ async function bootstrap() {
     }),
   );
 
-  const config = new DocumentBuilder()
-    .setTitle('C4C Backend Docs')
-    .setDescription('API docs for a C4C backend.')
-    .setVersion('1.0')
-    .addBearerAuth({
-      type: 'http',
-      bearerFormat: 'Bearer {token}',
-    })
-    .build();
+
   const document = SwaggerModule.createDocument(app, swaggerDocumentConfig);
   SwaggerModule.setup('api', app, document, {
     customSiteTitle: `C4C API - Swagger`,
