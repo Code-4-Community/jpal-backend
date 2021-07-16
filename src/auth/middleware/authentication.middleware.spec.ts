@@ -1,7 +1,7 @@
-import { AuthenticationMiddleware } from './authentication-middleware.service';
 import { AuthService } from '../auth.service';
 import { User } from '../../users/types/user.entity';
 import { Roles } from '../../users/types/roles';
+import { AuthenticationMiddleware } from './authentication.middleware';
 
 const mockUser: User = {
   id: 1,
@@ -23,7 +23,7 @@ describe('AuthMiddleware', () => {
     mockAuthService as AuthService,
   );
 
-  it('authenticates if valid token is given', async () => {
+  it('should authenticate if valid token is given', async () => {
     const req = {
       headers: {
         authorization: 'Bearer 1',
@@ -33,7 +33,7 @@ describe('AuthMiddleware', () => {
     expect(req['user']).toEqual(mockUser);
   });
 
-  it('fails otherwise', async () => {
+  it('should fail otherwise', async () => {
     const noAuthToken = {
       headers: {},
     };

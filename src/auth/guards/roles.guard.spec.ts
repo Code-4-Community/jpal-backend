@@ -30,19 +30,19 @@ const mockContext = (user?: User): Partial<ExecutionContext> => ({
 });
 
 describe('RolesGuard', () => {
-  it('rejects if no user', () => {
+  it('should reject if no user', () => {
     const Guard: Type = RolesGuard([Roles.ADMIN]);
     const context = mockContext(undefined);
     expect(new Guard().canActivate(context as ExecutionContext)).toBe(false);
   });
 
-  it('rejects if role not included', () => {
+  it('should reject if role not included', () => {
     const Guard: Type = RolesGuard([Roles.RESEARCHER]);
     const context = mockContext(mockUser(Roles.ADMIN));
     expect(new Guard().canActivate(context as ExecutionContext)).toBe(false);
   });
 
-  it('accepts if role is included', () => {
+  it('should accept if role is included', () => {
     const Guard: Type = RolesGuard([Roles.RESEARCHER]);
     const context = mockContext(mockUser(Roles.RESEARCHER));
     expect(new Guard().canActivate(context as ExecutionContext)).toBe(true);

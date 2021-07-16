@@ -1,4 +1,4 @@
-import { Injectable, NestMiddleware } from '@nestjs/common';
+import { Injectable, Logger, NestMiddleware } from '@nestjs/common';
 import { AuthService } from '../auth.service';
 
 /**
@@ -6,6 +6,8 @@ import { AuthService } from '../auth.service';
  */
 @Injectable()
 export class AuthenticationMiddleware implements NestMiddleware {
+  private logger = new Logger(AuthenticationMiddleware.name);
+
   constructor(private authService: AuthService) {}
 
   async use(req: any, res: any, next: () => void) {
@@ -17,7 +19,7 @@ export class AuthenticationMiddleware implements NestMiddleware {
       const user = await this.authService.verifyJwt(token);
       req.user = user;
     } catch (e) {
-      console.log(e);
+      this.logger.error(e);
       return next();
     }
     next();

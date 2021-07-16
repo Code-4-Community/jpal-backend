@@ -1,12 +1,28 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { BcryptService } from './bcrypt.service';
+import { BcryptWrapper } from './bcrypt.wrapper';
+
+const mockBcryptWrapper: BcryptWrapper = {
+  hashSync(data: string | Buffer, saltOrRounds: string | number): string {
+    return `HASHED${data}`;
+  },
+  compareSync(data: string | Buffer, encrypted: string): boolean {
+    return encrypted === `HASHED${data}`;
+  },
+};
 
 describe('BcryptService', () => {
   let service: BcryptService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [BcryptService],
+      providers: [
+        BcryptService,
+        {
+          provide: BcryptWrapper,
+          useValue: mockBcryptWrapper,
+        },
+      ],
     }).compile();
 
     service = module.get<BcryptService>(BcryptService);
@@ -14,7 +30,6 @@ describe('BcryptService', () => {
 
   test('hash', () => {
     expect(service.hash('test') === 'test').toBe(false);
-    expect(service.hash('password1') === service.hash('password1')).toBe(false);
     expect(typeof service.hash('example')).toBe('string');
     expect(() => {
       service.hash('');

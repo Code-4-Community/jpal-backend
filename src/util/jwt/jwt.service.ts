@@ -1,17 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import * as JWT from 'jsonwebtoken';
-import * as dotenv from 'dotenv';
 import { JwtPayload } from './types/jwt-payload';
-
-dotenv.config();
-
-const secret = process.env.JWT_SECRET;
+import { JwtWrapper } from './jwt.wrapper';
 
 @Injectable()
 export class JwtService {
+  constructor(private jwtWrapper: JwtWrapper) {}
+
   verify(jwt: string): number {
     if (!jwt) throw new Error();
-    const payload = JWT.verify(jwt, secret) as JwtPayload;
+    const payload = this.jwtWrapper.verify(jwt);
     return payload.userId;
   }
 
@@ -20,7 +17,7 @@ export class JwtService {
     const payload: JwtPayload = {
       userId,
     };
-    return JWT.sign(payload, secret, {
+    return this.jwtWrapper.sign(payload, {
       expiresIn: '1h',
     });
   }

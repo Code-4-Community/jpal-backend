@@ -4,15 +4,16 @@ import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
-import * as dotenv from 'dotenv';
 import TypeOrmConfig from '../ormconfig';
 import { AuthenticationMiddleware } from './auth/middleware/authentication.middleware';
 import { UtilModule } from './util/util.module';
-
-dotenv.config();
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
     TypeOrmModule.forRoot(TypeOrmConfig),
     UsersModule,
     AuthModule,
