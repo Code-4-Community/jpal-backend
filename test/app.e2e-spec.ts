@@ -26,8 +26,9 @@ describe('AuthController (e2e)', () => {
     app = moduleFixture.createNestApplication();
 
     await app.init();
+
+    await users.clear();
     await users.save(initialUser);
-    // await users.clear();
   });
 
   test('POST /auth/', async () => {
