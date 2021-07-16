@@ -1,9 +1,10 @@
 import { INestApplication } from '@nestjs/common';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { SwaggerModule } from '@nestjs/swagger';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as fs from 'fs';
 import { AppModule } from '../src/app.module';
 import * as YAML from 'js-yaml';
+import swaggerDocumentConfig from '../src/swagger.config';
 
 describe('AuthController (e2e)', () => {
   let app: INestApplication;
@@ -16,16 +17,8 @@ describe('AuthController (e2e)', () => {
     app = moduleFixture.createNestApplication();
 
     await app.init();
-    const config = new DocumentBuilder()
-      .setTitle('C4C Backend Docs')
-      .setDescription('API docs for a C4C backend.')
-      .setVersion('1.0')
-      .addBearerAuth({
-        type: 'http',
-        bearerFormat: 'Bearer {token}',
-      })
-      .build();
-    const document = SwaggerModule.createDocument(app, config);
+
+    const document = SwaggerModule.createDocument(app, swaggerDocumentConfig);
     fs.writeFileSync(
       './pact/swagger-spec.yml',
       YAML.dump(document, { noRefs: true }),

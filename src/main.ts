@@ -1,8 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import swaggerDocumentConfig from './swagger.config';
 import { AppModule } from './app.module';
-import * as fs from 'fs';
-import * as YAML from 'js-yaml';
 import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
@@ -24,14 +23,10 @@ async function bootstrap() {
       bearerFormat: 'Bearer {token}',
     })
     .build();
-  const document = SwaggerModule.createDocument(app, config);
+  const document = SwaggerModule.createDocument(app, swaggerDocumentConfig);
   SwaggerModule.setup('api', app, document, {
     customSiteTitle: `C4C API - Swagger`,
   });
-  fs.writeFileSync(
-    './pact/swagger-spec.yml',
-    YAML.dump(document, { noRefs: true }),
-  );
 
   await app.listen(5000);
 }
