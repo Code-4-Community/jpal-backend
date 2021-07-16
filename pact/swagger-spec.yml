@@ -1,0 +1,111 @@
+openapi: 3.0.0
+paths:
+  /:
+    get:
+      operationId: AppController_getHello
+      parameters: []
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: string
+  /users:
+    post:
+      operationId: UsersController_createUser
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateUserDto"
+      responses:
+        "201":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+  /auth/login:
+    post:
+      operationId: AuthController_login
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequestDto"
+      responses:
+        "201":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+info:
+  title: JPAL Backend
+  description: The JPAL Backend API description
+  version: 3be031-master+3be031.SNAPSHOT.LAPTOP-C7QEI9BM
+  contact: {}
+tags: []
+servers: []
+components:
+  schemas:
+    CreateUserDto:
+      type: object
+      properties:
+        email:
+          type: string
+          description: A valid email address.
+          example: jung.ry@northeastern.edu
+        password:
+          type: string
+          description: A valid password.
+          example: password123
+          minLength: 8
+        role:
+          type: string
+          enum:
+            - RESEARCHER
+            - ADMIN
+      required:
+        - email
+        - password
+        - role
+    User:
+      type: object
+      properties:
+        id:
+          type: number
+        email:
+          type: string
+        role:
+          type: string
+          enum:
+            - RESEARCHER
+            - ADMIN
+        password:
+          type: string
+      required:
+        - id
+        - email
+        - role
+        - password
+    LoginRequestDto:
+      type: object
+      properties:
+        email:
+          type: string
+          description: A valid email address.
+          example: jung.ry@northeastern.edu
+        password:
+          type: string
+          description: A valid password.
+          example: password123
+          minLength: 8
+      required:
+        - email
+        - password

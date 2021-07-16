@@ -8,14 +8,8 @@ import { AuthService } from './auth.service';
 export class AuthController {
   constructor(private authService: AuthService) {}
 
-  @Post()
-  login(@Body() body: LoginRequestDto) {
-    return this.authService.logIn(body.email, body.password);
-  }
-
-  @Get()
-  @UseGuards(RoleGuard([Roles.RESEARCHER]))
-  test() {
-    return true;
+  @Post('/login')
+  async login(@Body() body: LoginRequestDto) {
+    return await this.authService.logIn(body.email, body.password);
   }
 }

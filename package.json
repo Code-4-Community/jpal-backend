@@ -23,8 +23,8 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "test:pact": "jest --config ./test/jest-pact.json",
     "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js --config ormconfig.ts",
-    "test:ci": "test && test:e2e",
-    "check": "npm run format:check && tsc --noEmit && npm run lint:check"
+    "check": "npm run format:check && tsc --noEmit && npm run lint:check",
+    "publish:pact": "sh ./pact/publish-pact.sh"
   },
   "dependencies": {
     "@godaddy/terminus": "^4.9.0",
@@ -32,6 +32,7 @@
     "@nestjs/config": "^1.0.0",
     "@nestjs/core": "^8.0.0",
     "@nestjs/platform-express": "^8.0.0",
+    "@nestjs/swagger": "^5.0.3",
     "@nestjs/terminus": "^7.2.0",
     "@nestjs/typeorm": "^8.0.0",
     "@pact-foundation/absolute-version": "^0.0.2",
@@ -47,7 +48,9 @@
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0",
-    "typeorm": "^0.2.34"
+    "swagger-ui-express": "^4.1.6",
+    "typeorm": "^0.2.34",
+    "yaml": "^1.10.2"
   },
   "devDependencies": {
     "@nestjs/cli": "^8.0.0",

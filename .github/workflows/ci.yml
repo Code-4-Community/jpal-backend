@@ -1,7 +1,7 @@
 # This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
 
-name: build, lint, test
+name: CI
 
 on:
   push:
@@ -9,22 +9,77 @@ on:
   pull_request:
     branches: [master]
 
+env:
+  PACT_BROKER_BASE_URL: https://c4cneu.pactflow.io
+  PACT_BROKER_TOKEN: ${{ secrets.PACT_BROKER_TOKEN }}
+  PACT_PACTICIPANT: jpal-backend
+  GIT_COMMIT: ${{ github.sha }}
+  GITHUB_REF: ${{ github.ref }}
+  
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        node-version: [12.x, 14.x, 16.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+    # Postgres service for E2E testing
+    services:
+      # Label used to access the service container
+      postgres:
+        # Docker Hub image
+        image: postgres
+        # Provide the password for postgres
+        env:
+          POSTGRES_PASSWORD: postgres
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DATABASE: postgres
+      POSTGRES_HOST: 127.0.0.1
 
     steps:
       - uses: actions/checkout@v2
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v1
         with:
-          node-version: ${{ matrix.node-version }}
+          # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+          # We are using Node.js 14 because it is the current LTS version
+          node-version: 14.x  
+
+      - run: docker pull pactfoundation/pact-cli:latest
       - run: npm ci
       - run: npm run check
+      - run: npm run test
+      - run: npm run test:e2e
       - run: npm run build --if-present
-      - run: npm run test:ci
+      # Publish pact to pactflow
+      - run: npm run publish:pact
+      # Tag with branch name
+      - run: pact-broker create-version-tag --pacticipant=${PACT_PACTICIPANT} --version=${GIT_COMMIT} --tag-with-git-branch --broker-token=${PACT_BROKER_TOKEN}
+ 
+  can-i-deploy:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v2
+      - run: docker pull pactfoundation/pact-cli:latest
+      - name: Can I deploy?
+        run: pact-broker can-i-deploy --pacticipant=jpal-backend --version=${GIT_COMMIT} --broker-base-url=${PACT_BROKER_BASE_URL} --latest=prod --broker-token=${PACT_BROKER_TOKEN}
+  
+  #TODO: write a real deploy script
+  deploy:
+    if: ${{ github.ref == 'refs/heads/master' }}
+    runs-on: ubuntu-latest
+    needs: can-i-deploy
+    steps:
+      - uses: actions/checkout@v2
+      - run: docker pull pactfoundation/pact-cli:latest
+      - name: Tag version as prod
+        run: pact-broker create-version-tag --pacticipant=${PACT_PACTICIPANT} --version=${GIT_COMMIT} --tag=prod --broker-token=${PACT_BROKER_TOKEN}
+  
