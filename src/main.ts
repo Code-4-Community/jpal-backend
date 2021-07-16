@@ -14,7 +14,6 @@ async function bootstrap() {
     }),
   );
 
-
   const document = SwaggerModule.createDocument(app, swaggerDocumentConfig);
   SwaggerModule.setup('api', app, document, {
     customSiteTitle: `C4C API - Swagger`,
