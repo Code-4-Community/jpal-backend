@@ -44,6 +44,7 @@ jobs:
       POSTGRES_DATABASE: postgres
       POSTGRES_HOST: localhost
       POSTGRES_PORT: 5432
+      JWT_SECRET: test_secret_for_CI
 
     steps:
       - uses: actions/checkout@v2
