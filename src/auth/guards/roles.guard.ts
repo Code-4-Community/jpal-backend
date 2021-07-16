@@ -6,16 +6,22 @@ import {
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { Roles } from '../../users/types/roles';
-import { AuthorizedRequest } from '../types/authorized-request';
+import { PossiblyAuthorizedRequest } from '../types/authorized-request';
 
-// TODO: fix return type
-export const RoleGuard = (roles: Roles[]): any => {
+/**
+ * Returns a Guard that only allows Users with the given roles to access the route.
+ * @param roles user roles that can access the route
+ * @constructor
+ */
+const RolesGuard = (roles: Roles[]): any => {
   class RoleGuardMixin implements CanActivate {
     canActivate(
       context: ExecutionContext,
     ): boolean | Promise<boolean> | Observable<boolean> {
-      const req = context.switchToHttp().getRequest() as AuthorizedRequest;
-      if (!req.user) throw new UnauthorizedException();
+      const req = context
+        .switchToHttp()
+        .getRequest<PossiblyAuthorizedRequest>();
+      if (!req.user) return false;
       return roles.includes(req.user.role);
     }
   }
@@ -23,3 +29,5 @@ export const RoleGuard = (roles: Roles[]): any => {
   const guard = mixin(RoleGuardMixin);
   return guard;
 };
+
+export default RolesGuard;

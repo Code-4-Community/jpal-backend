@@ -1,13 +1,17 @@
 import { Injectable } from '@nestjs/common';
-import * as bcrypt from 'bcrypt';
+import { BcryptWrapper } from './bcrypt.wrapper';
 
 @Injectable()
 export class BcryptService {
+  constructor(private bcryptWrapper: BcryptWrapper) {}
+
   hash(raw: string): string {
-    return bcrypt.hashSync(raw, 10);
+    if (!raw) throw new Error();
+    return this.bcryptWrapper.hashSync(raw, 10);
   }
 
   compare(raw: string, hashed: string): boolean {
-    return bcrypt.compareSync(raw, hashed);
+    if (!raw || !hashed) throw new Error();
+    return this.bcryptWrapper.compareSync(raw, hashed);
   }
 }

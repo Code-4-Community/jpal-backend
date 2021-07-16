@@ -3,18 +3,31 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import * as fs from 'fs';
 import * as yaml from 'yaml';
-import { versionFromGitTag } from '@pact-foundation/absolute-version'
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.enableCors();
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      transform: true,
+    }),
+  );
 
   const config = new DocumentBuilder()
-    .setTitle('JPAL Backend')
-    .setDescription('The JPAL Backend API description')
-    .setVersion(versionFromGitTag())
+    .setTitle('C4C Backend Docs')
+    .setDescription('API docs for a C4C backend.')
+    .setVersion('1.0')
+    .addBearerAuth({
+      type: 'http',
+      bearerFormat: 'Bearer {token}',
+    })
     .build();
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document);
+  SwaggerModule.setup('api', app, document, {
+    customSiteTitle: `C4C API - Swagger`,
+  });
   fs.writeFileSync('./pact/swagger-spec.yml', yaml.stringify(document, {}));
 
   await app.listen(5000);
