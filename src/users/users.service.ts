@@ -9,7 +9,7 @@ import { BcryptService } from '../util/bcrypt/bcrypt.service';
 export class UsersService {
   constructor(
     @InjectRepository(User) private userRepository: Repository<User>,
-    private bcryptService: BcryptService
+    private bcryptService: BcryptService,
   ) {}
 
   create(email: string, role: Roles, password: string): Promise<User> {
@@ -32,5 +32,8 @@ export class UsersService {
 
   async remove(id: string): Promise<void> {
     await this.userRepository.delete(id);
+    this.userRepository.delete(
+      (await this.userRepository.find()).map((u) => u.id),
+    );
   }
 }

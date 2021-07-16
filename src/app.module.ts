@@ -8,11 +8,18 @@ import * as dotenv from 'dotenv';
 import TypeOrmConfig from '../ormconfig';
 import { AuthMiddleware } from './auth/middleware/auth.middleware';
 import { UtilModule } from './util/util.module';
+import { HealthModule } from './health/health.module';
 
 dotenv.config();
 
 @Module({
-  imports: [TypeOrmModule.forRoot(TypeOrmConfig), UsersModule, AuthModule, UtilModule],
+  imports: [
+    TypeOrmModule.forRoot(TypeOrmConfig),
+    UsersModule,
+    AuthModule,
+    UtilModule,
+    HealthModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

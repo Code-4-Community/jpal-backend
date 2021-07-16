@@ -14,7 +14,7 @@ import { BcryptService } from '../util/bcrypt/bcrypt.service';
 export class AuthService {
   constructor(
     @InjectRepository(User) private userRepository: Repository<User>,
-    private bcryptService: BcryptService
+    private bcryptService: BcryptService,
   ) {}
 
   async logIn(email: string, password: string): Promise<LoginResponseDto> {
