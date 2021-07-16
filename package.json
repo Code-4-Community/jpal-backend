@@ -24,7 +24,9 @@
     "test:pact": "jest --config ./test/jest-pact.json",
     "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js --config ormconfig.ts",
     "check": "npm run format:check && tsc --noEmit && npm run lint:check",
-    "publish:pact": "sh ./pact/publish-pact.sh"
+    "publish:pact": "sh ./pact/publish-pact.sh",
+    "migration": "npm run build && npm run typeorm migration:run",
+    "migration:revert": "npm run build && npm run typeorm migration:revert"
   },
   "dependencies": {
     "@godaddy/terminus": "^4.9.0",
