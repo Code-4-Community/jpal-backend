@@ -6,6 +6,8 @@ export default new DocumentBuilder()
   .setVersion('1.0')
   .addBearerAuth({
     type: 'http',
-    bearerFormat: 'Bearer {token}',
+    scheme: 'bearer',
+    bearerFormat: 'JWT',
+    in: 'header',
   })
   .build();
