@@ -5,8 +5,8 @@ paths:
       operationId: AppController_hello
       parameters: []
       responses:
-        "200":
-          description: ""
+        '200':
+          description: ''
           content:
             application/json:
               schema:
@@ -14,7 +14,7 @@ paths:
   /users:
     post:
       operationId: UsersController_createUser
-      summary: ""
+      summary: ''
       description: Creates a new User.
       parameters: []
       requestBody:
@@ -22,73 +22,177 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/CreateUserDto"
+              $ref: '#/components/schemas/CreateUserDto'
       responses:
-        "201":
-          description: ""
+        '201':
+          description: ''
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/User"
-        "409":
+                $ref: '#/components/schemas/User'
+        '409':
           description: User with given email already exists
       tags:
         - users
   /auth:
     post:
       operationId: AuthController_login
-      summary: ""
-      description: Logs in with a correct email and password. Returns the user and
-        token for accessing protected routes.
+      summary: ''
+      description: >-
+        Logs in with a correct email and password. Returns the user and token
+        for accessing protected routes.
       parameters: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/LoginRequestDto"
+              $ref: '#/components/schemas/LoginRequestDto'
       responses:
-        "201":
-          description: ""
+        '201':
+          description: ''
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/LoginResponseDto"
-        "401":
+                $ref: '#/components/schemas/LoginResponseDto'
+        '401':
           description: Password mismatch
-        "404":
+        '404':
           description: User with given email does not exist
       tags:
-        &a1
         - auth
   /auth/me:
     get:
       operationId: AuthController_me
-      summary: ""
+      summary: ''
       description: Must be authenticated. Returns the User making the request.
       parameters: []
       responses:
-        "200":
-          description: ""
+        '200':
+          description: ''
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/User"
-        "202":
-          description: ""
+                $ref: '#/components/schemas/User'
+        '202':
+          description: ''
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/User"
-        "401":
+                $ref: '#/components/schemas/User'
+        '401':
           description: Unauthorized (not authenticated or role insufficient)
-      tags: *a1
+      tags:
+        - auth
       security:
         - bearer: []
+  /health:
+    get:
+      operationId: HealthController_check
+      parameters: []
+      responses:
+        '200':
+          description: The Health Check is successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+                  info:
+                    type: object
+                    example:
+                      database:
+                        status: up
+                    additionalProperties:
+                      type: object
+                      properties:
+                        status:
+                          type: string
+                      additionalProperties:
+                        type: string
+                    nullable: true
+                  error:
+                    type: object
+                    example: {}
+                    additionalProperties:
+                      type: object
+                      properties:
+                        status:
+                          type: string
+                      additionalProperties:
+                        type: string
+                    nullable: true
+                  details:
+                    type: object
+                    example:
+                      database:
+                        status: up
+                    additionalProperties:
+                      type: object
+                      properties:
+                        status:
+                          type: string
+                      additionalProperties:
+                        type: string
+        '503':
+          description: The Health Check is not successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: error
+                  info:
+                    type: object
+                    example:
+                      database:
+                        status: up
+                    additionalProperties:
+                      type: object
+                      properties:
+                        status:
+                          type: string
+                      additionalProperties:
+                        type: string
+                    nullable: true
+                  error:
+                    type: object
+                    example:
+                      redis:
+                        status: down
+                        message: Could not connect
+                    additionalProperties:
+                      type: object
+                      properties:
+                        status:
+                          type: string
+                      additionalProperties:
+                        type: string
+                    nullable: true
+                  details:
+                    type: object
+                    example:
+                      database:
+                        status: up
+                      redis:
+                        status: down
+                        message: Could not connect
+                    additionalProperties:
+                      type: object
+                      properties:
+                        status:
+                          type: string
+                      additionalProperties:
+                        type: string
 info:
   title: C4C Backend Docs
   description: API docs for a C4C backend.
-  version: "1.0"
+  version: '1.0'
   contact: {}
 tags: []
 servers: []
@@ -96,7 +200,7 @@ components:
   securitySchemes:
     bearer:
       scheme: bearer
-      bearerFormat: Bearer {token}
+      bearerFormat: 'Bearer {token}'
       type: http
   schemas:
     CreateUserDto:
@@ -155,7 +259,7 @@ components:
       type: object
       properties:
         user:
-          $ref: "#/components/schemas/User"
+          $ref: '#/components/schemas/User'
         jwt:
           type: string
           description: The jason web token generated for the user

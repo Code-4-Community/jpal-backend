@@ -15,7 +15,6 @@ export class HealthController {
 
   @Get()
   @HealthCheck()
-  @ApiExcludeEndpoint()
   check() {
     return this.health.check([async () => this.db.pingCheck('database')]);
   }

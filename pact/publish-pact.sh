@@ -22,3 +22,5 @@ curl \
      \"verifier\": \"verifier\"
    }
  }"
+
+ # TODO: exit with code 1 if upload fails
