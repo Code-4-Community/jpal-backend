@@ -22,10 +22,7 @@ export class PactProviderConfigOptionsService
 
     const fetchPactsDynamicallyOpts = {
       provider: 'jpal-backend',
-      consumerVersionSelectors: [
-        { tag: 'prod', latest: true },
-        { deployed: true },
-      ], // the new way of specifying which pacts to verify
+      consumerVersionSelectors: [{ latest: true }], // the new way of specifying which pacts to verify
       pactBrokerUrl: process.env.PACT_BROKER_BASE_URL,
       enablePending: false,
       publishVerificationResult: process.env.CI ? true : false,
