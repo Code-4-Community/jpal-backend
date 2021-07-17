@@ -55,27 +55,13 @@ jobs:
           # We are using Node.js 14 because it is the current LTS version
           node-version: 14.x  
 
-      - run: docker pull pactfoundation/pact-cli:latest
       - run: npm ci
       - run: npm run check
       - run: npm run test
       - run: npm run build
       - run: npm run typeorm migration:run
       - run: npm run test:e2e
-      # Publish pact to pactflow
-      - name: Publish pact
-        run: npm run publish:pact
-      # Tag with branch name
-      - name: Tag pact
-        run: |
-          docker run --rm \
-              pactfoundation/pact-cli:latest \
-              broker create-version-tag \
-              --broker-base-url=${PACT_BROKER_BASE_URL} \
-              --broker-token ${PACT_BROKER_TOKEN} \
-              --pacticipant ${PACT_PACTICIPANT} \
-              --version ${GIT_COMMIT} \
-              --tag ${GITHUB_REF:11}   
+      - run: npm run test:pact  
 
   can-i-deploy:
     runs-on: ubuntu-latest
