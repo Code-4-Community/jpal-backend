@@ -22,7 +22,7 @@ export class PactProviderConfigOptionsService
 
     const fetchPactsDynamicallyOpts = {
       provider: 'jpal-backend',
-      consumerVersionSelectors: [{ latest: true }], // the new way of specifying which pacts to verify
+      consumerVersionSelectors: [{ tag: 'prod', latest: true }], // the new way of specifying which pacts to verify
       pactBrokerUrl: process.env.PACT_BROKER_BASE_URL,
       enablePending: false,
       publishVerificationResult: process.env.CI ? true : false,
@@ -67,9 +67,7 @@ export class PactProviderConfigOptionsService
 
       logLevel: 'debug',
       providerVersion: GIT_BRANCH ?? versionFromGitTag(),
-      providerVersionTags: GIT_BRANCH
-        ? [GIT_BRANCH === 'master' ? 'prod' : GIT_BRANCH]
-        : [],
+      providerVersionTags: GIT_BRANCH ? [GIT_BRANCH] : [],
       verbose: process.env.VERBOSE === 'true',
       pactBrokerToken: process.env.PACT_BROKER_TOKEN,
 
