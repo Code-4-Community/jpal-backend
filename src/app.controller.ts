@@ -1,9 +1,7 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Post } from '@nestjs/common';
+import { ApiHeader } from '@nestjs/swagger';
 
 @Controller()
 export class AppController {
-  @Get()
-  hello() {
-    return 'Hello World!';
-  }
+
 }
