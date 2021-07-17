@@ -28,7 +28,7 @@ export class PactProviderConfigOptionsService
       ], // the new way of specifying which pacts to verify
       pactBrokerUrl: process.env.PACT_BROKER_BASE_URL,
       enablePending: false,
-      publishVerificationResult: process.env.CI === 'true',
+      publishVerificationResult: process.env.CI ? true : false,
     };
 
     let token;
