@@ -66,7 +66,7 @@ export class PactProviderConfigOptionsService
       },
 
       logLevel: 'debug',
-      providerVersion: GIT_BRANCH ?? versionFromGitTag(),
+      providerVersion: process.env.GIT_COMMIT ?? versionFromGitTag(),
       providerVersionTags: GIT_BRANCH ? [GIT_BRANCH] : [],
       verbose: process.env.VERBOSE === 'true',
       pactBrokerToken: process.env.PACT_BROKER_TOKEN,
