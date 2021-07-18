@@ -2,7 +2,6 @@ import { Test } from '@nestjs/testing';
 import { PactVerifierService } from 'nestjs-pact';
 import { INestApplication, Logger, LoggerService } from '@nestjs/common';
 import { AppModule } from '../src/app.module';
-//import { AppRepository } from "../src/app.repository"
 import { PactModule } from './pact/pact.module';
 jest.setTimeout(30000);
 
@@ -12,17 +11,18 @@ describe('Pact Verification', () => {
   let app: INestApplication;
 
   beforeAll(async () => {
-    const moduleRef = await Test.createTestingModule({
+    const moduleFixture = await Test.createTestingModule({
       imports: [AppModule, PactModule],
       providers: [Logger], //If you need a repository pass it here
     }).compile();
 
-    verifier = moduleRef.get(PactVerifierService);
-    logger = moduleRef.get(Logger);
+    verifier = moduleFixture.get(PactVerifierService);
+    logger = moduleFixture.get(Logger);
 
-    app = moduleRef.createNestApplication();
+    app = moduleFixture.createNestApplication();
 
     await app.init();
+    logger.log('App initialized');
   });
 
   it("Validates the expectations of 'Matching Service'", async () => {
@@ -32,7 +32,5 @@ describe('Pact Verification', () => {
     logger.log(output);
   });
 
-  afterAll(async () => {
-    await app.close();
-  });
+  afterAll(async () => await app.close());
 });

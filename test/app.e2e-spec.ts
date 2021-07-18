@@ -44,7 +44,5 @@ describe('AuthController (e2e)', () => {
         expect(body.user.email).toBe(initialUser.email);
       });
   });
-  afterAll(() => {
-    app.close();
-  });
+  afterAll(async () => await app.close());
 });

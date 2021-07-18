@@ -1,11 +1,17 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
 import { versionFromGitTag } from '@pact-foundation/absolute-version';
 import { PactProviderOptions, PactProviderOptionsFactory } from 'nestjs-pact';
+import { Roles } from '../../src/users/types/roles';
+import { User } from '../../src/users/types/user.entity';
+import { Repository } from 'typeorm';
 @Injectable()
 export class PactProviderConfigOptionsService
   implements PactProviderOptionsFactory
 {
-  //public constructor() {}
+  public constructor(
+    @InjectRepository(User) private userRepository: Repository<User>,
+  ) {}
 
   public createPactProviderOptions(): PactProviderOptions {
     // For builds triggered by a 'contract content changed' webhook,
@@ -40,10 +46,15 @@ export class PactProviderConfigOptionsService
       },
 
       stateHandlers: {
-        'Has no animals': async () => {
+        nothing: async () => {
           //this.animalRepository.clear();
           token = '1234';
-
+          await this.userRepository.clear();
+          await this.userRepository.save({
+            email: 'test@test.com',
+            role: Roles.ADMIN,
+            password: 'Hello, World!',
+          });
           return 'Animals removed to the db';
         },
         'Has some animals': async () => {
