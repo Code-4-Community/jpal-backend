@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { CognitoUserAttribute } from 'amazon-cognito-identity-js';
 import 'cross-fetch/polyfill';
 import { CognitoWrapper } from './cognito.wrapper';
 
@@ -11,9 +12,14 @@ export class CognitoService {
       return this.cognitoWrapper.register(
         email,
         password,
-        [],
+        [
+          new CognitoUserAttribute({
+            Name: 'email',
+            Value: email,
+          }),
+        ],
         null,
-        (err, result) => {
+        (err) => {
           if (err) {
             reject(err);
           }
@@ -23,27 +29,8 @@ export class CognitoService {
     });
   }
 
-  login(email: string, password: string): Promise<string> {
-    const authDetails = this.cognitoWrapper.createAuthenticationDetails({
-      Username: email,
-      Password: password,
-    });
-    const cognitoUser = this.cognitoWrapper.newCognitoUser({
-      Username: email,
-    });
-    return new Promise((resolve, reject) => {
-      this.cognitoWrapper.authenticateUser(cognitoUser, authDetails, {
-        onSuccess: (session) => {
-          resolve('');
-        },
-        onFailure: (err) => {
-          reject(err);
-        },
-      });
-    });
-  }
-
   verifyToken(token: string): string {
+    // TODO: Sunday: use verification logic from Wednesday
     return '';
   }
 }
