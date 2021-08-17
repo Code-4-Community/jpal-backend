@@ -34,3 +34,12 @@ export class CognitoService {
     return '';
   }
 }
+
+// export const MockCognitoService: Partial<CognitoService> = {
+//   adminCreateUser: async () : Promise<void> => {
+//     return;
+//   },
+//   verifyToken: async (token: string): Promise<string> => {
+//     return 'idk';
+//   }
+// }

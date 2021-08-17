@@ -1,10 +1,10 @@
-import { Controller, Get, Post } from '@nestjs/common';
-import { ApiHeader } from '@nestjs/swagger';
+import { Controller, Get, ImATeapotException } from '@nestjs/common';
 
 @Controller()
 export class AppController {
   @Get()
   public hello(): string {
+    throw new ImATeapotException();
     return 'Hello, World!';
   }
 }

@@ -3,6 +3,7 @@ import { SwaggerModule } from '@nestjs/swagger';
 import swaggerDocumentConfig from './swagger.config';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
+import { SlackExceptionFilter } from './slack-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);

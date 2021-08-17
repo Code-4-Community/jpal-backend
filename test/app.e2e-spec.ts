@@ -1,11 +1,12 @@
 import { INestApplication } from '@nestjs/common';
+import { APP_FILTER } from '@nestjs/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as Bcrypt from 'bcrypt';
-import { AppModule } from '../src/app.module';
 import * as request from 'supertest';
-import { AuthModule } from '../src/auth/auth.module';
+import { AppModule } from '../src/app.module';
 import { Roles } from '../src/users/types/roles';
 import { User } from '../src/users/types/user.entity';
+import { MockSlackExceptionFilter } from './mock-slack-exception.filter';
 
 const initialUser: Omit<User, 'id'> = {
   email: 'test@test.com',
@@ -19,7 +20,10 @@ describe('AuthController (e2e)', () => {
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
-    }).compile();
+    })
+      .overrideProvider(APP_FILTER)
+      .useClass(MockSlackExceptionFilter)
+      .compile();
 
     const users = moduleFixture.get('UserRepository');
 
