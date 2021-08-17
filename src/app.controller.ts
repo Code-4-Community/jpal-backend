@@ -4,7 +4,6 @@ import { Controller, Get, ImATeapotException } from '@nestjs/common';
 export class AppController {
   @Get()
   public hello(): string {
-    throw new ImATeapotException();
     return 'Hello, World!';
   }
 }
