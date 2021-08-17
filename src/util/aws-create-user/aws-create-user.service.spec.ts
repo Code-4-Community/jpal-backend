@@ -13,7 +13,7 @@ describe('AwsCreateUserService', () => {
   });
 
   it('should be defined', async () => {
-    await service.adminCreateUser('blier.o@northeastern.edu');
+    // await service.adminCreateUser('blier.o@northeastern.edu');
     expect(service).toBeDefined();
   });
 });
