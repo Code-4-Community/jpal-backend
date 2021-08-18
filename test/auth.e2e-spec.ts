@@ -9,8 +9,6 @@ import { AuthModule } from '../src/auth/auth.module';
 import * as Bcrypt from 'bcrypt';
 import { AuthenticationMiddleware } from '../src/auth/middleware/authentication.middleware';
 import { AuthService } from '../src/auth/auth.service';
-import { APP_FILTER } from '@nestjs/core';
-import { MockSlackExceptionFilter } from './mock-slack-exception.filter';
 
 const initialUser: Omit<User, 'id'> = {
   email: 'test@test.com',
@@ -26,8 +24,6 @@ describe('AuthController (e2e)', () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AuthModule],
     })
-      .overrideProvider(APP_FILTER)
-      .useClass(MockSlackExceptionFilter)
       .overrideProvider(getRepositoryToken(User))
       .useValue(UserRepository)
       .compile();
