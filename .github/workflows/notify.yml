@@ -1,0 +1,21 @@
+name: Notify
+
+on:
+  workflow_run:
+    workflows: ["CI"]
+    types:
+      - completed
+
+jobs:
+  on-failure:
+    runs-on: ubuntu-latest
+    if: ${{ github.ref == 'refs/heads/master' }}
+    # if: ${{ github.event.workflow_run.conclusion == 'failure' }}
+    steps:
+      env:
+        SLACK_BOT_TOKEN: ${{ secrets.SLACK_NOTIFICATIONS_BOT_TOKEN }}
+      uses: voxmedia/github-action-slack-notify-build@v1
+      with:
+        channel: dev-alerts-jpal
+        status: FAILED
+        color: danger
