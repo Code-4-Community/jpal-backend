@@ -9,12 +9,15 @@ import { CognitoWrapper } from './cognito/cognito.wrapper';
 import { MailgunWrapper } from './email/mailgun.wrapper';
 import { mailgunClientFactory } from './email/mailgun-client.factory';
 import { userPoolFactory } from './cognito/user-pool.factory';
+import { AwsCreateUserServiceWrapper } from './aws-create-user/aws-create-user.wrapper';
+import { AwsCreateUserService } from './aws-create-user/aws-create-user.service';
 
 @Module({
   providers: [
     BcryptService,
     JwtService,
     CognitoService,
+    AwsCreateUserService,
     userPoolFactory,
     CognitoWrapper,
     BcryptWrapper,
@@ -22,7 +25,14 @@ import { userPoolFactory } from './cognito/user-pool.factory';
     mailgunClientFactory,
     MailgunWrapper,
     JwtWrapper,
+    AwsCreateUserServiceWrapper,
   ],
-  exports: [BcryptService, JwtService, EmailService, CognitoService],
+  exports: [
+    BcryptService,
+    JwtService,
+    EmailService,
+    CognitoService,
+    AwsCreateUserService,
+  ],
 })
 export class UtilModule {}

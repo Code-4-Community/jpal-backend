@@ -2,23 +2,17 @@ import { Injectable } from '@nestjs/common';
 import * as AWS from 'aws-sdk';
 import 'cross-fetch/polyfill';
 import * as dotenv from 'dotenv';
+import { AwsCreateUserServiceWrapper } from './aws-create-user.wrapper';
 
 dotenv.config();
 
 @Injectable()
 export class AwsCreateUserService {
   private cognitoClient: AWS.CognitoIdentityServiceProvider;
+  private awsCreateUserWrapper: AwsCreateUserServiceWrapper;
   constructor() {
-    AWS.config.update({
-      accessKeyId: process.env.AWS_ACCESS_KEY,
-      secretAccessKey: process.env.AWS_SECRET_KEY,
-      region: process.env.AWS_USER_POOL_REGION,
-    });
-
-    this.cognitoClient = new AWS.CognitoIdentityServiceProvider({
-      apiVersion: '2016-04-19',
-      region: process.env.AWS_USER_POOL_REGION,
-    });
+    this.awsCreateUserWrapper.configureAws();
+    this.cognitoClient = this.awsCreateUserWrapper.instantiateCognitoClient();
   }
 
   public async adminCreateUser(
