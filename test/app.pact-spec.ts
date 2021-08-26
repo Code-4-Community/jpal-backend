@@ -3,6 +3,7 @@ import { PactVerifierService } from 'nestjs-pact';
 import { INestApplication, Logger, LoggerService } from '@nestjs/common';
 import { AppModule } from '../src/app.module';
 import { PactModule } from './pact/pact.module';
+
 jest.setTimeout(30000);
 
 describe('Pact Verification', () => {

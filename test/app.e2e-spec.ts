@@ -1,9 +1,8 @@
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as Bcrypt from 'bcrypt';
-import { AppModule } from '../src/app.module';
 import * as request from 'supertest';
-import { AuthModule } from '../src/auth/auth.module';
+import { AppModule } from '../src/app.module';
 import { Roles } from '../src/users/types/roles';
 import { User } from '../src/users/types/user.entity';
 
