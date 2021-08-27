@@ -1,13 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { AwsCreateUserService } from './aws-create-user.service';
 import * as AWS from 'aws-sdk';
+import { AwsCreateUserService } from './aws-create-user.service';
 import { AwsCreateUserServiceWrapper } from './aws-create-user.wrapper';
 jest.mock('aws-sdk');
 
 const adminCreateUserSpy = jest.fn();
 const mockAwsCreateUserServiceWrapper: AwsCreateUserServiceWrapper = {
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  configureAws: () => {},
+  configureAws: () => {
+    return;
+  },
 
   instantiateCognitoClient: () =>
     ({
@@ -33,14 +34,14 @@ describe('AwsCreateUserService', () => {
   });
 
   it('should be defined', async () => {
-    // await service.adminCreateUser('blier.o@northeastern.edu');
     expect(service).toBeDefined();
   });
 
   it('should call the right AWS API endpoint', async () => {
+    adminCreateUserSpy.mockImplementation((_pool, callback) => {
+      return callback(null, {});
+    });
     await service.adminCreateUser('blier.o@northeastern.edu');
     expect(adminCreateUserSpy).toHaveBeenCalled();
   });
 });
-
-it('needs a test to pass', () => expect(true).toBeTruthy());

@@ -1,25 +1,18 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { User } from 'src/users/types/user.entity';
+import { Roles } from '../users/types/roles';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { LoginResponseDto } from './dto/login-response.dto';
-import { Roles } from '../users/types/roles';
 
-const mockUser = {
+const mockUser: User = {
   id: 1,
   email: 'test@test.com',
-  password: 'password123',
   role: Roles.ADMIN,
-};
-
-const mockLoginResponse: LoginResponseDto = {
-  user: mockUser,
-  jwt: '40f8hj208cdj1df2',
+  isClaimed: true,
 };
 
 const serviceMock: Partial<AuthService> = {
-  async logIn(email: string, password: string): Promise<LoginResponseDto> {
-    return mockLoginResponse;
-  },
+  verifyJwt: () => Promise.resolve(mockUser),
 };
 
 describe('AuthController', () => {
@@ -37,14 +30,6 @@ describe('AuthController', () => {
     }).compile();
 
     controller = module.get<AuthController>(AuthController);
-  });
-
-  test('login', async () => {
-    const goodResponse = await controller.login({
-      email: mockLoginResponse.user.email,
-      password: mockLoginResponse.user.password,
-    });
-    expect(goodResponse).toEqual(mockLoginResponse);
   });
 
   test('me', () => {

@@ -1,9 +1,4 @@
-import {
-  CanActivate,
-  ExecutionContext,
-  mixin,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { CanActivate, ExecutionContext, mixin } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { Roles } from '../../users/types/roles';
 import { PossiblyAuthorizedRequest } from '../types/authorized-request';

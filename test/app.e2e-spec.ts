@@ -1,6 +1,5 @@
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import * as Bcrypt from 'bcrypt';
 import * as request from 'supertest';
 import { AppModule } from '../src/app.module';
 import { Roles } from '../src/users/types/roles';
@@ -9,7 +8,7 @@ import { User } from '../src/users/types/user.entity';
 const initialUser: Omit<User, 'id'> = {
   email: 'test@test.com',
   role: Roles.ADMIN,
-  password: Bcrypt.hashSync('testpassword123', 10),
+  isClaimed: false,
 };
 
 describe('AuthController (e2e)', () => {

@@ -1,20 +1,29 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { EmailService } from './email.service';
+import { MailgunWrapper } from './mailgun.wrapper';
 
-// describe('EmailService', () => {
-//   let service: EmailService;
-//
-//   beforeEach(async () => {
-//     const module: TestingModule = await Test.createTestingModule({
-//       providers: [EmailService],
-//     }).compile();
-//
-//     service = module.get<EmailService>(EmailService);
-//   });
-//
-//   it('should be defined', () => {
-//     expect(service).toBeDefined();
-//   });
-// });
+const mockMailgunWrapper = {
+  sendEmails: () => Promise.resolve(null),
+};
 
-it('needs a test to pass', () => expect(true).toBeTruthy());
+describe('EmailService', () => {
+  let service: EmailService;
+
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [
+        EmailService,
+        {
+          provide: MailgunWrapper,
+          useValue: mockMailgunWrapper,
+        },
+      ],
+    }).compile();
+
+    service = module.get<EmailService>(EmailService);
+  });
+
+  it('should be defined', () => {
+    expect(service).toBeDefined();
+  });
+});

@@ -9,10 +9,12 @@ dotenv.config();
 @Injectable()
 export class AwsCreateUserService {
   private cognitoClient: AWS.CognitoIdentityServiceProvider;
-  private awsCreateUserWrapper: AwsCreateUserServiceWrapper;
-  constructor() {
-    this.awsCreateUserWrapper.configureAws();
-    this.cognitoClient = this.awsCreateUserWrapper.instantiateCognitoClient();
+  constructor(
+    private awsCreateUserServiceWrapper: AwsCreateUserServiceWrapper,
+  ) {
+    this.awsCreateUserServiceWrapper.configureAws();
+    this.cognitoClient =
+      this.awsCreateUserServiceWrapper.instantiateCognitoClient();
   }
 
   public async adminCreateUser(
@@ -38,7 +40,6 @@ export class AwsCreateUserService {
         if (error) {
           reject(error);
         } else {
-          console.log(data);
           resolve(data.User);
         }
       });

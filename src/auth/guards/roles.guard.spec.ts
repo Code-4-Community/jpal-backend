@@ -1,4 +1,4 @@
-import { CanActivate, ExecutionContext, Type } from '@nestjs/common';
+import { ExecutionContext, Type } from '@nestjs/common';
 import { HttpArgumentsHost } from '@nestjs/common/interfaces';
 import { User } from '../../users/types/user.entity';
 import RolesGuard from './roles.guard';
@@ -8,7 +8,7 @@ const mockUser = (role: Roles): User => ({
   id: 1,
   email: 'test@test.com',
   role,
-  password: 'sdlf;jk',
+  isClaimed: true,
 });
 
 const mockContext = (user?: User): Partial<ExecutionContext> => ({

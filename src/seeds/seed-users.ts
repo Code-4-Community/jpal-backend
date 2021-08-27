@@ -13,7 +13,7 @@ export default class CreateUsers implements Seeder {
         {
           email: 'test@test.com',
           role: Roles.ADMIN,
-          password: 'somehashedpassword',
+          isClaimed: true,
         },
       ])
       .execute();
