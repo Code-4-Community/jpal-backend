@@ -1,12 +1,12 @@
 import { ConflictException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { AwsCreateUserService } from '../../src/util/aws-create-user/aws-create-user.service';
+import { mock } from 'jest-mock-extended';
 import { DeepPartial, Repository } from 'typeorm';
+import { AwsCreateUserService } from '../../src/util/aws-create-user/aws-create-user.service';
 import { Roles } from './types/roles';
 import { User } from './types/user.entity';
 import { UsersService } from './users.service';
-import { mock } from 'jest-mock-extended';
 const mockUser: User = {
   id: 1,
   email: 'test@test.com',
