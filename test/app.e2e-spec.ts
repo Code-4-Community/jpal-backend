@@ -1,5 +1,6 @@
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { EmailService } from '../src/util/email/email.service';
 import { AppModule } from '../src/app.module';
 import { Roles } from '../src/users/types/roles';
 import { User } from '../src/users/types/user.entity';
@@ -10,12 +11,22 @@ const initialUser: Omit<User, 'id'> = {
   isClaimed: false,
 };
 
+const mockEmailService = {
+  sendEmails: jest.fn(),
+};
+
 describe('AuthController (e2e)', () => {
   let app: INestApplication;
 
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
+      providers: [
+        {
+          provide: EmailService,
+          useValue: mockEmailService,
+        },
+      ],
     }).compile();
 
     const users = moduleFixture.get('UserRepository');

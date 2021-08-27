@@ -5,7 +5,7 @@ import { MailgunWrapper } from './mailgun.wrapper';
 export class EmailService {
   constructor(private mailgunWrapper: MailgunWrapper) {}
 
-  private sendEmail(to: string[], subject: string, text: string) {
+  private sendEmails(to: string[], subject: string, text: string) {
     return this.mailgunWrapper.sendEmails({
       from: '',
       to,
