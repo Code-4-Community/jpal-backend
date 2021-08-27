@@ -2,9 +2,9 @@ import { ExecutionContext, Type } from '@nestjs/common';
 import { HttpArgumentsHost } from '@nestjs/common/interfaces';
 import { User } from '../../users/types/user.entity';
 import RolesGuard from './roles.guard';
-import { Roles } from '../../users/types/roles';
+import { Role } from '../../users/types/role';
 
-const mockUser = (role: Roles): User => ({
+const mockUser = (role: Role): User => ({
   id: 1,
   email: 'test@test.com',
   role,
@@ -31,20 +31,20 @@ const mockContext = (user?: User): Partial<ExecutionContext> => ({
 
 describe('RolesGuard', () => {
   it('should reject if no user', () => {
-    const Guard: Type = RolesGuard([Roles.ADMIN]);
+    const Guard: Type = RolesGuard([Role.ADMIN]);
     const context = mockContext(undefined);
     expect(new Guard().canActivate(context as ExecutionContext)).toBe(false);
   });
 
   it('should reject if role not included', () => {
-    const Guard: Type = RolesGuard([Roles.RESEARCHER]);
-    const context = mockContext(mockUser(Roles.ADMIN));
+    const Guard: Type = RolesGuard([Role.RESEARCHER]);
+    const context = mockContext(mockUser(Role.ADMIN));
     expect(new Guard().canActivate(context as ExecutionContext)).toBe(false);
   });
 
   it('should accept if role is included', () => {
-    const Guard: Type = RolesGuard([Roles.RESEARCHER]);
-    const context = mockContext(mockUser(Roles.RESEARCHER));
+    const Guard: Type = RolesGuard([Role.RESEARCHER]);
+    const context = mockContext(mockUser(Role.RESEARCHER));
     expect(new Guard().canActivate(context as ExecutionContext)).toBe(true);
   });
 });

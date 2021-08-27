@@ -1,6 +1,6 @@
 import { Controller, Get } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { Roles } from '../users/types/roles';
+import { Role } from '../users/types/role';
 import { User } from '../users/types/user.entity';
 import { AuthService } from './auth.service';
 import { Auth } from './decorators/auth.decorator';
@@ -15,7 +15,7 @@ export class AuthController {
    * Must be authenticated. Returns the User making the request.
    */
   @Get('me')
-  @Auth(Roles.ADMIN, Roles.RESEARCHER)
+  @Auth(Role.ADMIN, Role.RESEARCHER)
   me(@ReqUser() user: User): User {
     return user;
   }

@@ -1,6 +1,6 @@
 import { CanActivate, ExecutionContext, mixin } from '@nestjs/common';
 import { Observable } from 'rxjs';
-import { Roles } from '../../users/types/roles';
+import { Role } from '../../users/types/role';
 import { PossiblyAuthorizedRequest } from '../types/authorized-request';
 
 /**
@@ -8,7 +8,7 @@ import { PossiblyAuthorizedRequest } from '../types/authorized-request';
  * @param roles user roles that can access the route
  * @constructor
  */
-const RolesGuard = (roles: Roles[]): any => {
+const RolesGuard = (roles: Role[]): any => {
   class RoleGuardMixin implements CanActivate {
     canActivate(
       context: ExecutionContext,

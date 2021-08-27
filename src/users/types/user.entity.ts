@@ -1,6 +1,6 @@
 import { IsEmail } from 'class-validator';
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
-import { Roles } from './roles';
+import { Role } from './role';
 
 @Entity()
 export class User {
@@ -15,10 +15,10 @@ export class User {
 
   @Column({
     type: 'enum',
-    enum: Roles,
-    default: Roles.ADMIN,
+    enum: Role,
+    default: Role.ADMIN,
   })
-  role: Roles;
+  role: Role;
 
   @Column()
   isClaimed: boolean;

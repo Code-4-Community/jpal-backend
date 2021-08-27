@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { versionFromGitTag } from '@pact-foundation/absolute-version';
 import { PactProviderOptions, PactProviderOptionsFactory } from 'nestjs-pact';
-import { Roles } from '../../src/users/types/roles';
+import { Role } from '../../src/users/types/role';
 import { User } from '../../src/users/types/user.entity';
 import { Repository } from 'typeorm';
 @Injectable()
@@ -52,7 +52,7 @@ export class PactProviderConfigOptionsService
           await this.userRepository.clear();
           await this.userRepository.save({
             email: 'test@test.com',
-            role: Roles.ADMIN,
+            role: Role.ADMIN,
             isClaimed: true,
           });
           return 'Animals removed to the db';

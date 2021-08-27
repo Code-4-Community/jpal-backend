@@ -1,12 +1,12 @@
 import { AuthService } from '../auth.service';
 import { User } from '../../users/types/user.entity';
-import { Roles } from '../../users/types/roles';
+import { Role } from '../../users/types/role';
 import { AuthenticationMiddleware } from './authentication.middleware';
 
 const mockUser: User = {
   id: 1,
   email: 'test@test.com',
-  role: Roles.ADMIN,
+  role: Role.ADMIN,
   isClaimed: false,
 };
 

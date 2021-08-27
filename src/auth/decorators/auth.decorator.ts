@@ -1,5 +1,5 @@
 import { applyDecorators, UseGuards } from '@nestjs/common';
-import { Roles } from '../../users/types/roles';
+import { Role } from '../../users/types/role';
 import RolesGuard from '../guards/roles.guard';
 import { ApiBearerAuth, ApiUnauthorizedResponse } from '@nestjs/swagger';
 
@@ -8,7 +8,7 @@ import { ApiBearerAuth, ApiUnauthorizedResponse } from '@nestjs/swagger';
  * @param roles the user roles that should be able to access the route
  * @constructor
  */
-export function Auth(...roles: Roles[]) {
+export function Auth(...roles: Role[]) {
   return applyDecorators(
     UseGuards(RolesGuard(roles)),
     ApiBearerAuth(),

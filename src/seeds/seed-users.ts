@@ -1,6 +1,6 @@
 import { Connection } from 'typeorm';
 import { Factory, Seeder } from 'typeorm-seeding';
-import { Roles } from '../users/types/roles';
+import { Role } from '../users/types/role';
 import { User } from '../users/types/user.entity';
 
 export default class CreateUsers implements Seeder {
@@ -12,7 +12,7 @@ export default class CreateUsers implements Seeder {
       .values([
         {
           email: 'test@test.com',
-          role: Roles.ADMIN,
+          role: Role.ADMIN,
           isClaimed: true,
         },
       ])

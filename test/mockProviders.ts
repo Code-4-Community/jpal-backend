@@ -10,6 +10,19 @@ import { MAILGUN_CLIENT } from '../src/util/email/mailgun-client.factory';
 import { MailgunWrapper } from '../src/util/email/mailgun.wrapper';
 
 /**
+ * Mocking the cognito validation service to simply JSON parse whatever the "jwt" string is.
+ */
+const mockCognitoService = mock<CognitoService>();
+mockCognitoService.validate.mockImplementation((jwt) =>
+  Promise.resolve(JSON.parse(jwt)),
+);
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const createFakeJWTPayloadFromObject = (obj: any) => {
+  return JSON.stringify(obj);
+};
+
+/**
  * Mock out any external IO dependencies so we can ignore third party API calls in our E2E tests.
  * For example, we don't want to send actual emails in our E2E tests, we just want to check that the service is called.
  */
@@ -24,7 +37,7 @@ export const overrideExternalDependencies = (
     .overrideProvider(MAILGUN_CLIENT)
     .useValue(mock<mailgun.Mailgun>())
     .overrideProvider(CognitoService)
-    .useValue(mock<CognitoService>())
+    .useValue(mockCognitoService)
     .overrideProvider(CognitoWrapper)
     .useValue(mock<CognitoWrapper>())
     .overrideProvider(AwsCreateUserService)

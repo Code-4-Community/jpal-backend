@@ -1,13 +1,13 @@
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '../src/app.module';
-import { Roles } from '../src/users/types/roles';
+import { Role } from '../src/users/types/role';
 import { User } from '../src/users/types/user.entity';
 import { overrideExternalDependencies } from './mockProviders';
 
 const initialUser: Omit<User, 'id'> = {
   email: 'test@test.com',
-  role: Roles.ADMIN,
+  role: Role.ADMIN,
   isClaimed: false,
 };
 

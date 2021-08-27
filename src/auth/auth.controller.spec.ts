@@ -1,13 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { User } from 'src/users/types/user.entity';
-import { Roles } from '../users/types/roles';
+import { Role } from '../users/types/role';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 
 const mockUser: User = {
   id: 1,
   email: 'test@test.com',
-  role: Roles.ADMIN,
+  role: Role.ADMIN,
   isClaimed: true,
 };
 

@@ -4,13 +4,13 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { mock } from 'jest-mock-extended';
 import { DeepPartial, Repository } from 'typeorm';
 import { AwsCreateUserService } from '../../src/util/aws-create-user/aws-create-user.service';
-import { Roles } from './types/roles';
+import { Role } from './types/role';
 import { User } from './types/user.entity';
 import { UsersService } from './users.service';
 const mockUser: User = {
   id: 1,
   email: 'test@test.com',
-  role: Roles.ADMIN,
+  role: Role.ADMIN,
   isClaimed: false,
 };
 

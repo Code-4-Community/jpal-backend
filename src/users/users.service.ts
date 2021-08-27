@@ -6,7 +6,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { AwsCreateUserService } from '../../src/util/aws-create-user/aws-create-user.service';
-import { Roles } from './types/roles';
+import { Role } from './types/role';
 import { User } from './types/user.entity';
 
 @Injectable()
@@ -16,7 +16,7 @@ export class UsersService {
     private awsCreateUser: AwsCreateUserService,
   ) {}
 
-  async create(email: string, role: Roles): Promise<User> {
+  async create(email: string, role: Role): Promise<User> {
     const emailNotUnique = await this.userRepository.findOne({ email });
     if (!!emailNotUnique) throw new ConflictException('Email already exists');
     try {
