@@ -1,9 +1,9 @@
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { EmailService } from '../src/util/email/email.service';
 import { AppModule } from '../src/app.module';
 import { Roles } from '../src/users/types/roles';
 import { User } from '../src/users/types/user.entity';
+import { overrideExternalDependencies } from './mockProviders';
 
 const initialUser: Omit<User, 'id'> = {
   email: 'test@test.com',
@@ -11,23 +11,15 @@ const initialUser: Omit<User, 'id'> = {
   isClaimed: false,
 };
 
-const mockEmailService = {
-  sendEmails: jest.fn(),
-};
-
-describe('AuthController (e2e)', () => {
+describe('Example e2e', () => {
   let app: INestApplication;
 
   beforeEach(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
-      providers: [
-        {
-          provide: EmailService,
-          useValue: mockEmailService,
-        },
-      ],
-    }).compile();
+    const moduleFixture: TestingModule = await overrideExternalDependencies(
+      Test.createTestingModule({
+        imports: [AppModule],
+      }),
+    ).compile();
 
     const users = moduleFixture.get('UserRepository');
 
@@ -40,18 +32,5 @@ describe('AuthController (e2e)', () => {
   });
   test('needs a test to pass', () => expect(true).toBe(true));
 
-  // test('POST /auth/', async () => {
-  //   await request(app.getHttpServer())
-  //     .post('/auth')
-  //     .send({
-  //       email: 'test@test.com',
-  //       password: 'testpassword123',
-  //     })
-  //     .expect(201)
-  //     .expect(({ body }) => {
-  //       expect(body.jwt).toBeDefined();
-  //       expect(body.user.email).toBe(initialUser.email);
-  //     });
-  // });
   afterAll(async () => await app.close());
 });

@@ -81,6 +81,7 @@
     "eslint-plugin-prettier": "^3.4.0",
     "husky": "^7.0.1",
     "jest": "^27.0.6",
+    "jest-mock-extended": "^2.0.2-beta2",
     "lint-staged": "^11.0.1",
     "nestjs-pact": "^2.0.0",
     "prettier": "^2.3.2",
