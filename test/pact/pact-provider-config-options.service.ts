@@ -53,7 +53,7 @@ export class PactProviderConfigOptionsService
           await this.userRepository.save({
             email: 'test@test.com',
             role: Roles.ADMIN,
-            password: 'Hello, World!',
+            isClaimed: true,
           });
           return 'Animals removed to the db';
         },
