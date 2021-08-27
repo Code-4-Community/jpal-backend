@@ -53,11 +53,12 @@ describe('UsersService', () => {
     service = module.get<UsersService>(UsersService);
   });
 
-  it('should create a fresh unclaimed user', async () => {
+  it('should fail to create a user whose email is already claimed', async () => {
     await expect(
       service.create('already@exists.com', mockUser.role),
     ).rejects.toThrow(new ConflictException('Email already exists'));
-
+  });
+  it('should create a fresh unclaimed user', async () => {
     const goodResponse = await service.create(mockUser.email, mockUser.role);
     expect(goodResponse).toEqual({
       id: 1,
