@@ -3,6 +3,7 @@ import { PactVerifierService } from 'nestjs-pact';
 import { INestApplication, Logger, LoggerService } from '@nestjs/common';
 import { AppModule } from '../src/app.module';
 import { PactModule } from './pact/pact.module';
+import { overrideExternalDependencies } from './mockProviders';
 
 jest.setTimeout(30000);
 
@@ -12,10 +13,12 @@ describe('Pact Verification', () => {
   let app: INestApplication;
 
   beforeAll(async () => {
-    const moduleFixture = await Test.createTestingModule({
-      imports: [AppModule, PactModule],
-      providers: [Logger], //If you need a repository pass it here
-    }).compile();
+    const moduleFixture = await overrideExternalDependencies(
+      Test.createTestingModule({
+        imports: [AppModule, PactModule],
+        providers: [Logger], //If you need a repository pass it here
+      }),
+    ).compile();
 
     verifier = moduleFixture.get(PactVerifierService);
     logger = moduleFixture.get(Logger);
