@@ -1,11 +1,12 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { UsersService } from './users.service';
-import { DeepPartial, Repository } from 'typeorm';
-import { User } from './types/user.entity';
-import { Roles } from './types/roles';
-import { getRepositoryToken } from '@nestjs/typeorm';
 import { ConflictException } from '@nestjs/common';
-
+import { Test, TestingModule } from '@nestjs/testing';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { AwsCreateUserService } from '../../src/util/aws-create-user/aws-create-user.service';
+import { DeepPartial, Repository } from 'typeorm';
+import { Roles } from './types/roles';
+import { User } from './types/user.entity';
+import { UsersService } from './users.service';
+import { mock } from 'jest-mock-extended';
 const mockUser: User = {
   id: 1,
   email: 'test@test.com',
@@ -29,6 +30,8 @@ const mockUserRepository: Partial<Repository<User>> = {
   },
 };
 
+const mockAwsCreateUserService = mock<AwsCreateUserService>();
+
 describe('UsersService', () => {
   let service: UsersService;
 
@@ -40,13 +43,17 @@ describe('UsersService', () => {
           provide: getRepositoryToken(User),
           useValue: mockUserRepository,
         },
+        {
+          provide: AwsCreateUserService,
+          useValue: mockAwsCreateUserService,
+        },
       ],
     }).compile();
 
     service = module.get<UsersService>(UsersService);
   });
 
-  test('create', async () => {
+  it('should create a fresh unclaimed user', async () => {
     await expect(
       service.create('already@exists.com', mockUser.role),
     ).rejects.toThrow(new ConflictException('Email already exists'));
@@ -56,6 +63,10 @@ describe('UsersService', () => {
       id: 1,
       email: mockUser.email,
       role: mockUser.role,
+      isClaimed: false,
     });
+    expect(mockAwsCreateUserService.adminCreateUser).toHaveBeenCalledWith(
+      mockUser.email,
+    );
   });
 });
