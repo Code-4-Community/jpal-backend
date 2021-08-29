@@ -11,6 +11,7 @@ import { HealthModule } from './health/health.module';
 import { SentryInterceptor } from './sentry.interceptor';
 import { UsersModule } from './users/users.module';
 import { UtilModule } from './util/util.module';
+import { PostsModule } from './posts/posts.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -21,6 +22,7 @@ import { UtilModule } from './util/util.module';
     AuthModule,
     UtilModule,
     HealthModule,
+    PostsModule,
   ],
   controllers: [AppController],
   providers: [
