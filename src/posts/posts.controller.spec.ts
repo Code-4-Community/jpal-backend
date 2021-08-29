@@ -1,6 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { mock } from 'jest-mock-extended';
 import { PostsController } from './posts.controller';
 import { PostsService } from './posts.service';
+
+const mockPostsService = mock<PostsService>();
 
 describe('PostsController', () => {
   let controller: PostsController;
@@ -8,7 +11,12 @@ describe('PostsController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [PostsController],
-      providers: [PostsService],
+      providers: [
+        {
+          provide: PostsService,
+          useValue: mockPostsService,
+        },
+      ],
     }).compile();
 
     controller = module.get<PostsController>(PostsController);
