@@ -19,7 +19,7 @@ export class PostsService {
   }
 
   findOne(id: number) {
-    return this.postsRepository.findOneOrFail({ where: { id } });
+    return this.postsRepository.findOne({ where: { id } });
   }
 
   async update(id: number, updatePostDto: UpdatePostDto) {

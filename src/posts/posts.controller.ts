@@ -1,15 +1,17 @@
 import {
-  Controller,
-  Get,
-  Post,
+  BadRequestException,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
+  Get,
+  Param,
+  ParseIntPipe,
+  Patch,
+  Post,
 } from '@nestjs/common';
-import { PostsService } from './posts.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
+import { PostsService } from './posts.service';
 
 @Controller('posts')
 export class PostsController {
@@ -26,17 +28,33 @@ export class PostsController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.postsService.findOne(+id);
+  async findOne(@Param('id', ParseIntPipe) id: number) {
+    const result = await this.postsService.findOne(id);
+    if (!result) {
+      throw new BadRequestException(`Post with id ${id} not found`);
+    } else {
+      return result;
+    }
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePostDto: UpdatePostDto) {
-    return this.postsService.update(+id, updatePostDto);
+  async update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updatePostDto: UpdatePostDto,
+  ) {
+    if (!(await this.postsService.findOne(id))) {
+      throw new BadRequestException(`Post with id ${id} not found`);
+    } else {
+      return this.postsService.update(id, updatePostDto);
+    }
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.postsService.remove(+id);
+  async remove(@Param('id', ParseIntPipe) id: number) {
+    if (!(await this.postsService.findOne(id))) {
+      throw new BadRequestException(`Post with id ${id} not found`);
+    }
+    await this.postsService.remove(id);
+    return;
   }
 }
