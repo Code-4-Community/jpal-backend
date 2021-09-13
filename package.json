@@ -42,7 +42,7 @@
     "@nestjs/swagger": "^5.0.3",
     "@nestjs/terminus": "^7.2.0",
     "@nestjs/typeorm": "^8.0.0",
-    "@pact-foundation/absolute-version": "^0.0.2",
+    "@pact-foundation/absolute-version": "^0.0.4",
     "@sentry/node": "^6.11.0",
     "@types/bcrypt": "^5.0.0",
     "@types/jsonwebtoken": "^8.5.4",
