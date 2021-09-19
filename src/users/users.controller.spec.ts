@@ -12,7 +12,7 @@ const mockUser: User = {
 };
 
 const serviceMock: Partial<UsersService> = {
-  create: jest.fn((email: string, role: Role) => Promise.resolve(mockUser)),
+  create: jest.fn(() => Promise.resolve(mockUser)),
 };
 
 describe('UsersController', () => {
@@ -36,6 +36,9 @@ describe('UsersController', () => {
     expect(
       await controller.create({ email: mockUser.email, role: mockUser.role }),
     ).toEqual(mockUser);
-    expect(serviceMock.create).toHaveBeenCalledWith(mockUser.email, mockUser.role);
+    expect(serviceMock.create).toHaveBeenCalledWith(
+      mockUser.email,
+      mockUser.role,
+    );
   });
 });
