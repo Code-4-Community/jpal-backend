@@ -32,7 +32,7 @@
 //     await users.clear();
 //     await users.save(initialUser);
 //   });
-//   it('should save a user when creating a user', async () => 
+//   it('should save a user when creating a user', async () =>
 //   {return request(app.getHttpServer())
 //     .post('/users')
 //     .send({email: "test@test.com", role: Role.RESEARCHER})

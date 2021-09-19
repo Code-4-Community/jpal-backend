@@ -1,6 +1,5 @@
-import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
+import { IsEmail } from 'class-validator';
 import { Role } from '../types/role';
-
 
 export class CreateUserRequestDto {
   @IsEmail()
