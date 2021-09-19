@@ -3,7 +3,7 @@
 ## Installation & Scripts
 
 You need Node v14+, you can install Node [here](https://nodejs.org/en/download/).
-You also need a PostgreSQL DB ([instructions here](https://docs.c4cneu.com/getting-started/setup-local-dev/#start-a-local-postgres-database)).
+You also need a PostgreSQL DB ([instructions here](https://www.postgresql.org/download/)).
 
 Copy `.example.env` and rename it to `.env`, then fill out the environment variables for the DB.
 
