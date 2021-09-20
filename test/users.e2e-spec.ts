@@ -13,7 +13,7 @@ const initialAdminUser: Omit<User, 'id'> = {
   isClaimed: true,
 };
 
-describe('Example e2e', () => {
+describe('Users e2e', () => {
   let app: INestApplication;
   let usersRepository: Repository<User>;
 
