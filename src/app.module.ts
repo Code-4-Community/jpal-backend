@@ -9,6 +9,7 @@ import { AuthModule } from './auth/auth.module';
 import { AuthenticationMiddleware } from './auth/middleware/authentication.middleware';
 import { HealthModule } from './health/health.module';
 import { SentryInterceptor } from './sentry.interceptor';
+import { UsersController } from './users/users.controller';
 import { UsersModule } from './users/users.module';
 import { UtilModule } from './util/util.module';
 @Module({
@@ -22,7 +23,7 @@ import { UtilModule } from './util/util.module';
     UtilModule,
     HealthModule,
   ],
-  controllers: [AppController],
+  controllers: [AppController, UsersController],
   providers: [
     AppService,
     {

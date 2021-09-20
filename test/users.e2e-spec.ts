@@ -1,45 +1,84 @@
-// import { INestApplication } from '@nestjs/common';
-// import { Test, TestingModule } from '@nestjs/testing';
-// import { UsersService } from 'src/users/users.service';
-// import { AppModule } from '../src/app.module';
-// import { Role } from '../src/users/types/role';
-// import { User } from '../src/users/types/user.entity';
-// import { overrideExternalDependencies } from './mockProviders';
-// import * as request from 'supertest';
+import { INestApplication } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import * as request from 'supertest';
+import { Repository } from 'typeorm';
+import { AppModule } from '../src/app.module';
+import { Role } from '../src/users/types/role';
+import { User } from '../src/users/types/user.entity';
+import { overrideExternalDependencies } from './mockProviders';
 
-// const initialUser: Omit<User, 'id'> = {
-//   email: 'test@test.com',
-//   role: Role.ADMIN,
-//   isClaimed: false,
-// };
+const initialAdminUser: Omit<User, 'id'> = {
+  email: 'test@test.com',
+  role: Role.RESEARCHER,
+  isClaimed: true,
+};
 
-// describe('Example e2e', () => {
-//   let app: INestApplication;
+describe('Example e2e', () => {
+  let app: INestApplication;
+  let usersRepository: Repository<User>;
 
-//   beforeEach(async () => {
-//     const moduleFixture: TestingModule = await overrideExternalDependencies(
-//       Test.createTestingModule({
-//         imports: [AppModule],
-//       }),
-//     ).compile();
+  beforeAll(async () => {
+    const moduleFixture: TestingModule = await overrideExternalDependencies(
+      Test.createTestingModule({
+        imports: [AppModule],
+      }),
+    ).compile();
 
-//     const users = moduleFixture.get('UserRepository');
+    usersRepository = moduleFixture.get('UserRepository');
 
-//     app = moduleFixture.createNestApplication();
+    app = moduleFixture.createNestApplication();
 
-//     await app.init();
+    await app.init();
+    await usersRepository.clear();
+    await usersRepository.save(initialAdminUser);
+  });
 
-//     await users.clear();
-//     await users.save(initialUser);
-//   });
-//   it('should save a user when creating a user', async () =>
-//   {return request(app.getHttpServer())
-//     .post('/users')
-//     .send({email: "test@test.com", role: Role.RESEARCHER})
-//     .expect(201)
-//     .expect({
-//       data: UsersService.findAll(),
-//     });});
+  beforeEach(async () => {
+    await usersRepository.clear();
+    await usersRepository.save(initialAdminUser);
+  });
 
-//   afterAll(async () => await app.close());
-// });
+  it('should save a user when creating a researcher user', async () => {
+    expect.assertions(2);
+    const response = await request(app.getHttpServer())
+      .post('/users')
+      .send({ email: 'test.createuser@test.com', role: Role.RESEARCHER })
+      .set(
+        'Authorization',
+        `Bearer ${JSON.stringify({ email: 'test@test.com' })}`,
+      );
+
+    expect(response.statusCode).toBe(201);
+    expect(response.body).toEqual(
+      expect.objectContaining({
+        id: expect.any(Number),
+        email: 'test.createuser@test.com',
+        role: Role.RESEARCHER,
+        isClaimed: false,
+      }),
+    );
+  });
+
+  it('should save a user when creating an admin user', async () => {
+    expect.assertions(2);
+    const response = await request(app.getHttpServer())
+      .post('/users')
+      .send({ email: 'test.createuser@test.com', role: Role.ADMIN })
+      .set(
+        'Authorization',
+        `Bearer ${JSON.stringify({ email: 'test@test.com' })}`,
+      );
+
+    expect(response.statusCode).toBe(201);
+    expect(response.body).toEqual(
+      expect.objectContaining({
+        id: expect.any(Number),
+        email: 'test.createuser@test.com',
+        role: Role.ADMIN,
+        isClaimed: false,
+      }),
+    );
+  });
+
+  afterAll(async () => await app.close());
+});

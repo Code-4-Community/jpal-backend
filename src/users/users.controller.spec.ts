@@ -32,7 +32,8 @@ describe('UsersController', () => {
     controller = module.get<UsersController>(UsersController);
   });
 
-  test('create', async () => {
+  it('should delegate to the users service', async () => {
+    expect.assertions(2);
     expect(
       await controller.create({ email: mockUser.email, role: mockUser.role }),
     ).toEqual(mockUser);
