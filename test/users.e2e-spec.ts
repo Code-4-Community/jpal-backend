@@ -53,7 +53,6 @@ describe('Users e2e', () => {
         id: expect.any(Number),
         email: 'test.createuser@test.com',
         role: Role.RESEARCHER,
-        isClaimed: false,
       }),
     );
   });
@@ -74,7 +73,6 @@ describe('Users e2e', () => {
         id: expect.any(Number),
         email: 'test.createuser@test.com',
         role: Role.ADMIN,
-        isClaimed: false,
       }),
     );
   });
