@@ -11,7 +11,6 @@ const mockUser: User = {
   id: 1,
   email: 'test@test.com',
   role: Role.RESEARCHER,
-  isClaimed: false,
 };
 
 const mockCognitoService = {

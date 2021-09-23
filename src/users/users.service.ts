@@ -24,7 +24,6 @@ export class UsersService {
       const user = this.userRepository.create({
         email,
         role,
-        isClaimed: false,
       });
       return this.userRepository.save(user);
     } catch (error) {

@@ -8,7 +8,6 @@ import { overrideExternalDependencies } from './mockProviders';
 const initialUser: Omit<User, 'id'> = {
   email: 'test@test.com',
   role: Role.ADMIN,
-  isClaimed: false,
 };
 
 describe('Example e2e', () => {
