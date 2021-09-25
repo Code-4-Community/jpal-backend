@@ -38,41 +38,42 @@ export class PactProviderConfigOptionsService
 
     return {
       requestFilter: (req, res, next) => {
-        req.headers.MY_SPECIAL_HEADER = 'my special value';
-
         // e.g. ADD Bearer token
-        req.headers.authorization = `Bearer ${token}`;
+        if (token) req.headers.authorization = `Bearer ${token}`;
         next();
       },
 
       stateHandlers: {
         nothing: async () => {
-          //this.animalRepository.clear();
           token = '1234';
           await this.userRepository.clear();
           await this.userRepository.save({
             email: 'test@test.com',
             role: Role.ADMIN,
-            isClaimed: true,
           });
           return 'Animals removed to the db';
         },
-        'Has some animals': async () => {
-          token = '1234';
-          //this.animalRepository.importData();
-
-          return 'Animals added to the db';
+        'signed in as an researcher': async () => {
+          await this.userRepository.clear();
+          await this.userRepository.save({
+            email: 'c4cneu.jpal+researcher@gmail.com',
+            role: Role.RESEARCHER,
+          });
+          token = JSON.stringify({ email: 'c4cneu.jpal+researcher@gmail.com' });
+          return 'Request sent as a user authorized as a researcher';
         },
-        'Has an animal with ID 1': async () => {
-          token = '1234';
-          //this.animalRepository.importData();
-
-          return 'Animals added to the db';
+        'signed in as an admin': async () => {
+          await this.userRepository.clear();
+          await this.userRepository.save({
+            email: 'c4cneu.jpal+admin@gmail.com',
+            role: Role.ADMIN,
+          });
+          token = JSON.stringify({ email: 'c4cneu.jpal+admin@gmail.com' });
+          return 'Request sent as a user authorized as an admin';
         },
         'is not authenticated': async () => {
-          token = '';
-
-          return 'Invalid bearer token generated';
+          token = undefined;
+          return 'No authorization token sent';
         },
       },
 

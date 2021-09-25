@@ -19,7 +19,4 @@ export class User {
     default: Role.ADMIN,
   })
   role: Role;
-
-  @Column()
-  isClaimed: boolean;
 }

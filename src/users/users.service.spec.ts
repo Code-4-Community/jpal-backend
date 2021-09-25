@@ -11,7 +11,6 @@ const mockUser: User = {
   id: 1,
   email: 'test@test.com',
   role: Role.ADMIN,
-  isClaimed: false,
 };
 
 const mockUserRepository: Partial<Repository<User>> = {
@@ -64,7 +63,6 @@ describe('UsersService', () => {
       id: 1,
       email: mockUser.email,
       role: mockUser.role,
-      isClaimed: false,
     });
     expect(mockAwsCreateUserService.adminCreateUser).toHaveBeenCalledWith(
       mockUser.email,

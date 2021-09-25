@@ -8,7 +8,6 @@ const mockUser = (role: Role): User => ({
   id: 1,
   email: 'test@test.com',
   role,
-  isClaimed: true,
 });
 
 const mockContext = (user?: User): Partial<ExecutionContext> => ({

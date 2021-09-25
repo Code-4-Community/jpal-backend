@@ -7,7 +7,6 @@ const mockUser: User = {
   id: 1,
   email: 'test@test.com',
   role: Role.ADMIN,
-  isClaimed: false,
 };
 
 const mockAuthService: Partial<AuthService> = {

@@ -10,7 +10,6 @@ import { overrideExternalDependencies } from './mockProviders';
 const initialAdminUser: Omit<User, 'id'> = {
   email: 'test@test.com',
   role: Role.RESEARCHER,
-  isClaimed: true,
 };
 
 describe('Users e2e', () => {
@@ -54,7 +53,6 @@ describe('Users e2e', () => {
         id: expect.any(Number),
         email: 'test.createuser@test.com',
         role: Role.RESEARCHER,
-        isClaimed: false,
       }),
     );
   });
@@ -75,7 +73,6 @@ describe('Users e2e', () => {
         id: expect.any(Number),
         email: 'test.createuser@test.com',
         role: Role.ADMIN,
-        isClaimed: false,
       }),
     );
   });

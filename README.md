@@ -15,7 +15,6 @@ Installs all dependencies
 
 To run the server, by default this creates a server running on `http://localhost:5000`
 
-
 ### `npm run prepush:fix`
 
 Checks if linting and prettier and Typescript compilation checks pass, AND auto-fixes problems.
@@ -23,7 +22,6 @@ Checks if linting and prettier and Typescript compilation checks pass, AND auto-
 ### `npm run prepush`
 
 Checks if linting and prettier and Typescript compilation checks pass.
-
 
 ### `npm test`
 
@@ -33,9 +31,19 @@ Runs all unit tests
 
 Runs all e2e tests, requires a running DB.
 
+### `npm run seed:run`
+
+Runs the seed files so that you have data in your database for development! Only needs to be run once.
+
 ### `npm run migration`
+
 Runs all migrations in migrations folder that have not been recorded yet.
 
 ### `npm run typeorm migration:generate -- -n [name]`
+
 Automatically generates a migration based off changes to TypeORM entities.
 Example usage: `npm run typeorm migration:generate -- -n "createdUserProfiles"`
+
+### `npm run schema:drop`
+
+Drops your database. Do not do this unless you really need to!
