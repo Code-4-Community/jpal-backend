@@ -20,17 +20,13 @@ export class UsersController {
       createUserRequestDto.role,
     );
   }
-  
+
   /**
    * Returns all the users with the admin role.
    */
   @Get()
   @Auth(Role.RESEARCHER)
-  getAllAdmins() : Promise<User[]> {
+  getAllAdmins(): Promise<User[]> {
     return this.usersService.getAllAdmins();
   }
-
-  
-  
-
 }

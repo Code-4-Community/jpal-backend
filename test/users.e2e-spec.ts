@@ -38,7 +38,6 @@ describe('Users e2e', () => {
     app = moduleFixture.createNestApplication();
 
     await app.init();
-
   });
 
   beforeEach(async () => {
@@ -89,17 +88,23 @@ describe('Users e2e', () => {
   it('should get all admins', async () => {
     expect.assertions(3);
     const response = await request(app.getHttpServer())
-    .get('/users')
-    .set(
-      'Authorization',
-      `Bearer ${JSON.stringify({ email: 'test@test.com' })}`,
-    );
+      .get('/users')
+      .set(
+        'Authorization',
+        `Bearer ${JSON.stringify({ email: 'test@test.com' })}`,
+      );
 
-    expect(await usersRepository.find()).toEqual([initialResearcherUser, adminUser1, adminUser2]);
+    expect(await usersRepository.find()).toEqual([
+      initialResearcherUser,
+      adminUser1,
+      adminUser2,
+    ]);
 
     expect(response.statusCode).toBe(200);
-    expect(response.body).toEqual(
-      [expect.objectContaining(adminUser1), expect.objectContaining(adminUser2)])
+    expect(response.body).toEqual([
+      expect.objectContaining(adminUser1),
+      expect.objectContaining(adminUser2),
+    ]);
   });
 
   afterAll(async () => await app.close());

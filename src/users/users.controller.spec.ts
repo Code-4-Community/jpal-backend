@@ -10,12 +10,11 @@ const mockUser: User = {
   role: Role.ADMIN,
 };
 
-
 const listMockUsers: User[] = [mockUser];
 
 const serviceMock: Partial<UsersService> = {
   create: jest.fn(() => Promise.resolve(mockUser)),
-  getAllAdmins: jest.fn(() => Promise.resolve(listMockUsers))
+  getAllAdmins: jest.fn(() => Promise.resolve(listMockUsers)),
 };
 
 describe('UsersController', () => {
@@ -48,9 +47,7 @@ describe('UsersController', () => {
 
   it('should delegate fetching all admins to the users service', async () => {
     expect.assertions(2);
-    expect(
-      await controller.getAllAdmins()
-    ).toEqual(listMockUsers);
+    expect(await controller.getAllAdmins()).toEqual(listMockUsers);
     expect(serviceMock.getAllAdmins).toHaveBeenCalled();
-  }) 
+  });
 });
