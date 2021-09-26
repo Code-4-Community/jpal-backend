@@ -7,9 +7,19 @@ import { Role } from '../src/users/types/role';
 import { User } from '../src/users/types/user.entity';
 import { overrideExternalDependencies } from './mockProviders';
 
-const initialAdminUser: Omit<User, 'id'> = {
+const initialResearcherUser: Omit<User, 'id'> = {
   email: 'test@test.com',
   role: Role.RESEARCHER,
+};
+
+const adminUser1: Omit<User, 'id'> = {
+  email: 'cooladmin@test.com',
+  role: Role.ADMIN,
+};
+
+const adminUser2: Omit<User, 'id'> = {
+  email: 'lameadmin@test.com',
+  role: Role.ADMIN,
 };
 
 describe('Users e2e', () => {
@@ -28,13 +38,12 @@ describe('Users e2e', () => {
     app = moduleFixture.createNestApplication();
 
     await app.init();
-    await usersRepository.clear();
-    await usersRepository.save(initialAdminUser);
+
   });
 
   beforeEach(async () => {
     await usersRepository.clear();
-    await usersRepository.save(initialAdminUser);
+    await usersRepository.save([initialResearcherUser, adminUser1, adminUser2]);
   });
 
   it('should save a user when creating a researcher user', async () => {
@@ -75,6 +84,22 @@ describe('Users e2e', () => {
         role: Role.ADMIN,
       }),
     );
+  });
+
+  it('should get all admins', async () => {
+    expect.assertions(3);
+    const response = await request(app.getHttpServer())
+    .get('/users')
+    .set(
+      'Authorization',
+      `Bearer ${JSON.stringify({ email: 'test@test.com' })}`,
+    );
+
+    expect(await usersRepository.find()).toEqual([initialResearcherUser, adminUser1, adminUser2]);
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toEqual(
+      [expect.objectContaining(adminUser1), expect.objectContaining(adminUser2)])
   });
 
   afterAll(async () => await app.close());

@@ -30,4 +30,10 @@ export class UsersService {
       throw new InternalServerErrorException(error.message);
     }
   }
+
+  async getAllAdmins() : Promise<User[]> {
+    console.log(await this.userRepository.find({where: {role: Role.ADMIN}}));
+    console.log(await this.userRepository.find());
+    return this.userRepository.find({where: {role: Role.ADMIN}})
+  }
 }
