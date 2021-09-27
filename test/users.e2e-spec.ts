@@ -41,7 +41,7 @@ describe('Users e2e', () => {
   it('should save a user when creating a researcher user', async () => {
     expect.assertions(2);
     const response = await request(app.getHttpServer())
-      .post('/users')
+      .post('/user')
       .send({ email: 'test.createuser@test.com', role: Role.RESEARCHER })
       .set(
         'Authorization',
@@ -61,7 +61,7 @@ describe('Users e2e', () => {
   it('should save a user when creating an admin user', async () => {
     expect.assertions(2);
     const response = await request(app.getHttpServer())
-      .post('/users')
+      .post('/user')
       .send({ email: 'test.createuser@test.com', role: Role.ADMIN })
       .set(
         'Authorization',
