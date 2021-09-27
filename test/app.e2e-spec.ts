@@ -1,8 +1,9 @@
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '../src/app.module';
-import { Role } from '../src/users/types/role';
-import { User } from '../src/users/types/user.entity';
+import { Role } from '../src/user/types/role';
+import { User } from '../src/user/types/user.entity';
+import { clearDb } from './e2e.utils';
 import { overrideExternalDependencies } from './mockProviders';
 
 const initialUser: Omit<User, 'id'> = {
@@ -26,7 +27,7 @@ describe('Example e2e', () => {
 
     await app.init();
 
-    await users.clear();
+    await clearDb();
     await users.save(initialUser);
   });
   test('needs a test to pass', () => expect(true).toBe(true));

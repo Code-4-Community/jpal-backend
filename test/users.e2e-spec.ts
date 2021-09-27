@@ -3,9 +3,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
 import { Repository } from 'typeorm';
 import { AppModule } from '../src/app.module';
-import { Role } from '../src/users/types/role';
-import { User } from '../src/users/types/user.entity';
+import { Role } from '../src/user/types/role';
+import { User } from '../src/user/types/user.entity';
 import { overrideExternalDependencies } from './mockProviders';
+import { clearDb } from './e2e.utils';
 
 const initialAdminUser: Omit<User, 'id'> = {
   email: 'test@test.com',
@@ -28,12 +29,12 @@ describe('Users e2e', () => {
     app = moduleFixture.createNestApplication();
 
     await app.init();
-    await usersRepository.clear();
+    await clearDb();
     await usersRepository.save(initialAdminUser);
   });
 
   beforeEach(async () => {
-    await usersRepository.clear();
+    await clearDb();
     await usersRepository.save(initialAdminUser);
   });
 

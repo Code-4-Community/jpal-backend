@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { UsersController } from './users.controller';
+import { UserController } from './user.controller';
 import { Role } from './types/role';
-import { UsersService } from './users.service';
+import { UserService } from './user.service';
 import { User } from './types/user.entity';
 
 const mockUser: User = {
@@ -10,25 +10,25 @@ const mockUser: User = {
   role: Role.ADMIN,
 };
 
-const serviceMock: Partial<UsersService> = {
+const serviceMock: Partial<UserService> = {
   create: jest.fn(() => Promise.resolve(mockUser)),
 };
 
 describe('UsersController', () => {
-  let controller: UsersController;
+  let controller: UserController;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      controllers: [UsersController],
+      controllers: [UserController],
       providers: [
         {
-          provide: UsersService,
+          provide: UserService,
           useValue: serviceMock,
         },
       ],
     }).compile();
 
-    controller = module.get<UsersController>(UsersController);
+    controller = module.get<UserController>(UserController);
   });
 
   it('should delegate to the users service', async () => {

@@ -5,7 +5,7 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { User } from '../../users/types/user.entity';
+import { User } from '../../user/types/user.entity';
 import { Reviewer } from '../../reviewer/types/reviewer.entity';
 import { Youth } from '../../youth/types/youth.entity';
 import { SurveyTemplate } from '../../surveyTemplate/types/surveyTemplate.entity';

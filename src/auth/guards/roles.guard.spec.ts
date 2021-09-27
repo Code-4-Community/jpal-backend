@@ -1,8 +1,8 @@
 import { ExecutionContext, Type } from '@nestjs/common';
 import { HttpArgumentsHost } from '@nestjs/common/interfaces';
-import { User } from '../../users/types/user.entity';
+import { User } from '../../user/types/user.entity';
 import RolesGuard from './roles.guard';
-import { Role } from '../../users/types/role';
+import { Role } from '../../user/types/role';
 
 const mockUser = (role: Role): User => ({
   id: 1,

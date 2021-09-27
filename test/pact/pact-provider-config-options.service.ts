@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { versionFromGitTag } from '@pact-foundation/absolute-version';
 import { PactProviderOptions, PactProviderOptionsFactory } from 'nestjs-pact';
-import { Role } from '../../src/users/types/role';
-import { User } from '../../src/users/types/user.entity';
+import { Role } from '../../src/user/types/role';
+import { User } from '../../src/user/types/user.entity';
 import { Repository } from 'typeorm';
 @Injectable()
 export class PactProviderConfigOptionsService
