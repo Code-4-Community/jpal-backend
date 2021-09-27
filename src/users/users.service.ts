@@ -31,11 +31,11 @@ export class UsersService {
     }
   }
 
+  /**
+   *
+   * grabs all users with the role admin and returns them as an array of Users
+   */
   async getAllAdmins(): Promise<User[]> {
-    console.log(
-      await this.userRepository.find({ where: { role: Role.ADMIN } }),
-    );
-    console.log(await this.userRepository.find());
     return this.userRepository.find({ where: { role: Role.ADMIN } });
   }
 }
