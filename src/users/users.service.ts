@@ -32,7 +32,7 @@ export class UsersService {
   }
 
   /**
-   * grabs all users with the role admin and returns them as an array of Users
+   * Finds all users with the admin role.
    */
   async getAllAdmins(): Promise<User[]> {
     return this.userRepository.find({ where: { role: Role.ADMIN } });
