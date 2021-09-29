@@ -2,8 +2,8 @@ import { UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Role } from '../users/types/role';
-import { User } from '../users/types/user.entity';
+import { Role } from '../user/types/role';
+import { User } from '../user/types/user.entity';
 import { CognitoService } from '../util/cognito/cognito.service';
 import { AuthService } from './auth.service';
 

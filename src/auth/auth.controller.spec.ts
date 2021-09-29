@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { User } from 'src/users/types/user.entity';
-import { Role } from '../users/types/role';
+import { User } from 'src/user/types/user.entity';
+import { Role } from '../user/types/role';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 

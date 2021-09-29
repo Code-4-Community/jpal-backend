@@ -3,9 +3,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
 import { Repository } from 'typeorm';
 import { AppModule } from '../src/app.module';
-import { Role } from '../src/users/types/role';
-import { User } from '../src/users/types/user.entity';
+import { Role } from '../src/user/types/role';
+import { User } from '../src/user/types/user.entity';
 import { overrideExternalDependencies } from './mockProviders';
+import { clearDb } from './e2e.utils';
 
 const initialAdminUser: Omit<User, 'id'> = {
   email: 'test@test.com',
@@ -28,19 +29,19 @@ describe('Users e2e', () => {
     app = moduleFixture.createNestApplication();
 
     await app.init();
-    await usersRepository.clear();
+    await clearDb();
     await usersRepository.save(initialAdminUser);
   });
 
   beforeEach(async () => {
-    await usersRepository.clear();
+    await clearDb();
     await usersRepository.save(initialAdminUser);
   });
 
   it('should save a user when creating a researcher user', async () => {
     expect.assertions(2);
     const response = await request(app.getHttpServer())
-      .post('/users')
+      .post('/user')
       .send({ email: 'test.createuser@test.com', role: Role.RESEARCHER })
       .set(
         'Authorization',
@@ -60,7 +61,7 @@ describe('Users e2e', () => {
   it('should save a user when creating an admin user', async () => {
     expect.assertions(2);
     const response = await request(app.getHttpServer())
-      .post('/users')
+      .post('/user')
       .send({ email: 'test.createuser@test.com', role: Role.ADMIN })
       .set(
         'Authorization',

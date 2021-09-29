@@ -1,7 +1,7 @@
 import { Controller, Get } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { Role } from '../users/types/role';
-import { User } from '../users/types/user.entity';
+import { Role } from '../user/types/role';
+import { User } from '../user/types/user.entity';
 import { AuthService } from './auth.service';
 import { Auth } from './decorators/auth.decorator';
 import { ReqUser } from './decorators/user.decorator';

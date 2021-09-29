@@ -9,8 +9,8 @@ import { AuthModule } from './auth/auth.module';
 import { AuthenticationMiddleware } from './auth/middleware/authentication.middleware';
 import { HealthModule } from './health/health.module';
 import { SentryInterceptor } from './sentry.interceptor';
-import { UsersController } from './users/users.controller';
-import { UsersModule } from './users/users.module';
+import { UserController } from './user/user.controller';
+import { UserModule } from './user/user.module';
 import { UtilModule } from './util/util.module';
 @Module({
   imports: [
@@ -18,12 +18,12 @@ import { UtilModule } from './util/util.module';
       isGlobal: true,
     }),
     TypeOrmModule.forRoot(TypeOrmConfig),
-    UsersModule,
+    UserModule,
     AuthModule,
     UtilModule,
     HealthModule,
   ],
-  controllers: [AppController, UsersController],
+  controllers: [AppController, UserController],
   providers: [
     AppService,
     {

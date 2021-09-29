@@ -2,9 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { versionFromGitTag } from '@pact-foundation/absolute-version';
 import { PactProviderOptions, PactProviderOptionsFactory } from 'nestjs-pact';
-import { Role } from '../../src/users/types/role';
-import { User } from '../../src/users/types/user.entity';
+import { Role } from '../../src/user/types/role';
+import { User } from '../../src/user/types/user.entity';
 import { Repository } from 'typeorm';
+import { clearDb } from '../e2e.utils';
 @Injectable()
 export class PactProviderConfigOptionsService
   implements PactProviderOptionsFactory
@@ -46,7 +47,7 @@ export class PactProviderConfigOptionsService
       stateHandlers: {
         nothing: async () => {
           token = '1234';
-          await this.userRepository.clear();
+          await clearDb();
           await this.userRepository.save({
             email: 'test@test.com',
             role: Role.ADMIN,
@@ -54,7 +55,7 @@ export class PactProviderConfigOptionsService
           return 'Animals removed to the db';
         },
         'signed in as an researcher': async () => {
-          await this.userRepository.clear();
+          await clearDb();
           await this.userRepository.save({
             email: 'c4cneu.jpal+researcher@gmail.com',
             role: Role.RESEARCHER,
@@ -63,7 +64,7 @@ export class PactProviderConfigOptionsService
           return 'Request sent as a user authorized as a researcher';
         },
         'signed in as an admin': async () => {
-          await this.userRepository.clear();
+          await clearDb();
           await this.userRepository.save({
             email: 'c4cneu.jpal+admin@gmail.com',
             role: Role.ADMIN,

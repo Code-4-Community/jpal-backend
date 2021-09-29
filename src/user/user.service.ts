@@ -5,12 +5,12 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { AwsCreateUserService } from '../../src/util/aws-create-user/aws-create-user.service';
+import { AwsCreateUserService } from '../util/aws-create-user/aws-create-user.service';
 import { Role } from './types/role';
 import { User } from './types/user.entity';
 
 @Injectable()
-export class UsersService {
+export class UserService {
   constructor(
     @InjectRepository(User) private userRepository: Repository<User>,
     private awsCreateUser: AwsCreateUserService,
