@@ -1,6 +1,6 @@
 import { AuthService } from '../auth.service';
-import { User } from '../../users/types/user.entity';
-import { Role } from '../../users/types/role';
+import { User } from '../../user/types/user.entity';
+import { Role } from '../../user/types/role';
 import { AuthenticationMiddleware } from './authentication.middleware';
 
 const mockUser: User = {

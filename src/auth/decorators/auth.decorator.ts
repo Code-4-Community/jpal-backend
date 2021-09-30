@@ -1,5 +1,5 @@
 import { applyDecorators, UseGuards } from '@nestjs/common';
-import { Role } from '../../users/types/role';
+import { Role } from '../../user/types/role';
 import RolesGuard from '../guards/roles.guard';
 import { ApiBearerAuth, ApiUnauthorizedResponse } from '@nestjs/swagger';
 

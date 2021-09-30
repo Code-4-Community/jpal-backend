@@ -3,15 +3,18 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { mock } from 'jest-mock-extended';
 import { DeepPartial, Repository } from 'typeorm';
-import { AwsCreateUserService } from '../../src/util/aws-create-user/aws-create-user.service';
+import { AwsCreateUserService } from '../util/aws-create-user/aws-create-user.service';
 import { Role } from './types/role';
 import { User } from './types/user.entity';
-import { UsersService } from './users.service';
+import { UserService } from './user.service';
+
 const mockUser: User = {
   id: 1,
   email: 'test@test.com',
   role: Role.ADMIN,
 };
+
+const listMockUsers: User[] = [mockUser];
 
 const mockUserRepository: Partial<Repository<User>> = {
   create(user?: DeepPartial<User> | DeepPartial<User>[]): any {
@@ -27,17 +30,20 @@ const mockUserRepository: Partial<Repository<User>> = {
     if ((user as User).email === 'already@exists.com') return mockUser;
     return undefined;
   },
+  find(): Promise<User[]> {
+    return Promise.resolve(listMockUsers);
+  },
 };
 
 const mockAwsCreateUserService = mock<AwsCreateUserService>();
 
-describe('UsersService', () => {
-  let service: UsersService;
+describe('UserService', () => {
+  let service: UserService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        UsersService,
+        UserService,
         {
           provide: getRepositoryToken(User),
           useValue: mockUserRepository,
@@ -49,7 +55,7 @@ describe('UsersService', () => {
       ],
     }).compile();
 
-    service = module.get<UsersService>(UsersService);
+    service = module.get<UserService>(UserService);
   });
 
   it('should fail to create a user whose email is already claimed', async () => {
@@ -57,6 +63,7 @@ describe('UsersService', () => {
       service.create('already@exists.com', mockUser.role),
     ).rejects.toThrow(new ConflictException('Email already exists'));
   });
+
   it('should create a fresh unclaimed user', async () => {
     const goodResponse = await service.create(mockUser.email, mockUser.role);
     expect(goodResponse).toEqual({
@@ -67,5 +74,11 @@ describe('UsersService', () => {
     expect(mockAwsCreateUserService.adminCreateUser).toHaveBeenCalledWith(
       mockUser.email,
     );
+  });
+
+  it('should fetch all admins', async () => {
+    const goodResponse = await service.getAllAdmins();
+    expect.assertions(1);
+    expect(goodResponse).toEqual(listMockUsers);
   });
 });

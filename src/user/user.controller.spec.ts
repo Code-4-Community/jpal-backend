@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { UsersController } from './users.controller';
+import { UserController } from './user.controller';
 import { Role } from './types/role';
-import { UsersService } from './users.service';
+import { UserService } from './user.service';
 import { User } from './types/user.entity';
 
 const mockUser: User = {
@@ -10,28 +10,31 @@ const mockUser: User = {
   role: Role.ADMIN,
 };
 
-const serviceMock: Partial<UsersService> = {
+const listMockUsers: User[] = [mockUser];
+
+const serviceMock: Partial<UserService> = {
   create: jest.fn(() => Promise.resolve(mockUser)),
+  getAllAdmins: jest.fn(() => Promise.resolve(listMockUsers)),
 };
 
 describe('UsersController', () => {
-  let controller: UsersController;
+  let controller: UserController;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      controllers: [UsersController],
+      controllers: [UserController],
       providers: [
         {
-          provide: UsersService,
+          provide: UserService,
           useValue: serviceMock,
         },
       ],
     }).compile();
 
-    controller = module.get<UsersController>(UsersController);
+    controller = module.get<UserController>(UserController);
   });
 
-  it('should delegate to the users service', async () => {
+  it('should delegate user creation to the users service', async () => {
     expect.assertions(2);
     expect(
       await controller.create({ email: mockUser.email, role: mockUser.role }),
@@ -40,5 +43,11 @@ describe('UsersController', () => {
       mockUser.email,
       mockUser.role,
     );
+  });
+
+  it('should delegate fetching all admins to the users service', async () => {
+    expect.assertions(2);
+    expect(await controller.getAllAdmins()).toEqual(listMockUsers);
+    expect(serviceMock.getAllAdmins).toHaveBeenCalled();
   });
 });
