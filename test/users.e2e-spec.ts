@@ -39,11 +39,9 @@ describe('Users e2e', () => {
     app = moduleFixture.createNestApplication();
 
     await app.init();
-
   });
 
   beforeEach(async () => {
-    
     await clearDb();
     await usersRepository.save([initialResearcherUser, adminUser1, adminUser2]);
   });
