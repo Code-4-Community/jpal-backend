@@ -14,6 +14,8 @@ const mockUser: User = {
   role: Role.ADMIN,
 };
 
+const listMockUsers: User[] = [mockUser];
+
 const mockUserRepository: Partial<Repository<User>> = {
   create(user?: DeepPartial<User> | DeepPartial<User>[]): any {
     return {
@@ -27,6 +29,9 @@ const mockUserRepository: Partial<Repository<User>> = {
   findOne(user: any): any {
     if ((user as User).email === 'already@exists.com') return mockUser;
     return undefined;
+  },
+  find(): Promise<User[]> {
+    return Promise.resolve(listMockUsers);
   },
 };
 
@@ -69,5 +74,11 @@ describe('UserService', () => {
     expect(mockAwsCreateUserService.adminCreateUser).toHaveBeenCalledWith(
       mockUser.email,
     );
+  });
+
+  it('should fetch all admins', async () => {
+    const goodResponse = await service.getAllAdmins();
+    expect.assertions(1);
+    expect(goodResponse).toEqual(listMockUsers);
   });
 });

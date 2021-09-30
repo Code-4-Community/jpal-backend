@@ -30,4 +30,12 @@ export class UserService {
       throw new InternalServerErrorException(error.message);
     }
   }
+
+  /**
+   *
+   * grabs all users with the role admin and returns them as an array of Users
+   */
+  async getAllAdmins(): Promise<User[]> {
+    return this.userRepository.find({ where: { role: Role.ADMIN } });
+  }
 }

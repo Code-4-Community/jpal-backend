@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Post, Get } from '@nestjs/common';
 import { Role } from './types/role';
 import { User } from './types/user.entity';
 import { Auth } from '../auth/decorators/auth.decorator';
@@ -19,5 +19,14 @@ export class UserController {
       createUserRequestDto.email,
       createUserRequestDto.role,
     );
+  }
+
+  /**
+   * Returns all the users with the admin role.
+   */
+  @Get()
+  @Auth(Role.RESEARCHER)
+  getAllAdmins(): Promise<User[]> {
+    return this.userService.getAllAdmins();
   }
 }
