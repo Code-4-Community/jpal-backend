@@ -1,5 +1,5 @@
 import Request from 'express';
-import { User } from '../../users/types/user.entity';
+import { User } from '../../user/types/user.entity';
 
 export type PossiblyAuthorizedRequest = Request & {
   user?: User;
