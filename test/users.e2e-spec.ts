@@ -89,7 +89,7 @@ describe('Users e2e', () => {
   it('should get all admins', async () => {
     expect.assertions(3);
     const response = await request(app.getHttpServer())
-      .get('/users')
+      .get('/user')
       .set(
         'Authorization',
         `Bearer ${JSON.stringify({ email: 'test@test.com' })}`,
