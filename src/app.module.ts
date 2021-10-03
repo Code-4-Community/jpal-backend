@@ -12,6 +12,7 @@ import { SentryInterceptor } from './sentry.interceptor';
 import { UserController } from './user/user.controller';
 import { UserModule } from './user/user.module';
 import { UtilModule } from './util/util.module';
+import { SurveyModule } from './survey/survey.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -22,6 +23,7 @@ import { UtilModule } from './util/util.module';
     AuthModule,
     UtilModule,
     HealthModule,
+    SurveyModule,
   ],
   controllers: [AppController, UserController],
   providers: [
