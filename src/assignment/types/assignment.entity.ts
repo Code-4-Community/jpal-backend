@@ -8,7 +8,7 @@ import {
 import { User } from '../../user/types/user.entity';
 import { Reviewer } from '../../reviewer/types/reviewer.entity';
 import { Youth } from '../../youth/types/youth.entity';
-import { SurveyTemplate } from '../../surveyTemplate/types/surveyTemplate.entity';
+import { SurveyTemplate } from '../../survey-template/types/survey-template.entity';
 import { Response } from '../../response/types/response.entity';
 
 @Entity()

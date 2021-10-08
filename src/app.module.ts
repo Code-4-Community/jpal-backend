@@ -12,6 +12,10 @@ import { SentryInterceptor } from './sentry.interceptor';
 import { UserController } from './user/user.controller';
 import { UserModule } from './user/user.module';
 import { UtilModule } from './util/util.module';
+import { SurveyTemplateController } from './survey-template/survey-template.controller';
+import { SurveyTemplateService } from './survey-template/survey-template.service';
+import { SurveyTemplateModule } from './survey-template/survey-template.module';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -22,14 +26,16 @@ import { UtilModule } from './util/util.module';
     AuthModule,
     UtilModule,
     HealthModule,
+    SurveyTemplateModule,
   ],
-  controllers: [AppController, UserController],
+  controllers: [AppController, UserController, SurveyTemplateController],
   providers: [
     AppService,
     {
       provide: APP_INTERCEPTOR,
       useClass: SentryInterceptor,
     },
+    SurveyTemplateService,
   ],
 })
 export class AppModule {

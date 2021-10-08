@@ -2,7 +2,7 @@ import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import * as dotenv from 'dotenv';
 import { Assignment } from './src/assignment/types/assignment.entity';
 import { Question } from './src/question/types/question.entity';
-import { SurveyTemplate } from './src/surveyTemplate/types/surveyTemplate.entity';
+import { SurveyTemplate } from './src/survey-template/types/survey-template.entity';
 import { User } from './src/user/types/user.entity';
 import { Youth } from './src/youth/types/youth.entity';
 import { Reviewer } from './src/reviewer/types/reviewer.entity';
