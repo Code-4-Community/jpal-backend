@@ -8,7 +8,7 @@ import { Role } from './types/role';
 import { User } from './types/user.entity';
 import { UserService } from './user.service';
 
-const mockUser: User = {
+export const mockUser: User = {
   id: 1,
   email: 'test@test.com',
   role: Role.ADMIN,
