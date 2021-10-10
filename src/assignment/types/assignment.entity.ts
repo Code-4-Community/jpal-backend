@@ -8,7 +8,7 @@ import {
 import { Reviewer } from '../../reviewer/types/reviewer.entity';
 import { Youth } from '../../youth/types/youth.entity';
 import { Response } from '../../response/types/response.entity';
-import { Survey } from 'src/survey/types/survey.entity';
+import { Survey } from '../../survey/types/survey.entity';
 
 @Entity()
 export class Assignment {
@@ -18,7 +18,7 @@ export class Assignment {
   @Column()
   uuid: string;
 
-  @ManyToOne(() => Reviewer)
+  @ManyToOne(() => Survey)
   survey: Survey;
 
   @ManyToOne(() => Reviewer)

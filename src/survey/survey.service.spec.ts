@@ -22,16 +22,16 @@ export const mockSurvey: Survey = {
 const listMockSurveys: Survey[] = [mockSurvey];
 
 const mockSurveyRepository: Partial<Repository<Survey>> = {
-  create(Survey?: DeepPartial<Survey> | DeepPartial<Survey>[]): any {
+  create(survey?: DeepPartial<Survey> | DeepPartial<Survey>[]): any {
     return {
       id: 1,
-      ...Survey,
+      ...survey,
     };
   },
-  save<T>(Survey): T {
-    return Survey;
+  save<T>(survey): T {
+    return survey;
   },
-  findOne(Survey: any): any {
+  findOne(): any {
     return undefined;
   },
   find(): Promise<Survey[]> {
@@ -40,10 +40,10 @@ const mockSurveyRepository: Partial<Repository<Survey>> = {
 };
 
 const mockSurveyTemplateRepository: Partial<Repository<SurveyTemplate>> = {
-  async findOne(surveyTemplate: any) {
+  async findOne() {
     return mockSurveyTemplate;
   },
-  async findOneOrFail(...args: any[]): Promise<SurveyTemplate> {
+  async findOneOrFail(): Promise<SurveyTemplate> {
     return mockSurveyTemplate;
   },
 };
