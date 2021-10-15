@@ -81,4 +81,10 @@ describe('SurveyService', () => {
     );
     expect(survey).toEqual(mockSurvey);
   });
+
+  it('should fetch all surveys created by current user', async () => {
+    const goodResponse = await service.getAllSurveys(mockUser);
+    expect.assertions(1);
+    expect(goodResponse).toEqual(listMockSurveys);
+  });
 });
