@@ -24,7 +24,7 @@ export class SurveyService {
     });
   }
 
-  async getAllSurveys(user: User): Promise<Survey[]> {
+  async findAllSurveys(user: User): Promise<Survey[]> {
     return this.surveyRepository.find({
       where: { creator: user },
     });

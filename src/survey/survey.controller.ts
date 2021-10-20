@@ -29,7 +29,7 @@ export class SurveyController {
    */
   @Get()
   @Auth(Role.ADMIN || Role.RESEARCHER)
-  getAllSurveys(@ReqUser() user: User): Promise<Survey[]> {
-    return this.surveyService.getAllSurveys(user);
+  findAllSurveys(@ReqUser() user: User): Promise<Survey[]> {
+    return this.surveyService.findAllSurveys(user);
   }
 }

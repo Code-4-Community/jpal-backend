@@ -21,7 +21,7 @@ const mockSurveyService: Partial<SurveyService> = {
       creator,
     };
   },
-  getAllSurveys: jest.fn(() => Promise.resolve(listMockSurveys)),
+  findAllSurveys: jest.fn(() => Promise.resolve(listMockSurveys)),
 };
 
 describe('SurveyController', () => {
@@ -56,8 +56,7 @@ describe('SurveyController', () => {
     expect(survey).toEqual(mockSurvey);
   });
   it('should find all the surveys created by the user', async () => {
-    expect.assertions(2);
-    expect(await controller.getAllSurveys(mockUser)).toEqual(listMockSurveys);
-    expect(mockSurveyService.getAllSurveys).toHaveBeenCalled();
+    expect(await controller.findAllSurveys(mockUser)).toEqual(listMockSurveys);
+    expect(mockSurveyService.findAllSurveys).toHaveBeenCalled();
   });
 });
