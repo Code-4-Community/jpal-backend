@@ -1,4 +1,4 @@
-import { Controller, Get, Param } from "@nestjs/common";
+import { Controller, Get, Param, ParseIntPipe } from "@nestjs/common";
 import { SurveyTemplateService } from "./surveyTemplate.service";
 import { SurveyTemplate } from "./types/surveyTemplate.entity";
 import { Auth } from "../auth/decorators/auth.decorator";
@@ -13,7 +13,7 @@ export class SurveyTemplateController {
    */
   @Get(':id')
   @Auth(Role.ADMIN, Role.RESEARCHER)
-  getById(@Param() params): Promise<SurveyTemplate> {
-    return this.surveyTemplateService.getById(params.id);
+  getById(@Param('id', ParseIntPipe) id: number): Promise<SurveyTemplate> {
+    return this.surveyTemplateService.getById(id);
   }
 }

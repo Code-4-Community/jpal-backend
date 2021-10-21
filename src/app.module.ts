@@ -12,8 +12,6 @@ import { SentryInterceptor } from './sentry.interceptor';
 import { UserController } from './user/user.controller';
 import { UserModule } from './user/user.module';
 import { UtilModule } from './util/util.module';
-import { SurveyTemplateController } from './surveyTemplate/surveyTemplate.controller';
-import { SurveyTemplateService } from './surveyTemplate/surveyTemplate.service';
 import { SurveyTemplateModule } from './surveyTemplate/surveyTemplate.module';
 
 @Module({
