@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { SurveyTemplateController } from './survey-template.controller';
+import { SurveyTemplateController } from './surveyTemplate.controller';
 
 describe('SurveyTemplateController', () => {
   let controller: SurveyTemplateController;

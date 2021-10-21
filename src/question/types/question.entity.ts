@@ -1,5 +1,5 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { SurveyTemplate } from '../../survey-template/types/survey-template.entity';
+import { SurveyTemplate } from '../../surveyTemplate/types/surveyTemplate.entity';
 
 @Entity()
 export class Question {

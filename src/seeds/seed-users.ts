@@ -2,7 +2,7 @@ import { Connection } from 'typeorm';
 import { Factory, Seeder } from 'typeorm-seeding';
 import { Role } from '../user/types/role';
 import { User } from '../user/types/user.entity';
-import { SurveyTemplate } from '../survey-template/types/survey-template.entity';
+import { SurveyTemplate } from '../surveyTemplate/types/surveyTemplate.entity';
 
 export default class CreateUsers implements Seeder {
   public async run(factory: Factory, connection: Connection): Promise<any> {

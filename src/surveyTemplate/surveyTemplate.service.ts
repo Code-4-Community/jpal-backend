@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { SurveyTemplate } from './types/survey-template.entity';
+import { SurveyTemplate } from './types/surveyTemplate.entity';
 import { Repository } from 'typeorm';
 
 @Injectable()
