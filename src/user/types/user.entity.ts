@@ -13,6 +13,12 @@ export class User {
   @IsEmail()
   email: string;
 
+  @Column()
+  firstName: string;
+
+  @Column()
+  lastName: string;
+
   @Column({
     type: 'enum',
     enum: Role,
