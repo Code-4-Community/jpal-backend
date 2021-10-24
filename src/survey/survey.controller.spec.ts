@@ -14,6 +14,7 @@ const mockSurveyService: Partial<SurveyService> = {
   ): Promise<Survey> {
     return {
       id: 1,
+      uuid: 'uuid',
       surveyTemplate: mockSurveyTemplate,
       name,
       creator,

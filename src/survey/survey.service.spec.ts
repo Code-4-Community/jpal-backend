@@ -14,6 +14,7 @@ export const mockSurveyTemplate: SurveyTemplate = {
 
 export const mockSurvey: Survey = {
   id: 1,
+  uuid: 'uuid',
   name: 'Test Survey',
   surveyTemplate: mockSurveyTemplate,
   creator: mockUser,

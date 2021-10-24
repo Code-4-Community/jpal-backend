@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post } from '@nestjs/common';
 import { Auth } from '../auth/decorators/auth.decorator';
 import { CreateSurveyDto } from './dto/create-survey.dto';
 import { Survey } from './types/survey.entity';
@@ -21,5 +21,5 @@ export class SurveyController {
       createSurveyDto.name,
       reqUser,
     );
-  }
+  }  
 }
