@@ -1,10 +1,8 @@
 import { getConnection } from 'typeorm';
 
+// clears the database, works with the link below:
+// https://github.com/nestjs/nest/issues/409
 export async function clearDb() {
-  const entities = getConnection().entityMetadatas;
-
-  for (const entity of entities) {
-    const repository = getConnection().getRepository(entity.targetName); // Get repository
-    await repository.delete({}); // Clear each entity table's content
-  }
+  const connection = getConnection();
+  await connection.synchronize(true);
 }
