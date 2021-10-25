@@ -16,7 +16,6 @@ describe('Survey e2e', () => {
   let surveyRepository: Repository<Survey>;
   let userRepository: Repository<User>;
   let surveyTemplateRepository: Repository<SurveyTemplate>;
-  let mockSurvey: Survey;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await overrideExternalDependencies(
@@ -43,7 +42,7 @@ describe('Survey e2e', () => {
     const surveyTemplate = await surveyTemplateRepository.save(
       mockSurveyTemplate,
     );
-    mockSurvey = await surveyRepository.save({
+    await surveyRepository.save({
       name: "Joe's favorite survey",
       creator: user,
       surveyTemplate,
@@ -63,6 +62,7 @@ describe('Survey e2e', () => {
     expected.name = "Joe's favorite survey";
 
     expect(await surveyRepository.find()).toEqual([expected]);
+    expect(response.statusCode).toBe(200);
   });
   afterAll(async () => await app.close());
 });
