@@ -121,6 +121,6 @@ describe('SurveyService', () => {
   it('should create batch assignments', async () => {
     const dto: CreateBatchAssignmentsDto = {
       surveyId: 1,
-    }
-  })
+    };
+  });
 });
