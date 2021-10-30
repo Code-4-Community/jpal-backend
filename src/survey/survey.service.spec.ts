@@ -28,7 +28,7 @@ const mockSurveyRepository: Partial<Repository<Survey>> = {
   create(survey?: DeepPartial<Survey> | DeepPartial<Survey>[]): any {
     return {
       id: 1,
-      uuo: UUID,
+      uuid: UUID,
       ...survey,
     };
   },

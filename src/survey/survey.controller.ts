@@ -17,6 +17,12 @@ import { ReqUser } from '../auth/decorators/user.decorator';
 export class SurveyController {
   constructor(private surveyService: SurveyService) {}
 
+  /**
+   * Create a new survey with the given user and survey template. Must be authenticated as a Researcher or a Admin.
+   * @param createSurveyDto
+   * @param reqUser
+   * @returns Survey
+   */
   @Post()
   @Auth(Role.RESEARCHER, Role.ADMIN)
   create(
@@ -30,6 +36,11 @@ export class SurveyController {
     );
   }
 
+  /**
+   * Get a survey by its UUID. Must be authenticated as a Researcher or a Admin.
+   * @param uuid
+   * @returns Survey
+   */
   @Get(':uuid')
   @Auth(Role.RESEARCHER, Role.ADMIN)
   getSurveyByUUID(@Param('uuid', ParseUUIDPipe) uuid: string): Promise<Survey> {
