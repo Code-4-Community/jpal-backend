@@ -14,11 +14,14 @@ const mockSurveyService: Partial<SurveyService> = {
   ): Promise<Survey> {
     return {
       id: 1,
-      uuid: 'uuid',
+      uuid: '123e4567-e89b-12d3-a456-426614174000',
       surveyTemplate: mockSurveyTemplate,
       name,
       creator,
     };
+  },
+  async getSurveyByUUID(uuid: string): Promise<Survey> {
+    return mockSurvey;
   },
 };
 
@@ -44,12 +47,21 @@ describe('SurveyController', () => {
   });
 
   it('should create a user', async () => {
+    console.log('Should create user: ', controller.getSurveyByUUID);
     const survey = await controller.create(
       {
         name: 'Test Survey',
         surveyTemplateId: 1,
       },
       mockUser,
+    );
+    expect(survey).toEqual(mockSurvey);
+  });
+
+  it('should return a survey by its uuid', async () => {
+    console.log(controller.getSurveyByUUID);
+    const survey = await controller.getSurveyByUUID(
+      '123e4567-e89b-12d3-a456-426614174000',
     );
     expect(survey).toEqual(mockSurvey);
   });

@@ -24,7 +24,8 @@ export class SurveyService {
     });
   }
 
-  async getSurveyByUUID(uuid: string): Promise<Survey> {
-    return await this.surveyRepository.findOneOrFail({ uuid });
+  async getSurveyByUUID(uuid: string) {
+    const res = await this.surveyRepository.find({ uuid });
+    return res[0];
   }
 }

@@ -14,7 +14,7 @@ export const mockSurveyTemplate: SurveyTemplate = {
 
 export const mockSurvey: Survey = {
   id: 1,
-  uuid: 'uuid',
+  uuid: '123e4567-e89b-12d3-a456-426614174000',
   name: 'Test Survey',
   surveyTemplate: mockSurveyTemplate,
   creator: mockUser,
@@ -26,6 +26,7 @@ const mockSurveyRepository: Partial<Repository<Survey>> = {
   create(survey?: DeepPartial<Survey> | DeepPartial<Survey>[]): any {
     return {
       id: 1,
+      uuid: '123e4567-e89b-12d3-a456-426614174000',
       ...survey,
     };
   },
@@ -82,35 +83,9 @@ describe('SurveyService', () => {
     );
     expect(survey).toEqual(mockSurvey);
   });
+
+  it('should return the survey by uuid', async () => {
+    const survey = await service.getSurveyByUUID(mockSurvey.uuid);
+    expect(survey).toEqual(mockSurvey);
+  });
 });
-
-// describe('SurveyService', () => {
-//   let service: SurveyService;
-
-//   beforeEach(async () => {
-//     const module: TestingModule = await Test.createTestingModule({
-//       providers: [
-//         SurveyService,
-//         {
-//           provide: getRepositoryToken(Survey),
-//           useValue: mockSurveyRepository,
-//         },
-//         {
-//           provide: getRepositoryToken(SurveyTemplate),
-//           useValue: mockSurveyTemplateRepository,
-//         },
-//       ],
-//     }).compile();
-
-//     service = module.get<SurveyService>(SurveyService);
-//   });
-
-//   it('should be defined', () => {
-//     expect(service).toBeDefined();
-//   });
-
-//   it('should return the survey by uuid', async () => {
-//     const survey = await service.getSurveyByUUID(mockSurvey.uuid);
-//     expect(survey).toEqual(mockSurvey);
-//   });
-// });
