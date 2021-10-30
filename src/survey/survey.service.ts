@@ -25,7 +25,6 @@ export class SurveyService {
   }
 
   async getSurveyByUUID(uuid: string) {
-    const res = await this.surveyRepository.find({ uuid });
-    return res[0];
+    return await this.surveyRepository.find({ uuid })[0];
   }
 }

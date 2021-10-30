@@ -6,6 +6,7 @@ import { User } from '../user/types/user.entity';
 import { mockSurvey, mockSurveyTemplate } from './survey.service.spec';
 import { mockUser } from '../user/user.service.spec';
 
+const UUID = '123e4567-e89b-12d3-a456-426614174000';
 const mockSurveyService: Partial<SurveyService> = {
   async create(
     surveyTemplateId: number,
@@ -14,7 +15,7 @@ const mockSurveyService: Partial<SurveyService> = {
   ): Promise<Survey> {
     return {
       id: 1,
-      uuid: '123e4567-e89b-12d3-a456-426614174000',
+      uuid: UUID,
       surveyTemplate: mockSurveyTemplate,
       name,
       creator,
@@ -60,9 +61,7 @@ describe('SurveyController', () => {
 
   it('should return a survey by its uuid', async () => {
     console.log(controller.getSurveyByUUID);
-    const survey = await controller.getSurveyByUUID(
-      '123e4567-e89b-12d3-a456-426614174000',
-    );
+    const survey = await controller.getSurveyByUUID(UUID);
     expect(survey).toEqual(mockSurvey);
   });
 });
