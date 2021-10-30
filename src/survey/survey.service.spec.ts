@@ -83,3 +83,34 @@ describe('SurveyService', () => {
     expect(survey).toEqual(mockSurvey);
   });
 });
+
+// describe('SurveyService', () => {
+//   let service: SurveyService;
+
+//   beforeEach(async () => {
+//     const module: TestingModule = await Test.createTestingModule({
+//       providers: [
+//         SurveyService,
+//         {
+//           provide: getRepositoryToken(Survey),
+//           useValue: mockSurveyRepository,
+//         },
+//         {
+//           provide: getRepositoryToken(SurveyTemplate),
+//           useValue: mockSurveyTemplateRepository,
+//         },
+//       ],
+//     }).compile();
+
+//     service = module.get<SurveyService>(SurveyService);
+//   });
+
+//   it('should be defined', () => {
+//     expect(service).toBeDefined();
+//   });
+
+//   it('should return the survey by uuid', async () => {
+//     const survey = await service.getSurveyByUUID(mockSurvey.uuid);
+//     expect(survey).toEqual(mockSurvey);
+//   });
+// });

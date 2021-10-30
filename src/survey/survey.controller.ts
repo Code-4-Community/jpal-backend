@@ -1,4 +1,11 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  ParseUUIDPipe,
+  Post,
+} from '@nestjs/common';
 import { Auth } from '../auth/decorators/auth.decorator';
 import { CreateSurveyDto } from './dto/create-survey.dto';
 import { Survey } from './types/survey.entity';
@@ -25,7 +32,7 @@ export class SurveyController {
 
   @Get(':uuid')
   @Auth(Role.RESEARCHER, Role.ADMIN)
-  getSurveyByUUID(@Param('uuid') uuid:string): Promise<Survey> {
+  getSurveyByUUID(@Param('uuid', ParseUUIDPipe) uuid: string): Promise<Survey> {
     return this.surveyService.getSurveyByUUID(uuid);
   }
 }
