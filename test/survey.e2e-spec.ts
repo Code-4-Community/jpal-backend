@@ -80,7 +80,7 @@ describe('Survey e2e', () => {
     expected.id = 1;
     expected.name = "Joe's favorite survey";
     expected.uuid = UUID;
-    expect(response.body).toEqual(expected);
+    expect(await surveyRepository.find()).toEqual([expected]);
     expect(response.statusCode).toBe(200);
   });
 
