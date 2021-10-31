@@ -52,7 +52,6 @@ describe('SurveyController', () => {
   });
 
   it('should create a user', async () => {
-    console.log('Should create user: ', controller.getSurveyByUUID);
     const survey = await controller.create(
       {
         name: 'Test Survey',
@@ -64,7 +63,6 @@ describe('SurveyController', () => {
   });
 
   it('should return a survey by its uuid', async () => {
-    console.log(controller.getSurveyByUUID);
     const survey = await controller.getSurveyByUUID(UUID);
     expect(survey).toEqual(mockSurvey);
   });
