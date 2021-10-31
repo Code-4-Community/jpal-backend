@@ -11,6 +11,7 @@ import { mockSurveyTemplate } from '../src/survey/survey.service.spec';
 import { User } from '../src/user/types/user.entity';
 import { SurveyTemplate } from '../src/surveyTemplate/types/surveyTemplate.entity';
 
+const UUID = '123e4567-e89b-12d3-a456-426614174000';
 describe('Survey e2e', () => {
   let app: INestApplication;
   let surveyRepository: Repository<Survey>;
@@ -45,6 +46,7 @@ describe('Survey e2e', () => {
     await surveyRepository.save({
       name: "Joe's favorite survey",
       creator: user,
+      uuid: UUID,
       surveyTemplate,
     });
   });
@@ -60,9 +62,27 @@ describe('Survey e2e', () => {
     const expected = new Survey();
     expected.id = 1;
     expected.name = "Joe's favorite survey";
+    expected.uuid = UUID;
 
     expect(await surveyRepository.find()).toEqual([expected]);
     expect(response.statusCode).toBe(200);
   });
+
+  it('should return the survey by the given uuid', async () => {
+    const response = await request(app.getHttpServer())
+      .get(`/survey/${UUID}`)
+      .set(
+        'Authorization',
+        `Bearer ${JSON.stringify({ email: 'test@test.com' })}`,
+      );
+
+    const expected = new Survey();
+    expected.id = 1;
+    expected.name = "Joe's favorite survey";
+    expected.uuid = UUID;
+    expect(response.body).toEqual(expected);
+    expect(response.statusCode).toBe(200);
+  });
+
   afterAll(async () => await app.close());
 });
