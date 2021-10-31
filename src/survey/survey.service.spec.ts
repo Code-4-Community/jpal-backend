@@ -90,4 +90,9 @@ describe('SurveyService', () => {
     const survey = await service.getSurveyByUUID(UUID);
     expect(survey).toEqual(mockSurvey);
   });
+
+  it('should fetch all surveys created by current user', async () => {
+    const goodResponse = await service.findAllSurveys(mockUser);
+    expect(goodResponse).toEqual(listMockSurveys);
+  });
 });

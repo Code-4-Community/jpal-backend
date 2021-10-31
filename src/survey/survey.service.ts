@@ -28,4 +28,10 @@ export class SurveyService {
     const res = await this.surveyRepository.find({ uuid });
     return res[0];
   }
+
+  async findAllSurveys(user: User): Promise<Survey[]> {
+    return this.surveyRepository.find({
+      where: { creator: user },
+    });
+  }
 }
