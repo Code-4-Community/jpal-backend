@@ -2,9 +2,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { SurveyController } from './survey.controller';
 import { SurveyService } from './survey.service';
 import { Survey } from './types/survey.entity';
-import { User } from '../user/types/user.entity';
 import { mockSurvey, mockSurveyTemplate } from './survey.service.spec';
 import { mockUser } from '../user/user.service.spec';
+import { User } from 'src/user/types/user.entity';
+
+const listMockSurveys: Survey[] = [];
 
 const mockSurveyService: Partial<SurveyService> = {
   async create(
@@ -19,6 +21,7 @@ const mockSurveyService: Partial<SurveyService> = {
       creator,
     };
   },
+  findAllSurveys: jest.fn(() => Promise.resolve(listMockSurveys)),
 };
 
 describe('SurveyController', () => {
@@ -51,5 +54,9 @@ describe('SurveyController', () => {
       mockUser,
     );
     expect(survey).toEqual(mockSurvey);
+  });
+  it('should find all the surveys created by the user', async () => {
+    expect(await controller.findAllSurveys(mockUser)).toEqual(listMockSurveys);
+    expect(mockSurveyService.findAllSurveys).toHaveBeenCalled();
   });
 });
