@@ -38,20 +38,12 @@ export class SurveyController {
     );
   }
 
-  /**
-   * Get a survey by its UUID. Must be authenticated as a Researcher or a Admin.
-   * @param uuid
-   * @returns Survey
-   */
   @Get(':uuid')
   @Auth(Role.RESEARCHER, Role.ADMIN)
-  getSurveyByUUID(@Param('uuid', ParseUUIDPipe) uuid: string): Promise<Survey> {
-    return this.surveyService.getSurveyByUUID(uuid);
+  getByUUID(@Param('uuid', ParseUUIDPipe) uuid: string): Promise<Survey> {
+    return this.surveyService.getByUUID(uuid);
   }
 
-  /**
-   * Returns all surveys by the currently logged in user
-   */
   @Get()
   @Auth(Role.ADMIN || Role.RESEARCHER)
   findAllSurveys(@ReqUser() user: User): Promise<Survey[]> {

@@ -23,7 +23,7 @@ const mockSurveyService: Partial<SurveyService> = {
       creator,
     };
   },
-  async getSurveyByUUID(uuid: string): Promise<Survey> {
+  async getByUUID(uuid: string): Promise<Survey> {
     return mockSurvey;
   },
 
@@ -63,7 +63,7 @@ describe('SurveyController', () => {
   });
 
   it('should return a survey by its uuid', async () => {
-    const survey = await controller.getSurveyByUUID(UUID);
+    const survey = await controller.getByUUID(UUID);
     expect(survey).toEqual(mockSurvey);
   });
   it('should find all the surveys created by the user', async () => {

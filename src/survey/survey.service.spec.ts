@@ -41,6 +41,9 @@ const mockSurveyRepository: Partial<Repository<Survey>> = {
   find(): Promise<Survey[]> {
     return Promise.resolve(listMockSurveys);
   },
+  findOneOrFail(): Promise<Survey> {
+    return Promise.resolve(mockSurvey);
+  },
 };
 
 const mockSurveyTemplateRepository: Partial<Repository<SurveyTemplate>> = {
@@ -87,7 +90,7 @@ describe('SurveyService', () => {
   });
 
   it('should return the survey by uuid', async () => {
-    const survey = await service.getSurveyByUUID(UUID);
+    const survey = await service.getByUUID(UUID);
     expect(survey).toEqual(mockSurvey);
   });
 
