@@ -116,7 +116,7 @@ describe('Survey e2e', () => {
     expect(response.statusCode).toBe(200);
   });
 
-  it('it should return a 404 when the uuid is invalid', async () => {
+  it('should return a 400 when the uuid is invalid', async () => {
     const response = await request(app.getHttpServer())
       .get(`/survey/invalid-uuid`)
       .set(
