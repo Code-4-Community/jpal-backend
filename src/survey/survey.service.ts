@@ -28,6 +28,11 @@ export class SurveyService {
     return this.surveyRepository.findOneOrFail({ uuid });
   }
 
+  async getBySurveyAndReviewerUUID(surveyUUID: string, reviewerUUID: string) {
+    const survey = await this.getByUUID(surveyUUID);
+    // filter the assignments by the reviewer
+  }
+
   async findAllSurveys(user: User): Promise<Survey[]> {
     return this.surveyRepository.find({
       where: { creator: user },
