@@ -44,6 +44,18 @@ export class SurveyController {
     return this.surveyService.getByUUID(uuid);
   }
 
+  @Get(':survey_uuid/:reviewer_uuid')
+  @Auth(Role.RESEARCHER, Role.ADMIN)
+  getBySurveyAndReviewerUUID(
+    @Param('survey_uuid') surveyUUID: string,
+    @Param('reviewer_uuid') reviewerUUID: string,
+  ): Promise<Survey> {
+    return this.surveyService.getBySurveyAndReviewerUUID(
+      surveyUUID,
+      reviewerUUID,
+    );
+  }
+
   @Get()
   @Auth(Role.ADMIN, Role.RESEARCHER)
   findAllSurveys(@ReqUser() user: User): Promise<Survey[]> {
