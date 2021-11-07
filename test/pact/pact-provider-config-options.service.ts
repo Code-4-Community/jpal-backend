@@ -51,6 +51,8 @@ export class PactProviderConfigOptionsService
           await this.userRepository.save({
             email: 'test@test.com',
             role: Role.ADMIN,
+            firstName: 'admin',
+            lastName: 'user',
           });
           return 'Animals removed to the db';
         },
@@ -59,6 +61,8 @@ export class PactProviderConfigOptionsService
           await this.userRepository.save({
             email: 'c4cneu.jpal+researcher@gmail.com',
             role: Role.RESEARCHER,
+            firstName: 'researcher',
+            lastName: 'user',
           });
           token = JSON.stringify({ email: 'c4cneu.jpal+researcher@gmail.com' });
           return 'Request sent as a user authorized as a researcher';
@@ -68,6 +72,8 @@ export class PactProviderConfigOptionsService
           await this.userRepository.save({
             email: 'c4cneu.jpal+admin@gmail.com',
             role: Role.ADMIN,
+            firstName: 'admin',
+            lastName: 'user',
           });
           token = JSON.stringify({ email: 'c4cneu.jpal+admin@gmail.com' });
           return 'Request sent as a user authorized as an admin';
