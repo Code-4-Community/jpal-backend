@@ -8,6 +8,7 @@ import { Youth } from './src/youth/types/youth.entity';
 import { Reviewer } from './src/reviewer/types/reviewer.entity';
 import { Option } from './src/option/types/option.entity';
 import { Response } from './src/response/types/response.entity';
+import { Survey } from './src/survey/types/survey.entity';
 
 dotenv.config();
 
@@ -20,6 +21,7 @@ const config: TypeOrmModuleOptions & { seeds: string[] } = {
   database: process.env.POSTGRES_DATABASE,
   entities: [
     User,
+    Survey,
     SurveyTemplate,
     Question,
     Option,

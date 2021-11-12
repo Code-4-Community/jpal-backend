@@ -13,6 +13,7 @@ import { UserController } from './user/user.controller';
 import { UserModule } from './user/user.module';
 import { UtilModule } from './util/util.module';
 import { SurveyTemplateModule } from './surveyTemplate/surveyTemplate.module';
+import { SurveyModule } from './survey/survey.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { SurveyTemplateModule } from './surveyTemplate/surveyTemplate.module';
     UtilModule,
     HealthModule,
     SurveyTemplateModule,
+    SurveyModule,
   ],
   controllers: [AppController, UserController],
   providers: [
