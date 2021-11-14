@@ -11,6 +11,8 @@ import { UserService } from './user.service';
 export const mockUser: User = {
   id: 1,
   email: 'test@test.com',
+  firstName: 'test',
+  lastName: 'user',
   role: Role.ADMIN,
 };
 
@@ -60,15 +62,27 @@ describe('UserService', () => {
 
   it('should fail to create a user whose email is already claimed', async () => {
     await expect(
-      service.create('already@exists.com', mockUser.role),
+      service.create(
+        'already@exists.com',
+        mockUser.firstName,
+        mockUser.lastName,
+        mockUser.role,
+      ),
     ).rejects.toThrow(new ConflictException('Email already exists'));
   });
 
   it('should create a fresh unclaimed user', async () => {
-    const goodResponse = await service.create(mockUser.email, mockUser.role);
+    const goodResponse = await service.create(
+      mockUser.email,
+      mockUser.firstName,
+      mockUser.lastName,
+      mockUser.role,
+    );
     expect(goodResponse).toEqual({
       id: 1,
       email: mockUser.email,
+      firstName: mockUser.firstName,
+      lastName: mockUser.lastName,
       role: mockUser.role,
     });
     expect(mockAwsCreateUserService.adminCreateUser).toHaveBeenCalledWith(

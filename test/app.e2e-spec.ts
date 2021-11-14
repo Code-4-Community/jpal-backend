@@ -8,6 +8,8 @@ import { overrideExternalDependencies } from './mockProviders';
 
 const initialUser: Omit<User, 'id'> = {
   email: 'test@test.com',
+  firstName: 'first',
+  lastName: 'last',
   role: Role.ADMIN,
 };
 

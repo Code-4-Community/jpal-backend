@@ -16,13 +16,20 @@ export class UserService {
     private awsCreateUser: AwsCreateUserService,
   ) {}
 
-  async create(email: string, role: Role): Promise<User> {
+  async create(
+    email: string,
+    firstName: string,
+    lastName: string,
+    role: Role,
+  ): Promise<User> {
     const emailNotUnique = await this.userRepository.findOne({ email });
     if (!!emailNotUnique) throw new ConflictException('Email already exists');
     try {
       await this.awsCreateUser.adminCreateUser(email);
       const user = this.userRepository.create({
         email,
+        firstName,
+        lastName,
         role,
       });
       return this.userRepository.save(user);

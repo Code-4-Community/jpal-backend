@@ -6,6 +6,8 @@ import { AuthenticationMiddleware } from './authentication.middleware';
 const mockUser: User = {
   id: 1,
   email: 'test@test.com',
+  firstName: 'first',
+  lastName: 'last',
   role: Role.ADMIN,
 };
 

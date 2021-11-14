@@ -5,5 +5,9 @@ export class CreateUserRequestDto {
   @IsEmail()
   email: string;
 
+  firstName: string;
+
+  lastName: string;
+
   role: Role;
 }

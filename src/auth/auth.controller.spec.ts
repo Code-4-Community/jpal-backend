@@ -7,6 +7,8 @@ import { AuthService } from './auth.service';
 const mockUser: User = {
   id: 1,
   email: 'test@test.com',
+  firstName: 'first',
+  lastName: 'last',
   role: Role.ADMIN,
 };
 
