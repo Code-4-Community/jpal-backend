@@ -94,6 +94,10 @@ describe('SurveyService', () => {
     expect(survey).toEqual(mockSurvey);
   });
 
+  it('should throw an error when survey does not exist', async () => {
+    await expect(service.getByUUID('123')).rejects.toThrow();
+  });
+
   it('should fetch all surveys created by current user', async () => {
     const goodResponse = await service.findAllSurveys(mockUser);
     expect(goodResponse).toEqual(listMockSurveys);

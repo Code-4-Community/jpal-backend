@@ -45,7 +45,7 @@ export class SurveyController {
   }
 
   @Get()
-  @Auth(Role.ADMIN || Role.RESEARCHER)
+  @Auth(Role.ADMIN, Role.RESEARCHER)
   findAllSurveys(@ReqUser() user: User): Promise<Survey[]> {
     return this.surveyService.findAllSurveys(user);
   }
