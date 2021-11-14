@@ -34,6 +34,7 @@ export class SurveyService {
   ): Promise<Survey> {
     const survey = await this.getByUUID(surveyUUID);
     // filter the assignments by the reviewer
+    //survey.assignments = survey.assignments.filter()
     return survey;
   }
 
