@@ -18,6 +18,8 @@ const UUID2 = 'a48bea54-4948-4f38-897e-f47a042c891d';
 const mockUser2: User = {
   id: 2,
   email: 'something@test.com',
+  firstName: 'first',
+  lastName: 'last',
   role: Role.RESEARCHER,
 };
 
