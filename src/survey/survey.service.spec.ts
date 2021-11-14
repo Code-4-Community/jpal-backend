@@ -12,8 +12,11 @@ export const mockSurveyTemplate: SurveyTemplate = {
   questions: [],
 };
 
+const UUID = '123e4567-e89b-12d3-a456-426614174000';
+
 export const mockSurvey: Survey = {
   id: 1,
+  uuid: UUID,
   name: 'Test Survey',
   surveyTemplate: mockSurveyTemplate,
   creator: mockUser,
@@ -25,6 +28,7 @@ const mockSurveyRepository: Partial<Repository<Survey>> = {
   create(survey?: DeepPartial<Survey> | DeepPartial<Survey>[]): any {
     return {
       id: 1,
+      uuid: UUID,
       ...survey,
     };
   },
@@ -36,6 +40,9 @@ const mockSurveyRepository: Partial<Repository<Survey>> = {
   },
   find(): Promise<Survey[]> {
     return Promise.resolve(listMockSurveys);
+  },
+  findOneOrFail(): Promise<Survey> {
+    return Promise.resolve(mockSurvey);
   },
 };
 
@@ -79,6 +86,11 @@ describe('SurveyService', () => {
       mockSurvey.name,
       mockSurvey.creator,
     );
+    expect(survey).toEqual(mockSurvey);
+  });
+
+  it('should return the survey by uuid', async () => {
+    const survey = await service.getByUUID(UUID);
     expect(survey).toEqual(mockSurvey);
   });
 

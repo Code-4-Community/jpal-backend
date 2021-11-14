@@ -8,6 +8,7 @@ import { User } from 'src/user/types/user.entity';
 
 const listMockSurveys: Survey[] = [];
 
+const UUID = '123e4567-e89b-12d3-a456-426614174000';
 const mockSurveyService: Partial<SurveyService> = {
   async create(
     surveyTemplateId: number,
@@ -16,11 +17,16 @@ const mockSurveyService: Partial<SurveyService> = {
   ): Promise<Survey> {
     return {
       id: 1,
+      uuid: UUID,
       surveyTemplate: mockSurveyTemplate,
       name,
       creator,
     };
   },
+  async getByUUID(uuid: string): Promise<Survey> {
+    return mockSurvey;
+  },
+
   findAllSurveys: jest.fn(() => Promise.resolve(listMockSurveys)),
 };
 
@@ -53,6 +59,11 @@ describe('SurveyController', () => {
       },
       mockUser,
     );
+    expect(survey).toEqual(mockSurvey);
+  });
+
+  it('should return a survey by its uuid', async () => {
+    const survey = await controller.getByUUID(UUID);
     expect(survey).toEqual(mockSurvey);
   });
   it('should find all the surveys created by the user', async () => {
