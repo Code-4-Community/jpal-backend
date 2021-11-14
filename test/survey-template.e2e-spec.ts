@@ -8,12 +8,13 @@ import { overrideExternalDependencies } from './mockProviders';
 import { clearDb } from './e2e.utils';
 import { SurveyTemplate } from "../src/surveyTemplate/types/surveyTemplate.entity";
 import { mockUser } from '../src/user/user.service.spec';
-import { mockSurveyTemplate } from '../src/survey/survey.service.spec';
 
 describe('Survey Template e2e', () => {
   let app: INestApplication;
   let usersRepository: Repository<User>;
   let surveyTemplateRepository: Repository<SurveyTemplate>;
+
+  let savedSurveyTemplateId: number;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await overrideExternalDependencies(
@@ -34,10 +35,11 @@ describe('Survey Template e2e', () => {
     await clearDb();
     const user = await usersRepository.save(mockUser);
 
-    mockSurveyTemplate.creator = user;
-    await surveyTemplateRepository.save(
-      mockSurveyTemplate,
+    const savedSurveyTemplate = await surveyTemplateRepository.save(
+      { creator: user, questions: [] }
     );
+
+    savedSurveyTemplateId = savedSurveyTemplate.id;
   });
 
   it('should error when requesting survey template that does not exist', async () => {
@@ -55,14 +57,20 @@ describe('Survey Template e2e', () => {
   it('should return correct survey template when it exists', async () => {
     expect.assertions(2);
     const response = await request(app.getHttpServer())
-      .get('/survey-template/1')
+      .get(`/survey-template/${savedSurveyTemplateId}`)
       .set(
         'Authorization',
         `Bearer ${JSON.stringify({ email: 'test@test.com' })}`,
       );
 
     expect(response.statusCode).toBe(200);
-    expect(response.body).toEqual(mockSurveyTemplate);
+    expect(response.body).toEqual(
+      expect.objectContaining({
+        id: expect.any(Number),
+        creator: mockUser,
+        questions: []
+      }),
+    );
   });
 
   afterAll(async () => await app.close());

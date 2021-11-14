@@ -1,4 +1,4 @@
-import { Controller, Get, Param, ParseIntPipe } from "@nestjs/common";
+import { BadRequestException, Controller, Get, Param, ParseIntPipe } from "@nestjs/common";
 import { SurveyTemplateService } from "./surveyTemplate.service";
 import { SurveyTemplate } from "./types/surveyTemplate.entity";
 import { Auth } from "../auth/decorators/auth.decorator";
@@ -13,7 +13,13 @@ export class SurveyTemplateController {
    */
   @Get(':id')
   @Auth(Role.ADMIN, Role.RESEARCHER)
-  getById(@Param('id', ParseIntPipe) id: number): Promise<SurveyTemplate> {
-    return this.surveyTemplateService.getById(id);
+  async getById(@Param('id', ParseIntPipe) id: number): Promise<SurveyTemplate> {
+      const result: SurveyTemplate = await this.surveyTemplateService.getById(id);
+      if (!result) {
+        throw new BadRequestException(`Survey template id ${id} not found`);
+      }
+      else {
+        return result;
+      }
   }
 }

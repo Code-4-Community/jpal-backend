@@ -15,7 +15,7 @@ const mockUser: User = {
 const mockSurveyTemplate: SurveyTemplate = { id: 1, creator: mockUser, questions: []}
 
 const mockSurveyTemplateRepository: Partial<Repository<SurveyTemplate>> = {
-  findOne(query: any): any {
+  async findOne(query: any): Promise<SurveyTemplate | undefined> {
     if (query.where.id === 1) return mockSurveyTemplate;
     return undefined;
   },
@@ -39,9 +39,9 @@ describe('SurveyTemplateService', () => {
   });
 
   it('should error if the requested id is not in the table', async () => {
-    await expect(
-      service.getById(-1),
-    ).rejects.toThrow(new BadRequestException(`Survey template id ${-1} not found`));
+    expect(
+      await service.getById(-1),
+    ).toEqual(undefined);
   });
 
   it('should return expected survey template if id in table', async () => {
