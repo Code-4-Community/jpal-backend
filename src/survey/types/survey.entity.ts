@@ -3,6 +3,7 @@ import {
   Entity,
   Generated,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { User } from '../../user/types/user.entity';
@@ -26,4 +27,7 @@ export class Survey {
 
   @Column()
   name: string;
+
+  @OneToMany(() => Assignment, (assignment) => assignment.survey)
+  assignments: Assignment[];
 }

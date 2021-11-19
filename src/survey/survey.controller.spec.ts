@@ -5,6 +5,7 @@ import { Survey } from './types/survey.entity';
 import { mockSurvey, mockSurveyTemplate } from './survey.service.spec';
 import { mockUser } from '../user/user.service.spec';
 import { User } from 'src/user/types/user.entity';
+import { Assignment } from 'src/assignment/types/assignment.entity';
 
 const listMockSurveys: Survey[] = [];
 
@@ -14,6 +15,7 @@ const mockSurveyService: Partial<SurveyService> = {
     surveyTemplateId: number,
     name: string,
     creator: User,
+    assignments: Assignment[],
   ): Promise<Survey> {
     return {
       id: 1,
@@ -21,6 +23,7 @@ const mockSurveyService: Partial<SurveyService> = {
       surveyTemplate: mockSurveyTemplate,
       name,
       creator,
+      assignments,
     };
   },
   async getByUUID(uuid: string): Promise<Survey> {

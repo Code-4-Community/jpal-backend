@@ -35,6 +35,7 @@ export class SurveyController {
       createSurveyDto.surveyTemplateId,
       createSurveyDto.name,
       reqUser,
+      [],
     );
   }
 
@@ -47,8 +48,8 @@ export class SurveyController {
   @Get(':survey_uuid/:reviewer_uuid')
   @Auth(Role.RESEARCHER, Role.ADMIN)
   getBySurveyAndReviewerUUID(
-    @Param('survey_uuid') surveyUUID: string,
-    @Param('reviewer_uuid') reviewerUUID: string,
+    @Param('survey_uuid', ParseUUIDPipe) surveyUUID: string,
+    @Param('reviewer_uuid', ParseUUIDPipe) reviewerUUID: string,
   ): Promise<Survey> {
     return this.surveyService.getBySurveyAndReviewerUUID(
       surveyUUID,

@@ -20,6 +20,7 @@ export const mockSurvey: Survey = {
   name: 'Test Survey',
   surveyTemplate: mockSurveyTemplate,
   creator: mockUser,
+  assignments: [],
 };
 
 const listMockSurveys: Survey[] = [mockSurvey];
@@ -85,6 +86,7 @@ describe('SurveyService', () => {
       mockSurveyTemplate.id,
       mockSurvey.name,
       mockSurvey.creator,
+      mockSurvey.assignments,
     );
     expect(survey).toEqual(mockSurvey);
   });
