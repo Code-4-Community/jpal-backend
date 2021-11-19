@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { Survey } from './types/survey.entity';
 import { User } from '../user/types/user.entity';
 import { SurveyTemplate } from '../surveyTemplate/types/surveyTemplate.entity';
+import { Assignment } from 'src/assignment/types/assignment.entity';
 
 @Injectable()
 export class SurveyService {
@@ -13,7 +14,12 @@ export class SurveyService {
     private surveyTemplateRepository: Repository<SurveyTemplate>,
   ) {}
 
-  async create(surveyTemplateId: number, name: string, creator: User) {
+  async create(
+    surveyTemplateId: number,
+    name: string,
+    creator: User,
+    assignments: Assignment[],
+  ): Promise<Survey> {
     const surveyTemplate = await this.surveyTemplateRepository.findOneOrFail({
       id: surveyTemplateId,
     });
@@ -21,6 +27,7 @@ export class SurveyService {
       surveyTemplate,
       name,
       creator,
+      assignments,
     });
   }
 
@@ -33,8 +40,9 @@ export class SurveyService {
     reviewerUUID: string,
   ): Promise<Survey> {
     const survey = await this.getByUUID(surveyUUID);
-    // filter the assignments by the reviewer
-    //survey.assignments = survey.assignments.filter()
+    survey.assignments = survey.assignments.filter(
+      (surveyAssigment) => surveyAssigment.reviewer.uuid === reviewerUUID,
+    );
     return survey;
   }
 
