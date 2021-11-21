@@ -5,6 +5,9 @@ import { mockUser } from '../user/user.service.spec';
 import { DeepPartial, Repository } from 'typeorm';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { SurveyTemplate } from '../surveyTemplate/types/surveyTemplate.entity';
+import { Assignment } from 'src/assignment/types/assignment.entity';
+import { Reviewer } from 'src/reviewer/types/reviewer.entity';
+import { Youth } from 'src/youth/types/youth.entity';
 
 export const mockSurveyTemplate: SurveyTemplate = {
   id: 1,
@@ -23,6 +26,32 @@ export const mockSurvey: Survey = {
   assignments: [],
 };
 
+export const mockReviewer: Reviewer = {
+  id: 1,
+  uuid: `1234`,
+  email: `mock@reviewer.com`,
+  firstName: `Mock`,
+  lastName: `Reviewer`,
+};
+
+export const mockYouth: Youth = {
+  id: 1,
+  email: `mock@youth.com`,
+  firstName: `Mock`,
+  lastName: `Youth`,
+};
+
+export const mockAssignment: Assignment = {
+  id: 1,
+  uuid: '123',
+  survey: mockSurvey,
+  reviewer: mockReviewer,
+  youth: mockYouth,
+  completed: false,
+  responses: [],
+};
+
+export const mockAssignments: Assignment[] = [mockAssignment];
 const listMockSurveys: Survey[] = [mockSurvey];
 
 const mockSurveyRepository: Partial<Repository<Survey>> = {
