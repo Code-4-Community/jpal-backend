@@ -18,6 +18,8 @@ export const mockUser: User = {
 
 export const mockUser2: User = {
   id: 2,
+  firstName: 'first',
+  lastName: 'last',
   email: 'test2@test.com',
   role: Role.RESEARCHER,
 };
