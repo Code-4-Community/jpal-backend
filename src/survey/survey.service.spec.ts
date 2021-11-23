@@ -82,7 +82,7 @@ export const mockAssignment2: Assignment = {
 mockSurvey.assignments = [mockAssignment2];
 
 export const mockAssignments: Assignment[] = [mockAssignment];
-const listMockSurveys: Survey[] = [mockSurvey];
+const listMockSurveys: Survey[] = [mockSurvey, mockSurvey2];
 
 const mockSurveyRepository: Partial<Repository<Survey>> = {
   create(survey?: DeepPartial<Survey> | DeepPartial<Survey>[]): any {
@@ -160,22 +160,23 @@ describe('SurveyService', () => {
     expect(goodResponse).toEqual(listMockSurveys);
   });
 
-  it('should the survey with the survey uuid and filter it by the reviewer uuid', async () => {
-    const goodResponse = await service.getBySurveyAndReviewerUUID(
-      UUID,
-      mockReviewer.uuid,
-    );
-    expect(goodResponse).toEqual(mockSurvey);
-  });
-
-  it('should the survey with the survey uuid and filter remove the assignment', async () => {
-    console.log('before processing', mockSurvey);
+  it('should filter the assignments of the survey because the given reviewer uuid does not match', async () => {
+    console.log('before filtering', mockSurvey);
     const goodResponse = await service.getBySurveyAndReviewerUUID(
       UUID,
       mockReviewer.uuid,
     );
     console.log(goodResponse);
+
     console.log(mockSurvey);
+    expect(goodResponse).toEqual(mockSurvey);
+  });
+
+  it('should not filter the assignments because the given reviewer uuid does match', async () => {
+    const goodResponse = await service.getBySurveyAndReviewerUUID(
+      UUID,
+      mockReviewer2.uuid,
+    );
 
     expect(goodResponse).toEqual(mockSurvey);
   });
