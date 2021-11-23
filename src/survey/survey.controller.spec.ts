@@ -5,7 +5,6 @@ import { Survey } from './types/survey.entity';
 import {
   mockReviewer,
   mockSurvey,
-  mockSurvey2,
   mockSurveyTemplate,
 } from './survey.service.spec';
 import { mockUser } from '../user/user.service.spec';

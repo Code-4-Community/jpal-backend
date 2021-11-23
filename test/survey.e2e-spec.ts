@@ -7,7 +7,10 @@ import { Repository } from 'typeorm';
 import { clearDb } from './e2e.utils';
 import { overrideExternalDependencies } from './mockProviders';
 import { mockUser } from '../src/user/user.service.spec';
-import { mockSurveyTemplate } from '../src/survey/survey.service.spec';
+import {
+  mockAssignment,
+  mockSurveyTemplate,
+} from '../src/survey/survey.service.spec';
 import { User } from '../src/user/types/user.entity';
 import { SurveyTemplate } from '../src/surveyTemplate/types/surveyTemplate.entity';
 import { Role } from '../src/user/types/role';
@@ -58,12 +61,15 @@ describe('Survey e2e', () => {
       creator: user,
       uuid: UUID,
       surveyTemplate,
-    });
+      assignments: [mockAssignment],
+    } as Survey);
+
     await surveyRepository.save({
       name: 'My survey',
       creator: user2,
       uuid: UUID2,
       surveyTemplate,
+      assignments: [mockAssignment],
     });
   });
 
