@@ -2,7 +2,12 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { SurveyController } from './survey.controller';
 import { SurveyService } from './survey.service';
 import { Survey } from './types/survey.entity';
-import { mockSurvey, mockSurveyTemplate } from './survey.service.spec';
+import {
+  mockReviewer,
+  mockSurvey,
+  mockSurvey2,
+  mockSurveyTemplate,
+} from './survey.service.spec';
 import { mockUser } from '../user/user.service.spec';
 import { User } from 'src/user/types/user.entity';
 import { Assignment } from 'src/assignment/types/assignment.entity';
@@ -27,6 +32,10 @@ const mockSurveyService: Partial<SurveyService> = {
     };
   },
   async getByUUID(uuid: string): Promise<Survey> {
+    return mockSurvey;
+  },
+
+  async getBySurveyAndReviewerUUID(): Promise<Survey> {
     return mockSurvey;
   },
 
@@ -72,5 +81,13 @@ describe('SurveyController', () => {
   it('should find all the surveys created by the user', async () => {
     expect(await controller.findAllSurveys(mockUser)).toEqual(listMockSurveys);
     expect(mockSurveyService.findAllSurveys).toHaveBeenCalled();
+  });
+
+  it('should return a survey by its survey uuid and filter it for the reviewer uuid', async () => {
+    const survey = await controller.getBySurveyAndReviewerUUID(
+      UUID,
+      mockReviewer.uuid,
+    );
+    expect(survey).toEqual(mockSurvey);
   });
 });
