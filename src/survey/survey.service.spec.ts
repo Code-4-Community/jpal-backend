@@ -20,7 +20,7 @@ const UUID2 = 'a48bea54-4948-4f38-897e-f47a042c891d';
 
 export const mockReviewer: Reviewer = {
   id: 1,
-  uuid: `1234`,
+  uuid: UUID2,
   email: `mock@reviewer.com`,
   firstName: `Mock`,
   lastName: `Reviewer`,
@@ -82,7 +82,7 @@ export const mockAssignment2: Assignment = {
 mockSurvey.assignments = [mockAssignment2];
 
 export const mockAssignments: Assignment[] = [mockAssignment];
-const listMockSurveys: Survey[] = [mockSurvey, mockSurvey2];
+const listMockSurveys: Survey[] = [mockSurvey];
 
 const mockSurveyRepository: Partial<Repository<Survey>> = {
   create(survey?: DeepPartial<Survey> | DeepPartial<Survey>[]): any {
@@ -161,14 +161,11 @@ describe('SurveyService', () => {
   });
 
   it('should filter the assignments of the survey because the given reviewer uuid does not match', async () => {
-    console.log('before filtering', mockSurvey);
     const goodResponse = await service.getBySurveyAndReviewerUUID(
       UUID,
       mockReviewer.uuid,
     );
-    console.log(goodResponse);
 
-    console.log(mockSurvey);
     expect(goodResponse).toEqual(mockSurvey);
   });
 

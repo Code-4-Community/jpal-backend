@@ -40,9 +40,13 @@ export class SurveyService {
     reviewerUUID: string,
   ): Promise<Survey> {
     const survey = await this.getByUUID(surveyUUID);
-    survey.assignments = survey.assignments.filter(
-      (surveyAssigment) => surveyAssigment.reviewer.uuid === reviewerUUID,
-    );
+
+    if (survey.assignments) {
+      survey.assignments = survey.assignments.filter(
+        (surveyAssigment) => surveyAssigment.reviewer.uuid === reviewerUUID,
+      );
+    }
+
     return survey;
   }
 
