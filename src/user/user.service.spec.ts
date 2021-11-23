@@ -16,6 +16,12 @@ export const mockUser: User = {
   role: Role.ADMIN,
 };
 
+export const mockUser2: User = {
+  id: 2,
+  email: 'test2@test.com',
+  role: Role.RESEARCHER,
+};
+
 const listMockUsers: User[] = [mockUser];
 
 const mockUserRepository: Partial<Repository<User>> = {
