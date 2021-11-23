@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { Survey } from './types/survey.entity';
 import { User } from '../user/types/user.entity';
 import { SurveyTemplate } from '../surveyTemplate/types/surveyTemplate.entity';
-import { Assignment } from 'src/assignment/types/assignment.entity';
+import { Assignment } from '../assignment/types/assignment.entity';
 
 @Injectable()
 export class SurveyService {

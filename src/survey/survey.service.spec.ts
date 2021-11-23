@@ -1,11 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { SurveyService } from './survey.service';
 import { Survey } from './types/survey.entity';
-import { mockUser } from '../user/user.service.spec';
+import { mockUser, mockUser2 } from '../user/user.service.spec';
 import { DeepPartial, Repository } from 'typeorm';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { SurveyTemplate } from '../surveyTemplate/types/surveyTemplate.entity';
-import { Assignment } from 'src/assignment/types/assignment.entity';
+import { Assignment } from '../assignment/types/assignment.entity';
 import { Reviewer } from 'src/reviewer/types/reviewer.entity';
 import { Youth } from 'src/youth/types/youth.entity';
 
@@ -16,6 +16,30 @@ export const mockSurveyTemplate: SurveyTemplate = {
 };
 
 const UUID = '123e4567-e89b-12d3-a456-426614174000';
+const UUID2 = 'a48bea54-4948-4f38-897e-f47a042c891d';
+
+export const mockReviewer: Reviewer = {
+  id: 1,
+  uuid: `1234`,
+  email: `mock@reviewer.com`,
+  firstName: `Mock`,
+  lastName: `Reviewer`,
+};
+
+export const mockReviewer2: Reviewer = {
+  id: 2,
+  uuid: `123443`,
+  email: `mock2@reviewer.com`,
+  firstName: `Mock2`,
+  lastName: `Reviewer2`,
+};
+
+export const mockYouth: Youth = {
+  id: 1,
+  email: `mock@youth.com`,
+  firstName: `Mock`,
+  lastName: `Youth`,
+};
 
 export const mockSurvey: Survey = {
   id: 1,
@@ -26,19 +50,13 @@ export const mockSurvey: Survey = {
   assignments: [],
 };
 
-export const mockReviewer: Reviewer = {
-  id: 1,
-  uuid: `1234`,
-  email: `mock@reviewer.com`,
-  firstName: `Mock`,
-  lastName: `Reviewer`,
-};
-
-export const mockYouth: Youth = {
-  id: 1,
-  email: `mock@youth.com`,
-  firstName: `Mock`,
-  lastName: `Youth`,
+export const mockSurvey2: Survey = {
+  id: 2,
+  uuid: UUID2,
+  name: 'Test Survey 2',
+  surveyTemplate: mockSurveyTemplate,
+  creator: mockUser2,
+  assignments: [],
 };
 
 export const mockAssignment: Assignment = {
@@ -50,6 +68,18 @@ export const mockAssignment: Assignment = {
   completed: false,
   responses: [],
 };
+
+export const mockAssignment2: Assignment = {
+  id: 2,
+  uuid: '1234',
+  survey: mockSurvey2,
+  reviewer: mockReviewer2,
+  youth: mockYouth,
+  completed: false,
+  responses: [],
+};
+
+mockSurvey.assignments = [mockAssignment2];
 
 export const mockAssignments: Assignment[] = [mockAssignment];
 const listMockSurveys: Survey[] = [mockSurvey];
@@ -128,5 +158,25 @@ describe('SurveyService', () => {
   it('should fetch all surveys created by current user', async () => {
     const goodResponse = await service.findAllSurveys(mockUser);
     expect(goodResponse).toEqual(listMockSurveys);
+  });
+
+  it('should the survey with the survey uuid and filter it by the reviewer uuid', async () => {
+    const goodResponse = await service.getBySurveyAndReviewerUUID(
+      UUID,
+      mockReviewer.uuid,
+    );
+    expect(goodResponse).toEqual(mockSurvey);
+  });
+
+  it('should the survey with the survey uuid and filter remove the assignment', async () => {
+    console.log('before processing', mockSurvey);
+    const goodResponse = await service.getBySurveyAndReviewerUUID(
+      UUID,
+      mockReviewer.uuid,
+    );
+    console.log(goodResponse);
+    console.log(mockSurvey);
+
+    expect(goodResponse).toEqual(mockSurvey);
   });
 });

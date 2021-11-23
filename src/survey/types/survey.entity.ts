@@ -8,8 +8,7 @@ import {
 } from 'typeorm';
 import { User } from '../../user/types/user.entity';
 import { SurveyTemplate } from '../../surveyTemplate/types/surveyTemplate.entity';
-import { Assignment } from 'src/assignment/types/assignment.entity';
-
+import { Assignment } from '../../assignment/types/assignment.entity';
 @Entity()
 export class Survey {
   @PrimaryGeneratedColumn()
