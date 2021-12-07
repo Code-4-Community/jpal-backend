@@ -33,6 +33,10 @@ export class SurveyService {
     });
   }
 
+  /**
+   * Creates assignments for a survey given reviewer/youth pairs. Upserts the given reviewers and youth.
+   * @param dto
+   */
   async getByUUID(uuid: string): Promise<Survey> {
     return this.surveyRepository.findOneOrFail({ uuid });
   }
@@ -55,7 +59,7 @@ export class SurveyService {
      */
     await Promise.all(
       dto.pairs.map((pair, i) => {
-        return this.assignmentRepository.insert({
+        return this.assignmentRepository.create({
           survey,
           reviewer: reviewers[i],
           youth: youth[i],

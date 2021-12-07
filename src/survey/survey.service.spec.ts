@@ -121,6 +121,32 @@ describe('SurveyService', () => {
   it('should create batch assignments', async () => {
     const dto: CreateBatchAssignmentsDto = {
       surveyId: 1,
+      pairs: [
+        {
+          reviewer: {
+            email: 'alpha@gmail.com',
+            firstName: 'Alpha',
+            lastName: 'Beta',
+          },
+          youth: {
+            email: 'gamma@gmail.com',
+            firstName: 'Gamma',
+            lastName: 'Delta',
+          },
+        },
+      ],
     };
+    const youthSave = jest.spyOn(mockYouthRepository, 'save');
+    const reviewerSave = jest.spyOn(mockReviewerRepository, 'save');
+    const assignmentCreate = jest.spyOn(mockAssignmentRepository, 'create');
+    await service.createBatchAssignments(dto);
+    expect(youthSave).toHaveBeenCalledWith([dto.pairs[0].youth]);
+    expect(reviewerSave).toHaveBeenCalledWith([dto.pairs[0].reviewer]);
+    expect(assignmentCreate).toHaveBeenCalledWith({
+      survey: mockSurvey,
+      reviewer: dto.pairs[0].reviewer,
+      youth: dto.pairs[0].youth,
+      responses: [],
+    });
   });
 });
