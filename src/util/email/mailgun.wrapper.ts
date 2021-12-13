@@ -11,12 +11,7 @@ export class MailgunWrapper {
     this.client = client;
   }
 
-  sendEmails(
-    data:
-      | Mailgun.messages.SendData
-      | SendTemplateData
-      | Mailgun.messages.BatchData,
-  ) {
+  sendEmails(data: Mailgun.messages.SendData | SendTemplateData | Mailgun.messages.BatchData) {
     return this.client.messages().send(data);
   }
 }

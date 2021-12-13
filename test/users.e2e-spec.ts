@@ -51,10 +51,7 @@ describe('Users e2e', () => {
     const response = await request(app.getHttpServer())
       .post('/user')
       .send({ email: 'test.createuser@test.com', role: Role.RESEARCHER })
-      .set(
-        'Authorization',
-        `Bearer ${JSON.stringify({ email: 'test@test.com' })}`,
-      );
+      .set('Authorization', `Bearer ${JSON.stringify({ email: 'test@test.com' })}`);
 
     expect(response.statusCode).toBe(201);
     expect(response.body).toEqual(
@@ -71,10 +68,7 @@ describe('Users e2e', () => {
     const response = await request(app.getHttpServer())
       .post('/user')
       .send({ email: 'test.createuser@test.com', role: Role.ADMIN })
-      .set(
-        'Authorization',
-        `Bearer ${JSON.stringify({ email: 'test@test.com' })}`,
-      );
+      .set('Authorization', `Bearer ${JSON.stringify({ email: 'test@test.com' })}`);
 
     expect(response.statusCode).toBe(201);
     expect(response.body).toEqual(
@@ -90,16 +84,9 @@ describe('Users e2e', () => {
     expect.assertions(3);
     const response = await request(app.getHttpServer())
       .get('/user')
-      .set(
-        'Authorization',
-        `Bearer ${JSON.stringify({ email: 'test@test.com' })}`,
-      );
+      .set('Authorization', `Bearer ${JSON.stringify({ email: 'test@test.com' })}`);
 
-    expect(await usersRepository.find()).toEqual([
-      initialResearcherUser,
-      adminUser1,
-      adminUser2,
-    ]);
+    expect(await usersRepository.find()).toEqual([initialResearcherUser, adminUser1, adminUser2]);
 
     expect(response.statusCode).toBe(200);
     expect(response.body).toEqual([

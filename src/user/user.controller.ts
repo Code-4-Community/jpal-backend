@@ -15,10 +15,7 @@ export class UserController {
   @Post()
   @Auth(Role.RESEARCHER)
   create(@Body() createUserRequestDto: CreateUserRequestDto): Promise<User> {
-    return this.userService.create(
-      createUserRequestDto.email,
-      createUserRequestDto.role,
-    );
+    return this.userService.create(createUserRequestDto.email, createUserRequestDto.role);
   }
 
   /**

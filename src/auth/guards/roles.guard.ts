@@ -10,12 +10,8 @@ import { PossiblyAuthorizedRequest } from '../types/authorized-request';
  */
 const RolesGuard = (roles: Role[]): any => {
   class RoleGuardMixin implements CanActivate {
-    canActivate(
-      context: ExecutionContext,
-    ): boolean | Promise<boolean> | Observable<boolean> {
-      const req = context
-        .switchToHttp()
-        .getRequest<PossiblyAuthorizedRequest>();
+    canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
+      const req = context.switchToHttp().getRequest<PossiblyAuthorizedRequest>();
       if (!req.user) return false;
       return roles.includes(req.user.role);
     }

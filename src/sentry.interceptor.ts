@@ -1,9 +1,4 @@
-import {
-  CallHandler,
-  ExecutionContext,
-  Injectable,
-  NestInterceptor,
-} from '@nestjs/common';
+import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common';
 import * as Sentry from '@sentry/node';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';

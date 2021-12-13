@@ -13,9 +13,7 @@ import { MailgunWrapper } from '../src/util/email/mailgun.wrapper';
  * Mocking the cognito validation service to simply JSON parse whatever the "jwt" string is.
  */
 const mockCognitoService = mock<CognitoService>();
-mockCognitoService.validate.mockImplementation((jwt) =>
-  Promise.resolve(JSON.parse(jwt)),
-);
+mockCognitoService.validate.mockImplementation((jwt) => Promise.resolve(JSON.parse(jwt)));
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const createFakeJWTPayloadFromObject = (obj: any) => {

@@ -48,13 +48,9 @@ describe('AuthService', () => {
   });
 
   test('verifyJwt', async () => {
-    mockCognitoService.validate.mockRejectedValueOnce(
-      new UnauthorizedException(),
-    );
+    mockCognitoService.validate.mockRejectedValueOnce(new UnauthorizedException());
 
-    await expect(service.verifyJwt('5')).rejects.toThrow(
-      new UnauthorizedException(),
-    );
+    await expect(service.verifyJwt('5')).rejects.toThrow(new UnauthorizedException());
     expect(mockCognitoService.validate).toHaveBeenCalledTimes(1);
 
     mockCognitoService.validate.mockResolvedValueOnce(mockUser);

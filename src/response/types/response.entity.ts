@@ -1,7 +1,7 @@
 import { Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { Question } from '../../question/types/question.entity';
 import { Assignment } from '../../assignment/types/assignment.entity';
 import { Option } from '../../option/types/option.entity';
+import { Question } from '../../question/types/question.entity';
 
 @Entity()
 export class Response {

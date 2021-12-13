@@ -1,10 +1,7 @@
 /**
  * A mock TypeORM repository for use in e2e tests. Maintains state like an actual database.
  */
-export class MockRepository<
-  T extends { id: number },
-  K extends Omit<T, 'id'> = Omit<T, 'id'>,
-> {
+export class MockRepository<T extends { id: number }, K extends Omit<T, 'id'> = Omit<T, 'id'>> {
   private data: T[];
   private readonly dataCompleter: (partial: Partial<K>) => K;
 
@@ -14,10 +11,7 @@ export class MockRepository<
    * @param dataCompleter function that completes partial entries by specifying default values
    * for optional fields
    */
-  constructor(
-    initialData: K[] = [],
-    dataCompleter: (partial: Partial<K>) => K = (v: K) => v,
-  ) {
+  constructor(initialData: K[] = [], dataCompleter: (partial: Partial<K>) => K = (v: K) => v) {
     this.data = initialData.map((d, i) => {
       return {
         id: i + 1,

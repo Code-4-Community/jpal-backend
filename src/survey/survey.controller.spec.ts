@@ -7,11 +7,7 @@ import { mockSurvey, mockSurveyTemplate } from './survey.service.spec';
 import { mockUser } from '../user/user.service.spec';
 
 const mockSurveyService: Partial<SurveyService> = {
-  async create(
-    surveyTemplateId: number,
-    name: string,
-    creator: User,
-  ): Promise<Survey> {
+  async create(surveyTemplateId: number, name: string, creator: User): Promise<Survey> {
     return {
       id: 1,
       surveyTemplate: mockSurveyTemplate,

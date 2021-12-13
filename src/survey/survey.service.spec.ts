@@ -74,11 +74,7 @@ describe('SurveyService', () => {
   });
 
   it('should create a survey', async () => {
-    const survey = await service.create(
-      mockSurveyTemplate.id,
-      mockSurvey.name,
-      mockSurvey.creator,
-    );
+    const survey = await service.create(mockSurveyTemplate.id, mockSurvey.name, mockSurvey.creator);
     expect(survey).toEqual(mockSurvey);
   });
 });
