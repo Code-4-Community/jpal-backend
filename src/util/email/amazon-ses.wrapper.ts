@@ -6,6 +6,9 @@ import { AMAZON_SES_CLIENT } from './amazon-ses-client.factory';
 export class AmazonSESWrapper {
   private client: AmazonSESClient;
 
+  /**
+   * @param client injected from `amazon-ses-client.factory.ts`
+   */
   constructor(@Inject(AMAZON_SES_CLIENT) client: AmazonSESClient) {
     this.client = client;
   }
@@ -21,7 +24,7 @@ export class AmazonSESWrapper {
    */
   async sendEmails(recipientEmails: string[], subject: string, bodyHtml: string): Promise<unknown> {
     const params = {
-      Source: '<email address you verified>',
+      Source: process.env.AWS_SES_SENDER_EMAIL,
       Destination: {
         ToAddresses: recipientEmails,
       },
