@@ -10,9 +10,14 @@ export default class CreateReviewers implements Seeder {
       .into(Reviewer)
       .values([
         {
-          email: 'c4cneu.jpal+reviewer@gmail.com',
-          firstName: 'reviewer',
-          lastName: 'user',
+          email: 'c4cneu.jpal+ben.lerner@gmail.com',
+          firstName: 'Ben',
+          lastName: 'Lerner',
+        },
+        {
+          email: 'c4cneu.jpal+alan.mislove@gmail.com',
+          firstName: 'Alan',
+          lastName: 'Mislove',
         },
       ])
       .execute();
