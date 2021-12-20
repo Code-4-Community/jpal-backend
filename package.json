@@ -33,7 +33,7 @@
     "schema:drop": "ts-node ./node_modules/typeorm/cli.js schema:drop",
     "schema:sync": "ts-node ./node_modules/typeorm/cli.js schema:sync",
     "seed": "npm run seed:run -- -s \"CreateUsers\" && npm run seed:run -- -s \"CreateReviewers\" && npm run seed:run -- -s \"CreateYouth\" && npm run seed:run -- -s \"CreateSurveyTemplates\" && npm run seed:run -- -s \"CreateSurveys\" && npm run seed:run -- -s \"CreateAssignments\"",
-    "reset-db": "npm run schema:drop && npm run:migration && npm run seed"
+    "reset-db": "npm run schema:drop && npm run migration && npm run seed"
   },
   "dependencies": {
     "@godaddy/terminus": "^4.9.0",

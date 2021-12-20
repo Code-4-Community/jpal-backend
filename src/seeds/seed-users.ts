@@ -1,4 +1,4 @@
-import { userExamples } from 'src/user/user.examples';
+import { userExamples } from '../user/user.examples';
 import { Connection } from 'typeorm';
 import { Factory, Seeder } from 'typeorm-seeding';
 import { User } from '../user/types/user.entity';
