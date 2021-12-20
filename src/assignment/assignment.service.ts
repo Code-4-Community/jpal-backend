@@ -3,7 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Option } from '../option/types/option.entity';
 import { Question } from '../question/types/question.entity';
 import { Repository } from 'typeorm';
-import { Survey } from '../survey/types/survey.entity';
 import { SurveyResponseDto } from './dto/survey-response.dto';
 import { Assignment } from './types/assignment.entity';
 import { Response } from '../response/types/response.entity';
