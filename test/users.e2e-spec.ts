@@ -10,16 +10,22 @@ import { clearDb } from './e2e.utils';
 
 const initialResearcherUser: Omit<User, 'id'> = {
   email: 'test@test.com',
+  firstName: 'test',
+  lastName: 'researcher',
   role: Role.RESEARCHER,
 };
 
 const adminUser1: Omit<User, 'id'> = {
   email: 'cooladmin@test.com',
+  firstName: 'test',
+  lastName: 'admin1',
   role: Role.ADMIN,
 };
 
 const adminUser2: Omit<User, 'id'> = {
   email: 'lameadmin@test.com',
+  firstName: 'test',
+  lastName: 'admin2',
   role: Role.ADMIN,
 };
 
@@ -50,7 +56,12 @@ describe('Users e2e', () => {
     expect.assertions(2);
     const response = await request(app.getHttpServer())
       .post('/user')
-      .send({ email: 'test.createuser@test.com', role: Role.RESEARCHER })
+      .send({
+        email: 'test.createuser@test.com',
+        firstName: 'test2',
+        lastName: 'researcher',
+        role: Role.RESEARCHER,
+      })
       .set('Authorization', `Bearer ${JSON.stringify({ email: 'test@test.com' })}`);
 
     expect(response.statusCode).toBe(201);
@@ -58,6 +69,8 @@ describe('Users e2e', () => {
       expect.objectContaining({
         id: expect.any(Number),
         email: 'test.createuser@test.com',
+        firstName: 'test2',
+        lastName: 'researcher',
         role: Role.RESEARCHER,
       }),
     );
@@ -67,7 +80,12 @@ describe('Users e2e', () => {
     expect.assertions(2);
     const response = await request(app.getHttpServer())
       .post('/user')
-      .send({ email: 'test.createuser@test.com', role: Role.ADMIN })
+      .send({
+        email: 'test.createuser@test.com',
+        firstName: 'test2',
+        lastName: 'admin',
+        role: Role.ADMIN,
+      })
       .set('Authorization', `Bearer ${JSON.stringify({ email: 'test@test.com' })}`);
 
     expect(response.statusCode).toBe(201);
@@ -75,6 +93,8 @@ describe('Users e2e', () => {
       expect.objectContaining({
         id: expect.any(Number),
         email: 'test.createuser@test.com',
+        firstName: 'test2',
+        lastName: 'admin',
         role: Role.ADMIN,
       }),
     );

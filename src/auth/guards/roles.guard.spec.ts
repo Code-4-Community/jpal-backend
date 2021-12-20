@@ -7,6 +7,8 @@ import { Role } from '../../user/types/role';
 const mockUser = (role: Role): User => ({
   id: 1,
   email: 'test@test.com',
+  firstName: 'first',
+  lastName: 'last',
   role,
 });
 

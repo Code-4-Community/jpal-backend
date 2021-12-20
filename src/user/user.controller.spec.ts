@@ -7,6 +7,8 @@ import { User } from './types/user.entity';
 const mockUser: User = {
   id: 1,
   email: 'test@test.com',
+  firstName: 'test',
+  lastName: 'user',
   role: Role.ADMIN,
 };
 
@@ -36,8 +38,19 @@ describe('UsersController', () => {
 
   it('should delegate user creation to the users service', async () => {
     expect.assertions(2);
-    expect(await controller.create({ email: mockUser.email, role: mockUser.role })).toEqual(
-      mockUser,
+    expect(
+      await controller.create({
+        email: mockUser.email,
+        firstName: mockUser.firstName,
+        lastName: mockUser.lastName,
+        role: mockUser.role,
+      }),
+    ).toEqual(mockUser);
+    expect(serviceMock.create).toHaveBeenCalledWith(
+      mockUser.email,
+      mockUser.firstName,
+      mockUser.lastName,
+      mockUser.role,
     );
     expect(serviceMock.create).toHaveBeenCalledWith(mockUser.email, mockUser.role);
   });
