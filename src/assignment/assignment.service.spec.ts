@@ -3,42 +3,56 @@ import { Repository } from 'typeorm';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Assignment } from './types/assignment.entity';
 import { AssignmentService } from './assignment.service';
-import { Youth } from '../youth/types/youth.entity';
+import {
+  mockSurvey,
+  mockSurveyRepository,
+} from '../survey/survey.service.spec';
+import { reviewerExamples } from '../reviewer/reviewer.examples';
+import { youthExamples } from '../youth/youth.examples';
+import { AssignmentStatus } from './types/assignmentStatus';
+import { Survey } from '../survey/types/survey.entity';
 import { Reviewer } from '../reviewer/types/reviewer.entity';
-import { mockSurvey } from 'src/survey/survey.service.spec';
+import { Youth } from '../youth/types/youth.entity';
 
-const UUID = '123e4567-e89b-12d3-a456-426614174000';
+const reviewer_UUID = '123e4567-e89b-12d3-a456-426614174000';
+export const assignment_UUID = '123e4567-e89b-12d3-a456-426614174330';
 
-const exampleReviwer: Reviewer = {
-  firstName: 'Olivia',
-  lastName: 'Blier',
-  email: 'blierolivia@gmail.com',
+const mockReviewer: Reviewer = {
+  ...reviewerExamples[0],
+  uuid: reviewer_UUID,
+  id: 1,
+};
+const mockYouth: Youth = {
+  ...youthExamples[0],
   id: 1,
 };
 
-const exampleYouth: Youth = {
-  firstName: 'Ryan',
-  lastName: 'Jung',
-  email: 'jung.ry@northeastern.edu',
+export const incompleteMockAssignment: Assignment = {
+  uuid: assignment_UUID,
+  reviewer: mockReviewer,
+  youth: mockYouth,
   id: 1,
+  survey: mockSurvey,
+  status: AssignmentStatus.INCOMPLETE,
+  responses: [],
 };
 
 export const mockAssignment: Assignment = {
-  uuid: UUID,
-  reviewer: exampleReviwer,
-  youth: exampleYouth,
+  uuid: assignment_UUID,
+  reviewer: mockReviewer,
+  youth: mockYouth,
   id: 1,
   survey: mockSurvey,
-  completed: false,
+  status: AssignmentStatus.COMPLETED,
   responses: [],
 };
 
 const mockAssignmentRepository: Partial<Repository<Assignment>> = {
-  save<T>(survey): T {
-    return survey;
+  save<T>(assignment): T {
+    return assignment;
   },
-  findOne(): any {
-    return undefined;
+  async findOne() {
+    return incompleteMockAssignment;
   },
 };
 
@@ -50,8 +64,12 @@ describe('AssignmentService', () => {
       providers: [
         AssignmentService,
         {
-          provide: getRepositoryToken(AssignmentService),
+          provide: getRepositoryToken(Assignment),
           useValue: mockAssignmentRepository,
+        },
+        {
+          provide: getRepositoryToken(Survey),
+          useValue: mockSurveyRepository,
         },
       ],
     }).compile();

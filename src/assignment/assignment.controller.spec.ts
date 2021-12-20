@@ -1,11 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { mockUser } from '../user/user.service.spec';
+import { mockSurveyService } from '../survey/survey.controller.spec';
+import { SurveyService } from '../survey/survey.service';
 import { AssignmentController } from './assignment.controller';
 import { AssignmentService } from './assignment.service';
+import { assignment_UUID, mockAssignment } from './assignment.service.spec';
+import { Assignment } from './types/assignment.entity';
 
-const UUID = '123e4567-e89b-12d3-a456-426614174000';
 const mockAssignmentService: Partial<AssignmentService> = {
-  async complete(assignmentUuid: string): Promise<void>;,
+  async complete(assignmentUuid: string): Promise<Assignment> {
+    return mockAssignment;
+  },
 };
 
 describe('AssignmentController', () => {
@@ -19,6 +23,10 @@ describe('AssignmentController', () => {
           provide: AssignmentService,
           useValue: mockAssignmentService,
         },
+        {
+          provide: SurveyService,
+          useValue: mockSurveyService,
+        },
       ],
     }).compile();
 
@@ -30,12 +38,7 @@ describe('AssignmentController', () => {
   });
 
   it('should complete an assignment', async () => {
-    const survey = await controller.complete(
-      {
-        uuid: UUID,
-        surveyTemplateId: 1,
-      },
-    );
-    expect(survey).toEqual(mockSurvey);
+    const assignment = await controller.complete(assignment_UUID);
+    expect(assignment).toEqual(mockAssignment);
   });
 });
