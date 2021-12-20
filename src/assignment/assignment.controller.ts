@@ -1,5 +1,14 @@
-import { Controller, Param, ParseUUIDPipe, Post } from '@nestjs/common';
+/* eslint-disable prettier/prettier */
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Param,
+  ParseUUIDPipe,
+  Post,
+} from '@nestjs/common';
 import { AssignmentService } from './assignment.service';
+import { CompleteAssignmentDto } from './dto/complete-assignment.dto';
 import { Assignment } from './types/assignment.entity';
 
 @Controller('assignment')
@@ -12,7 +21,16 @@ export class AssignmentController {
    * @returns Assignment
    */
   @Post(':uuid')
-  complete(@Param('uuid', ParseUUIDPipe) uuid: string): Promise<Assignment> {
-    return this.assignmentService.complete(uuid);
+  complete(
+    @Param('uuid', ParseUUIDPipe) uuid: string,
+    @Body() completeAssignmentDto: CompleteAssignmentDto,
+  ): Promise<Assignment> {
+    if (!this.assignmentService.getByUuid(uuid)) {
+      throw new BadRequestException('This assignment does not exist.');
+    }
+    return this.assignmentService.complete(
+      uuid,
+      completeAssignmentDto.responses,
+    );
   }
 }

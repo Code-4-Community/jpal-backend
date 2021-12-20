@@ -3,13 +3,25 @@ import { mockSurveyService } from '../survey/survey.controller.spec';
 import { SurveyService } from '../survey/survey.service';
 import { AssignmentController } from './assignment.controller';
 import { AssignmentService } from './assignment.service';
-import { assignment_UUID, mockAssignment } from './assignment.service.spec';
+import {
+  assignment_UUID,
+  mockAssignment,
+  mockAssignment2,
+  mockResponses,
+} from './assignment.service.spec';
 import { Assignment } from './types/assignment.entity';
 
 const mockAssignmentService: Partial<AssignmentService> = {
-  async complete(assignmentUuid: string): Promise<Assignment> {
+  async complete(): Promise<Assignment> {
     return mockAssignment;
   },
+  async getByUuid(): Promise<Assignment> {
+    return mockAssignment2;
+  },
+};
+
+const mockCompleteAssignmentDto = {
+  responses: mockResponses,
 };
 
 describe('AssignmentController', () => {
@@ -38,7 +50,16 @@ describe('AssignmentController', () => {
   });
 
   it('should complete an assignment', async () => {
-    const assignment = await controller.complete(assignment_UUID);
+    const assignment = () =>
+      controller.complete('bad!', mockCompleteAssignmentDto);
+    expect(assignment).rejects.toThrow();
+  });
+
+  it('should complete an assignment', async () => {
+    const assignment = await controller.complete(
+      assignment_UUID,
+      mockCompleteAssignmentDto,
+    );
     expect(assignment).toEqual(mockAssignment);
   });
 });

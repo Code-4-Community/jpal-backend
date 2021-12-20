@@ -1,4 +1,11 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Option } from '../../option/types/option.entity';
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { SurveyTemplate } from '../../surveyTemplate/types/surveyTemplate.entity';
 
 @Entity()
@@ -11,4 +18,7 @@ export class Question {
 
   @Column()
   text: string;
+
+  @OneToMany(() => Option, (option) => option.question)
+  options: Option[];
 }
