@@ -1,16 +1,24 @@
 import { Injectable } from '@nestjs/common';
-import { MailgunWrapper } from './mailgun.wrapper';
+import { AmazonSESWrapper } from './amazon-ses.wrapper';
 
 @Injectable()
 export class EmailService {
-  constructor(private mailgunWrapper: MailgunWrapper) {}
+  constructor(private amazonSESWrapper: AmazonSESWrapper) {}
 
-  private sendEmails(to: string[], subject: string, text: string) {
-    return this.mailgunWrapper.sendEmails({
-      from: '',
-      to,
-      subject,
-      text,
-    });
+  /**
+   * Sends an email.
+   *
+   * @param recipientEmails the email addresses of the recipients
+   * @param subject the subject of the email
+   * @param bodyHtml the HTML body of the email
+   * @resolves if the email was sent successfully
+   * @rejects if the email was not sent successfully
+   */
+  public async sendEmails(
+    recipientEmails: string[],
+    subject: string,
+    bodyHTML: string,
+  ): Promise<unknown> {
+    return this.amazonSESWrapper.sendEmails(recipientEmails, subject, bodyHTML);
   }
 }
