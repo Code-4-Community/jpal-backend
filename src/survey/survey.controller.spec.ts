@@ -19,7 +19,7 @@ const mockSurveyService: Partial<SurveyService> = {
       creator,
     };
   },
-  async getByUUID(uuid: string): Promise<Survey> {
+  async getByUUID(): Promise<Survey> {
     return mockSurvey;
   },
 
