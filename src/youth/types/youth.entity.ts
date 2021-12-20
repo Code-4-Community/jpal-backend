@@ -15,4 +15,7 @@ export class Youth {
 
   @Column()
   lastName: string;
+
+  @Column()
+  isControl: boolean;
 }

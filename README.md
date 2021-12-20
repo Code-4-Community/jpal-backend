@@ -31,9 +31,13 @@ Runs all unit tests
 
 Runs all e2e tests, requires a running DB.
 
-### `npm run seed:run`
+### `npm run seed`
 
-Runs the seed files so that you have data in your database for development! Only needs to be run once.
+Runs the seed files in the correct order so that you have data in your database for development! 
+
+## `npm run seed:run -- -s <specific seeder class>`
+
+Runs a specific seed file.
 
 ### `npm run migration`
 
