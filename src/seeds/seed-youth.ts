@@ -1,15 +1,15 @@
-import { userExamples } from '../user/user.examples';
+import { Youth } from '../youth/types/youth.entity';
 import { Connection } from 'typeorm';
 import { Factory, Seeder } from 'typeorm-seeding';
-import { User } from '../user/types/user.entity';
+import { youthExamples } from '../youth/youth.examples';
 
-export default class CreateUsers implements Seeder {
+export default class CreateYouth implements Seeder {
   public async run(factory: Factory, connection: Connection): Promise<any> {
     await connection
       .createQueryBuilder()
       .insert()
-      .into(User)
-      .values(userExamples)
+      .into(Youth)
+      .values(youthExamples)
       .execute();
   }
 }

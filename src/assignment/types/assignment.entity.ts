@@ -1,6 +1,7 @@
 import {
   Column,
   Entity,
+  Generated,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
@@ -9,6 +10,7 @@ import { Reviewer } from '../../reviewer/types/reviewer.entity';
 import { Youth } from '../../youth/types/youth.entity';
 import { Response } from '../../response/types/response.entity';
 import { Survey } from '../../survey/types/survey.entity';
+import { AssignmentStatus } from './assignmentStatus';
 
 @Entity()
 export class Assignment {
@@ -16,6 +18,7 @@ export class Assignment {
   id: number;
 
   @Column()
+  @Generated('uuid')
   uuid: string;
 
   @ManyToOne(() => Survey)
@@ -28,9 +31,11 @@ export class Assignment {
   youth: Youth;
 
   @Column({
-    default: false,
+    type: 'enum',
+    enum: AssignmentStatus,
+    default: AssignmentStatus.INCOMPLETE,
   })
-  completed: boolean;
+  status: AssignmentStatus;
 
   @OneToMany(() => Response, (response) => response.assignment)
   responses: Response[];
