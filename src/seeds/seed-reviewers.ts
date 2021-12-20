@@ -1,6 +1,7 @@
 import { Reviewer } from '../reviewer/types/reviewer.entity';
 import { Connection } from 'typeorm';
 import { Factory, Seeder } from 'typeorm-seeding';
+import { reviewerExamples } from 'src/reviewer/reviewer.examples';
 
 export default class CreateReviewers implements Seeder {
   public async run(factory: Factory, connection: Connection): Promise<any> {
@@ -8,18 +9,7 @@ export default class CreateReviewers implements Seeder {
       .createQueryBuilder()
       .insert()
       .into(Reviewer)
-      .values([
-        {
-          email: 'c4cneu.jpal+ben.lerner@gmail.com',
-          firstName: 'Ben',
-          lastName: 'Lerner',
-        },
-        {
-          email: 'c4cneu.jpal+alan.mislove@gmail.com',
-          firstName: 'Alan',
-          lastName: 'Mislove',
-        },
-      ])
+      .values(reviewerExamples)
       .execute();
   }
 }
