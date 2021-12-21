@@ -1,11 +1,11 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { Option } from '../option/types/option.entity';
 import { Question } from '../question/types/question.entity';
-import { Repository } from 'typeorm';
+import { Response } from '../response/types/response.entity';
 import { SurveyResponseDto } from './dto/survey-response.dto';
 import { Assignment } from './types/assignment.entity';
-import { Response } from '../response/types/response.entity';
 import { AssignmentStatus } from './types/assignmentStatus';
 
 @Injectable()
@@ -40,39 +40,36 @@ export class AssignmentService {
       );
     }
 
-    responses.forEach(async (response) => {
-      const question = await this.questionRepository.findOne({
-        where: { text: response.question },
-        relations: ['options'],
-      });
+    const responsesToSave: Omit<Response, 'id'>[] = await Promise.all(
+      responses.map(async (response) => {
+        const question = await this.questionRepository.findOne({
+          where: { text: response.question },
+          relations: ['options'],
+        });
 
-      if (question === undefined) {
-        throw new BadRequestException('Question does not exist');
-      }
+        if (question === undefined) {
+          throw new BadRequestException('Question does not exist');
+        }
 
-      const selectedOption = await this.optionRepository.findOne({
-        where: { text: response.selectedOption },
-      });
+        const selectedOption = await this.optionRepository.findOne({
+          where: { text: response.selectedOption },
+        });
 
-      if (
-        selectedOption === undefined ||
-        !question.options.some((o) => o.text === selectedOption.text)
-      ) {
-        throw new BadRequestException('Option does not exist');
-      }
+        if (
+          selectedOption === undefined ||
+          !question.options.some((o) => o.text === selectedOption.text)
+        ) {
+          throw new BadRequestException('Option does not exist');
+        }
 
-      // const newResponse = new Response();
-      // newResponse.question = question;
-      // newResponse.option = selectedOption;
-      // newResponse.assignment = assignment;
-
-      await this.responseRepository.save({
-        question,
-        option: selectedOption,
-        assignment,
-      });
-    });
-
+        return {
+          question,
+          option: selectedOption,
+          assignment,
+        };
+      }),
+    );
+    await this.responseRepository.save(responsesToSave);
     assignment = await this.getByUuid(uuid);
     assignment.status = AssignmentStatus.COMPLETED;
     await this.assignmentRepository.save(assignment);
