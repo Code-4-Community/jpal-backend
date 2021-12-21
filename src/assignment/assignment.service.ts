@@ -23,7 +23,7 @@ export class AssignmentService {
 
   async getByUuid(uuid: string): Promise<Assignment> {
     return await this.assignmentRepository.findOne({
-      relations: ['responses'],
+      relations: ['responses', 'responses.question', 'responses.option'],
       where: { uuid },
     });
   }
@@ -61,12 +61,16 @@ export class AssignmentService {
         throw new BadRequestException('Option does not exist');
       }
 
-      const newResponse = new Response();
-      newResponse.question = question;
-      newResponse.option = selectedOption;
-      newResponse.assignment = assignment;
+      // const newResponse = new Response();
+      // newResponse.question = question;
+      // newResponse.option = selectedOption;
+      // newResponse.assignment = assignment;
 
-      await this.responseRepository.save(newResponse);
+      await this.responseRepository.save({
+        question,
+        option: selectedOption,
+        assignment,
+      });
     });
 
     assignment = await this.getByUuid(uuid);

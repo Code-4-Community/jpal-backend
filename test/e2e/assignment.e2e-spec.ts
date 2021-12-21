@@ -10,14 +10,9 @@ import { mockUser } from '../../src/user/user.service.spec';
 import { mockSurveyTemplate } from '../../src/survey/survey.service.spec';
 import { User } from '../../src/user/types/user.entity';
 import { SurveyTemplate } from '../../src/surveyTemplate/types/surveyTemplate.entity';
-import { Role } from '../../src/user/types/role';
 import { Question } from '../../src/question/types/question.entity';
 import { Option } from '../../src/option/types/option.entity';
-import { Response } from '../../src/response/types/response.entity';
 import { Assignment } from '../../src/assignment/types/assignment.entity';
-import { Youth } from '../../src/youth/types/youth.entity';
-import { Reviewer } from '../../src/reviewer/types/reviewer.entity';
-import { assert } from 'console';
 import { youthExamples } from '../../src/youth/youth.examples';
 import { reviewerExamples } from '../../src/reviewer/reviewer.examples';
 import { AssignmentStatus } from '../../src/assignment/types/assignmentStatus';
@@ -109,15 +104,24 @@ describe('Assignment e2e', () => {
         ],
       });
 
-    console.log(response.body);
-    const expected = new Assignment();
-    expected.id = 1;
-    expected.status = AssignmentStatus.COMPLETED;
-    expected.uuid = assignmentUUID;
-
-    console.log(response.body);
-
-    expect(response.body).toEqual(expected);
+    expect(response.body).toEqual({
+      id: 1,
+      status: AssignmentStatus.COMPLETED,
+      uuid: assignmentUUID,
+      responses: [
+        {
+          id: 1,
+          question: {
+            id: 1,
+            text: 'How often is this student responsible?',
+          },
+          option: {
+            id: 1,
+            text: 'Always',
+          },
+        },
+      ],
+    });
     expect(response.statusCode).toBe(201);
   });
 
