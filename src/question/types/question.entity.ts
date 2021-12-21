@@ -19,6 +19,8 @@ export class Question {
   @Column()
   text: string;
 
-  @OneToMany(() => Option, (option) => option.question)
+  @OneToMany(() => Option, (option) => option.question, {
+    cascade: true,
+  })
   options: Option[];
 }

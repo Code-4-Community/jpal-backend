@@ -23,6 +23,7 @@ export class AssignmentService {
 
   async getByUuid(uuid: string): Promise<Assignment> {
     return await this.assignmentRepository.findOne({
+      relations: ['responses'],
       where: { uuid },
     });
   }
@@ -42,23 +43,27 @@ export class AssignmentService {
     responses.forEach(async (response) => {
       const question = await this.questionRepository.findOne({
         where: { text: response.question },
+        relations: ['options'],
       });
 
       if (question === undefined) {
         throw new BadRequestException('Question does not exist');
       }
 
-      const option = await this.optionRepository.findOne({
+      const selectedOption = await this.optionRepository.findOne({
         where: { text: response.selectedOption },
       });
 
-      if (option === undefined || !question.options.includes(option)) {
+      if (
+        selectedOption === undefined ||
+        !question.options.some((o) => o.text === selectedOption.text)
+      ) {
         throw new BadRequestException('Option does not exist');
       }
 
       const newResponse = new Response();
       newResponse.question = question;
-      newResponse.option = option;
+      newResponse.option = selectedOption;
       newResponse.assignment = assignment;
 
       await this.responseRepository.save(newResponse);
@@ -66,6 +71,7 @@ export class AssignmentService {
 
     assignment = await this.getByUuid(uuid);
     assignment.status = AssignmentStatus.COMPLETED;
-    return await this.assignmentRepository.save(assignment);
+    await this.assignmentRepository.save(assignment);
+    return await this.getByUuid(uuid);
   }
 }
