@@ -1,6 +1,8 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { SES as AmazonSESClient } from 'aws-sdk';
 import { AMAZON_SES_CLIENT } from './amazon-ses-client.factory';
+import * as dotenv from 'dotenv';
+dotenv.config();
 
 @Injectable()
 export class AmazonSESWrapper {
