@@ -21,4 +21,12 @@ export class EmailService {
   ): Promise<unknown> {
     return this.amazonSESWrapper.sendEmails(recipientEmails, subject, bodyHTML);
   }
+
+  public async sendEmailWithPdfAttachment(
+    recipientEmail: string,
+    subject: string,
+    bodyHTML: string,
+  ): Promise<unknown> {
+    return this.amazonSESWrapper.sendEmailWithPdfAttachment(recipientEmail, subject, bodyHTML);
+  }
 }
