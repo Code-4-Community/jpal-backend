@@ -21,10 +21,7 @@ async function bootstrap() {
   });
 
   Sentry.init({
-    dsn:
-      process.env.NODE_ENV === 'production'
-        ? process.env.SENTRY_DSN
-        : undefined,
+    dsn: process.env.NODE_ENV === 'production' ? process.env.SENTRY_DSN : undefined,
     tracesSampleRate: 1.0,
   });
 

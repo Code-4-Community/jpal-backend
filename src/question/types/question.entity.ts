@@ -1,11 +1,5 @@
 import { Option } from '../../option/types/option.entity';
-import {
-  Column,
-  Entity,
-  ManyToOne,
-  OneToMany,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { SurveyTemplate } from '../../surveyTemplate/types/surveyTemplate.entity';
 
 @Entity()

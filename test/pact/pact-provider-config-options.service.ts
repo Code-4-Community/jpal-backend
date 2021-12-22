@@ -7,12 +7,8 @@ import { User } from '../../src/user/types/user.entity';
 import { Repository } from 'typeorm';
 import { clearDb } from '../e2e.utils';
 @Injectable()
-export class PactProviderConfigOptionsService
-  implements PactProviderOptionsFactory
-{
-  public constructor(
-    @InjectRepository(User) private userRepository: Repository<User>,
-  ) {}
+export class PactProviderConfigOptionsService implements PactProviderOptionsFactory {
+  public constructor(@InjectRepository(User) private userRepository: Repository<User>) {}
 
   public createPactProviderOptions(): PactProviderOptions {
     // For builds triggered by a 'contract content changed' webhook,
@@ -23,9 +19,7 @@ export class PactProviderConfigOptionsService
       pactUrls: [process.env.PACT_URL],
     };
 
-    const GIT_BRANCH = process.env.GITHUB_REF
-      ? process.env.GITHUB_REF.substring(11)
-      : undefined;
+    const GIT_BRANCH = process.env.GITHUB_REF ? process.env.GITHUB_REF.substring(11) : undefined;
 
     const fetchPactsDynamicallyOpts = {
       provider: 'jpal-backend',

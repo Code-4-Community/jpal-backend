@@ -15,9 +15,7 @@ export class addReviewerUuid1640012056080 implements MigrationInterface {
 
   public async down(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`ALTER TABLE "assignment" DROP COLUMN "uuid"`);
-    await queryRunner.query(
-      `ALTER TABLE "assignment" ADD "uuid" character varying NOT NULL`,
-    );
+    await queryRunner.query(`ALTER TABLE "assignment" ADD "uuid" character varying NOT NULL`);
     await queryRunner.query(`ALTER TABLE "reviewer" DROP COLUMN "uuid"`);
   }
 }

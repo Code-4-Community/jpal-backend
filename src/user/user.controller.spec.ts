@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { UserController } from './user.controller';
 import { Role } from './types/role';
-import { UserService } from './user.service';
 import { User } from './types/user.entity';
+import { UserController } from './user.controller';
+import { UserService } from './user.service';
 
 const mockUser: User = {
   id: 1,

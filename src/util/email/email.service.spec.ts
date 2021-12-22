@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { AmazonSESWrapper } from './amazon-ses.wrapper';
 import { EmailService } from './email.service';
-import { MailgunWrapper } from './mailgun.wrapper';
 
-const mockMailgunWrapper = {
+const mockAmazonSESWrapper = {
   sendEmails: () => Promise.resolve(null),
 };
 
@@ -14,8 +14,8 @@ describe('EmailService', () => {
       providers: [
         EmailService,
         {
-          provide: MailgunWrapper,
-          useValue: mockMailgunWrapper,
+          provide: AmazonSESWrapper,
+          useValue: mockAmazonSESWrapper,
         },
       ],
     }).compile();

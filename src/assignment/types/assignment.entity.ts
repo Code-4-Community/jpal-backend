@@ -1,15 +1,8 @@
-import {
-  Column,
-  Entity,
-  Generated,
-  ManyToOne,
-  OneToMany,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
-import { Reviewer } from '../../reviewer/types/reviewer.entity';
-import { Youth } from '../../youth/types/youth.entity';
+import { Column, Entity, Generated, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Response } from '../../response/types/response.entity';
+import { Reviewer } from '../../reviewer/types/reviewer.entity';
 import { Survey } from '../../survey/types/survey.entity';
+import { Youth } from '../../youth/types/youth.entity';
 import { AssignmentStatus } from './assignmentStatus';
 
 @Entity()

@@ -52,9 +52,7 @@ describe('Survey e2e', () => {
 
     mockSurveyTemplate.creator = user;
 
-    const surveyTemplate = await surveyTemplateRepository.save(
-      mockSurveyTemplate,
-    );
+    const surveyTemplate = await surveyTemplateRepository.save(mockSurveyTemplate);
     await surveyRepository.save({
       name: "Joe's favorite survey",
       creator: user,
@@ -72,10 +70,7 @@ describe('Survey e2e', () => {
   it('should find all the surveys created by the user', async () => {
     const response = await request(app.getHttpServer())
       .get('/survey')
-      .set(
-        'Authorization',
-        `Bearer ${JSON.stringify({ email: 'test@test.com' })}`,
-      );
+      .set('Authorization', `Bearer ${JSON.stringify({ email: 'test@test.com' })}`);
 
     const expected = new Survey();
     expected.id = 1;
@@ -89,10 +84,7 @@ describe('Survey e2e', () => {
   it('should return the survey by the given uuid', async () => {
     const response = await request(app.getHttpServer())
       .get(`/survey/${UUID}`)
-      .set(
-        'Authorization',
-        `Bearer ${JSON.stringify({ email: 'test@test.com' })}`,
-      );
+      .set('Authorization', `Bearer ${JSON.stringify({ email: 'test@test.com' })}`);
 
     const expected = new Survey();
     expected.id = 1;
@@ -105,10 +97,7 @@ describe('Survey e2e', () => {
   it('should return the survey by another uuid', async () => {
     const response = await request(app.getHttpServer())
       .get(`/survey/${UUID2}`)
-      .set(
-        'Authorization',
-        `Bearer ${JSON.stringify({ email: 'something@test.com' })}`,
-      );
+      .set('Authorization', `Bearer ${JSON.stringify({ email: 'something@test.com' })}`);
 
     const expected = new Survey();
     expected.id = 2;
@@ -121,10 +110,7 @@ describe('Survey e2e', () => {
   it('should return a 400 when the uuid is invalid', async () => {
     const response = await request(app.getHttpServer())
       .get(`/survey/invalid-uuid`)
-      .set(
-        'Authorization',
-        `Bearer ${JSON.stringify({ email: 'something@test.com' })}`,
-      );
+      .set('Authorization', `Bearer ${JSON.stringify({ email: 'something@test.com' })}`);
     expect(response.statusCode).toBe(400);
   });
 

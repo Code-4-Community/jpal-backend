@@ -20,9 +20,7 @@ const mockAuthService: Partial<AuthService> = {
 };
 
 describe('AuthMiddleware', () => {
-  const middleware = new AuthenticationMiddleware(
-    mockAuthService as AuthService,
-  );
+  const middleware = new AuthenticationMiddleware(mockAuthService as AuthService);
 
   it('should authenticate if valid token is given', async () => {
     const req = {

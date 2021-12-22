@@ -46,15 +46,14 @@ export const mockSurveyRepository: Partial<Repository<Survey>> = {
   },
 };
 
-export const mockSurveyTemplateRepository: Partial<Repository<SurveyTemplate>> =
-  {
-    async findOne() {
-      return mockSurveyTemplate;
-    },
-    async findOneOrFail(): Promise<SurveyTemplate> {
-      return mockSurveyTemplate;
-    },
-  };
+export const mockSurveyTemplateRepository: Partial<Repository<SurveyTemplate>> = {
+  async findOne() {
+    return mockSurveyTemplate;
+  },
+  async findOneOrFail(): Promise<SurveyTemplate> {
+    return mockSurveyTemplate;
+  },
+};
 
 describe('SurveyService', () => {
   let service: SurveyService;
@@ -82,11 +81,7 @@ describe('SurveyService', () => {
   });
 
   it('should create a survey', async () => {
-    const survey = await service.create(
-      mockSurveyTemplate.id,
-      mockSurvey.name,
-      mockSurvey.creator,
-    );
+    const survey = await service.create(mockSurveyTemplate.id, mockSurvey.name, mockSurvey.creator);
     expect(survey).toEqual(mockSurvey);
   });
 

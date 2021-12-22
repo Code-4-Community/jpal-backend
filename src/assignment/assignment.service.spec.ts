@@ -10,9 +10,7 @@ import { AssignmentStatus } from './types/assignmentStatus';
 import { Reviewer } from '../reviewer/types/reviewer.entity';
 import { Youth } from '../youth/types/youth.entity';
 import { SurveyResponseDto } from './dto/survey-response.dto';
-import DEFAULT_QUESTIONS, {
-  exampleOptions,
-} from '../question/question.examples';
+import DEFAULT_QUESTIONS, { exampleOptions } from '../question/question.examples';
 import { Question } from '../question/types/question.entity';
 import { mock } from 'jest-mock-extended';
 import { Option } from '../option/types/option.entity';
@@ -128,18 +126,13 @@ describe('AssignmentService', () => {
   });
 
   it('should get an assignment by uuid', async () => {
-    jest
-      .spyOn(mockAssignmentRepository, 'findOne')
-      .mockResolvedValueOnce(mockAssignment2);
+    jest.spyOn(mockAssignmentRepository, 'findOne').mockResolvedValueOnce(mockAssignment2);
     const assignment = await service.getByUuid(assignment_UUID2);
     expect(assignment).toEqual(mockAssignment2);
   });
 
   it('should complete an assignment', async () => {
-    const assignment = await service.complete(
-      mockAssignment.uuid,
-      mockResponses,
-    );
+    const assignment = await service.complete(mockAssignment.uuid, mockResponses);
     expect(assignment).toEqual(mockAssignment);
   });
 });

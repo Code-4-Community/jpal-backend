@@ -28,16 +28,11 @@ export class AssignmentService {
     });
   }
 
-  async complete(
-    uuid: string,
-    responses: SurveyResponseDto[],
-  ): Promise<Assignment> {
+  async complete(uuid: string, responses: SurveyResponseDto[]): Promise<Assignment> {
     let assignment = await this.getByUuid(uuid);
 
     if (assignment.status === AssignmentStatus.COMPLETED) {
-      throw new BadRequestException(
-        'Responses for this assignment have already been recorded.',
-      );
+      throw new BadRequestException('Responses for this assignment have already been recorded.');
     }
 
     const responsesToSave: Omit<Response, 'id'>[] = await Promise.all(

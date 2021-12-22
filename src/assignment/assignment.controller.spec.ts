@@ -50,16 +50,12 @@ describe('AssignmentController', () => {
   });
 
   it('should complete an assignment', async () => {
-    const assignment = () =>
-      controller.complete('bad!', mockCompleteAssignmentDto);
+    const assignment = () => controller.complete('bad!', mockCompleteAssignmentDto);
     expect(assignment).rejects.toThrow();
   });
 
   it('should complete an assignment', async () => {
-    const assignment = await controller.complete(
-      assignment_UUID,
-      mockCompleteAssignmentDto,
-    );
+    const assignment = await controller.complete(assignment_UUID, mockCompleteAssignmentDto);
     expect(assignment).toEqual(mockAssignment);
   });
 });
