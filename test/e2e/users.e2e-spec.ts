@@ -2,11 +2,11 @@ import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
 import { Repository } from 'typeorm';
-import { AppModule } from '../src/app.module';
-import { Role } from '../src/user/types/role';
-import { User } from '../src/user/types/user.entity';
-import { overrideExternalDependencies } from './mockProviders';
-import { clearDb } from './e2e.utils';
+import { AppModule } from '../../src/app.module';
+import { Role } from '../../src/user/types/role';
+import { User } from '../../src/user/types/user.entity';
+import { overrideExternalDependencies } from '../mockProviders';
+import { clearDb } from '../e2e.utils';
 
 const initialResearcherUser: Omit<User, 'id'> = {
   email: 'test@test.com',
