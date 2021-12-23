@@ -30,6 +30,8 @@ export class Assignment {
   })
   status: AssignmentStatus;
 
-  @OneToMany(() => Response, (response) => response.assignment)
+  @OneToMany(() => Response, (response) => response.assignment, {
+    cascade: true,
+  })
   responses: Response[];
 }

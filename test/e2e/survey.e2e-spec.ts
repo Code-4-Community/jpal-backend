@@ -1,16 +1,16 @@
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
-import { AppModule } from '../src/app.module';
-import { Survey } from '../src/survey/types/survey.entity';
+import { AppModule } from '../../src/app.module';
+import { Survey } from '../../src/survey/types/survey.entity';
 import { Repository } from 'typeorm';
-import { clearDb } from './e2e.utils';
-import { overrideExternalDependencies } from './mockProviders';
-import { mockUser } from '../src/user/user.service.spec';
-import { mockSurveyTemplate } from '../src/survey/survey.service.spec';
-import { User } from '../src/user/types/user.entity';
-import { SurveyTemplate } from '../src/surveyTemplate/types/surveyTemplate.entity';
-import { Role } from '../src/user/types/role';
+import { clearDb } from '../e2e.utils';
+import { overrideExternalDependencies } from '../mockProviders';
+import { mockUser } from '../../src/user/user.service.spec';
+import { mockSurveyTemplate } from '../../src/survey/survey.service.spec';
+import { User } from '../../src/user/types/user.entity';
+import { SurveyTemplate } from '../../src/surveyTemplate/types/surveyTemplate.entity';
+import { Role } from '../../src/user/types/role';
 
 const UUID = '123e4567-e89b-12d3-a456-426614174000';
 const UUID2 = 'a48bea54-4948-4f38-897e-f47a042c891d';

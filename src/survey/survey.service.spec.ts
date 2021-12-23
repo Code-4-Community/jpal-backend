@@ -24,7 +24,7 @@ export const mockSurvey: Survey = {
 
 const listMockSurveys: Survey[] = [mockSurvey];
 
-const mockSurveyRepository: Partial<Repository<Survey>> = {
+export const mockSurveyRepository: Partial<Repository<Survey>> = {
   create(survey?: DeepPartial<Survey> | DeepPartial<Survey>[]): any {
     return {
       id: 1,
@@ -46,7 +46,7 @@ const mockSurveyRepository: Partial<Repository<Survey>> = {
   },
 };
 
-const mockSurveyTemplateRepository: Partial<Repository<SurveyTemplate>> = {
+export const mockSurveyTemplateRepository: Partial<Repository<SurveyTemplate>> = {
   async findOne() {
     return mockSurveyTemplate;
   },

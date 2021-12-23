@@ -14,18 +14,20 @@ import { UserModule } from './user/user.module';
 import { UtilModule } from './util/util.module';
 import { SurveyModule } from './survey/survey.module';
 import { ScheduleModule } from '@nestjs/schedule';
+import { AssignmentModule } from './assignment/assignment.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
     }),
     TypeOrmModule.forRoot(TypeOrmConfig),
+    ScheduleModule.forRoot(),
     UserModule,
     AuthModule,
     UtilModule,
     HealthModule,
     SurveyModule,
-    ScheduleModule.forRoot(),
+    AssignmentModule,
   ],
   controllers: [AppController, UserController],
   providers: [
