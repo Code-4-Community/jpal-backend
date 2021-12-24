@@ -8,6 +8,8 @@ import { SurveyTemplate } from '../surveyTemplate/types/surveyTemplate.entity';
 import { Assignment } from '../assignment/types/assignment.entity';
 import { Reviewer } from 'src/reviewer/types/reviewer.entity';
 import { Youth } from 'src/youth/types/youth.entity';
+import { YouthRoles } from 'src/youth/types/youthRoles';
+import { AssignmentStatus } from 'src/assignment/types/assignmentStatus';
 
 export const mockSurveyTemplate: SurveyTemplate = {
   id: 1,
@@ -39,6 +41,7 @@ export const mockYouth: Youth = {
   email: `mock@youth.com`,
   firstName: `Mock`,
   lastName: `Youth`,
+  role: YouthRoles.CONTROL,
 };
 
 export const mockSurvey: Survey = {
@@ -65,7 +68,7 @@ export const mockAssignment: Assignment = {
   survey: mockSurvey,
   reviewer: mockReviewer,
   youth: mockYouth,
-  completed: false,
+  status: AssignmentStatus.INCOMPLETE,
   responses: [],
 };
 
@@ -75,7 +78,7 @@ export const mockAssignment2: Assignment = {
   survey: mockSurvey2,
   reviewer: mockReviewer2,
   youth: mockYouth,
-  completed: false,
+  status: AssignmentStatus.INCOMPLETE,
   responses: [],
 };
 
@@ -84,7 +87,7 @@ mockSurvey.assignments = [mockAssignment2];
 export const mockAssignments: Assignment[] = [mockAssignment];
 const listMockSurveys: Survey[] = [mockSurvey];
 
-const mockSurveyRepository: Partial<Repository<Survey>> = {
+export const mockSurveyRepository: Partial<Repository<Survey>> = {
   create(survey?: DeepPartial<Survey> | DeepPartial<Survey>[]): any {
     return {
       id: 1,
@@ -106,7 +109,7 @@ const mockSurveyRepository: Partial<Repository<Survey>> = {
   },
 };
 
-const mockSurveyTemplateRepository: Partial<Repository<SurveyTemplate>> = {
+export const mockSurveyTemplateRepository: Partial<Repository<SurveyTemplate>> = {
   async findOne() {
     return mockSurveyTemplate;
   },
@@ -161,19 +164,13 @@ describe('SurveyService', () => {
   });
 
   it('should filter the assignments of the survey because the given reviewer uuid does not match', async () => {
-    const goodResponse = await service.getBySurveyAndReviewerUUID(
-      UUID,
-      mockReviewer.uuid,
-    );
+    const goodResponse = await service.getBySurveyAndReviewerUUID(UUID, mockReviewer.uuid);
 
     expect(goodResponse).toEqual(mockSurvey);
   });
 
   it('should not filter the assignments because the given reviewer uuid does match', async () => {
-    const goodResponse = await service.getBySurveyAndReviewerUUID(
-      UUID,
-      mockReviewer2.uuid,
-    );
+    const goodResponse = await service.getBySurveyAndReviewerUUID(UUID, mockReviewer2.uuid);
 
     expect(goodResponse).toEqual(mockSurvey);
   });

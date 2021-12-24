@@ -2,11 +2,11 @@ import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
 import { Repository } from 'typeorm';
-import { AppModule } from '../src/app.module';
-import { Role } from '../src/user/types/role';
-import { User } from '../src/user/types/user.entity';
-import { overrideExternalDependencies } from './mockProviders';
-import { clearDb } from './e2e.utils';
+import { AppModule } from '../../src/app.module';
+import { Role } from '../../src/user/types/role';
+import { User } from '../../src/user/types/user.entity';
+import { overrideExternalDependencies } from '../mockProviders';
+import { clearDb } from '../e2e.utils';
 
 const initialResearcherUser: Omit<User, 'id'> = {
   email: 'test@test.com',
@@ -62,10 +62,7 @@ describe('Users e2e', () => {
         lastName: 'researcher',
         role: Role.RESEARCHER,
       })
-      .set(
-        'Authorization',
-        `Bearer ${JSON.stringify({ email: 'test@test.com' })}`,
-      );
+      .set('Authorization', `Bearer ${JSON.stringify({ email: 'test@test.com' })}`);
 
     expect(response.statusCode).toBe(201);
     expect(response.body).toEqual(
@@ -89,10 +86,7 @@ describe('Users e2e', () => {
         lastName: 'admin',
         role: Role.ADMIN,
       })
-      .set(
-        'Authorization',
-        `Bearer ${JSON.stringify({ email: 'test@test.com' })}`,
-      );
+      .set('Authorization', `Bearer ${JSON.stringify({ email: 'test@test.com' })}`);
 
     expect(response.statusCode).toBe(201);
     expect(response.body).toEqual(
@@ -110,16 +104,9 @@ describe('Users e2e', () => {
     expect.assertions(3);
     const response = await request(app.getHttpServer())
       .get('/user')
-      .set(
-        'Authorization',
-        `Bearer ${JSON.stringify({ email: 'test@test.com' })}`,
-      );
+      .set('Authorization', `Bearer ${JSON.stringify({ email: 'test@test.com' })}`);
 
-    expect(await usersRepository.find()).toEqual([
-      initialResearcherUser,
-      adminUser1,
-      adminUser2,
-    ]);
+    expect(await usersRepository.find()).toEqual([initialResearcherUser, adminUser1, adminUser2]);
 
     expect(response.statusCode).toBe(200);
     expect(response.body).toEqual([

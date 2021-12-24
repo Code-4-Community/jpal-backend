@@ -10,6 +10,10 @@ export class Reviewer {
   uuid: string;
 
   @Column()
+  @Generated('uuid')
+  uuid: string;
+
+  @Column()
   @IsEmail()
   email: string;
 

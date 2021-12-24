@@ -1,11 +1,4 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Param,
-  ParseUUIDPipe,
-  Post,
-} from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseUUIDPipe, Post } from '@nestjs/common';
 
 import { Auth } from '../auth/decorators/auth.decorator';
 import { CreateSurveyDto } from './dto/create-survey.dto';
@@ -27,10 +20,7 @@ export class SurveyController {
    */
   @Post()
   @Auth(Role.RESEARCHER, Role.ADMIN)
-  create(
-    @Body() createSurveyDto: CreateSurveyDto,
-    @ReqUser() reqUser,
-  ): Promise<Survey> {
+  create(@Body() createSurveyDto: CreateSurveyDto, @ReqUser() reqUser): Promise<Survey> {
     return this.surveyService.create(
       createSurveyDto.surveyTemplateId,
       createSurveyDto.name,

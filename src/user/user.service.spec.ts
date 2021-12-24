@@ -70,12 +70,7 @@ describe('UserService', () => {
 
   it('should fail to create a user whose email is already claimed', async () => {
     await expect(
-      service.create(
-        'already@exists.com',
-        mockUser.firstName,
-        mockUser.lastName,
-        mockUser.role,
-      ),
+      service.create('already@exists.com', mockUser.firstName, mockUser.lastName, mockUser.role),
     ).rejects.toThrow(new ConflictException('Email already exists'));
   });
 
@@ -93,9 +88,7 @@ describe('UserService', () => {
       lastName: mockUser.lastName,
       role: mockUser.role,
     });
-    expect(mockAwsCreateUserService.adminCreateUser).toHaveBeenCalledWith(
-      mockUser.email,
-    );
+    expect(mockAwsCreateUserService.adminCreateUser).toHaveBeenCalledWith(mockUser.email);
   });
 
   it('should fetch all admins', async () => {

@@ -13,7 +13,7 @@ import { UserController } from './user/user.controller';
 import { UserModule } from './user/user.module';
 import { UtilModule } from './util/util.module';
 import { SurveyModule } from './survey/survey.module';
-
+import { AssignmentModule } from './assignment/assignment.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -25,6 +25,7 @@ import { SurveyModule } from './survey/survey.module';
     UtilModule,
     HealthModule,
     SurveyModule,
+    AssignmentModule,
   ],
   controllers: [AppController, UserController],
   providers: [

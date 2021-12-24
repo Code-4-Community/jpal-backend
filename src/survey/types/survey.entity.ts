@@ -1,11 +1,4 @@
-import {
-  Column,
-  Entity,
-  Generated,
-  ManyToOne,
-  OneToMany,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, Generated, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { User } from '../../user/types/user.entity';
 import { SurveyTemplate } from '../../surveyTemplate/types/surveyTemplate.entity';
 import { Assignment } from '../../assignment/types/assignment.entity';

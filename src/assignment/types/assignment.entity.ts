@@ -1,14 +1,9 @@
-import {
-  Column,
-  Entity,
-  ManyToOne,
-  OneToMany,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
-import { Reviewer } from '../../reviewer/types/reviewer.entity';
-import { Youth } from '../../youth/types/youth.entity';
+import { Column, Entity, Generated, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Response } from '../../response/types/response.entity';
+import { Reviewer } from '../../reviewer/types/reviewer.entity';
 import { Survey } from '../../survey/types/survey.entity';
+import { Youth } from '../../youth/types/youth.entity';
+import { AssignmentStatus } from './assignmentStatus';
 
 @Entity()
 export class Assignment {
@@ -16,6 +11,7 @@ export class Assignment {
   id: number;
 
   @Column()
+  @Generated('uuid')
   uuid: string;
 
   @ManyToOne(() => Survey)
@@ -28,10 +24,14 @@ export class Assignment {
   youth: Youth;
 
   @Column({
-    default: false,
+    type: 'enum',
+    enum: AssignmentStatus,
+    default: AssignmentStatus.INCOMPLETE,
   })
-  completed: boolean;
+  status: AssignmentStatus;
 
-  @OneToMany(() => Response, (response) => response.assignment)
+  @OneToMany(() => Response, (response) => response.assignment, {
+    cascade: true,
+  })
   responses: Response[];
 }
