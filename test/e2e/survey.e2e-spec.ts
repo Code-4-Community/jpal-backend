@@ -120,5 +120,18 @@ describe('Survey e2e', () => {
     expect(response.statusCode).toBe(400);
   });
 
+  it('should send the survey for the specific reviewer', async () => {
+    const response = await request(app.getHttpServer())
+      .get(`/survey/${UUID2}/${UUID}`)
+      .set('Authorization', `Bearer ${JSON.stringify({ email: 'something@test.com' })}`);
+    const expected = new Survey();
+    expected.id = 2;
+    expected.name = 'My survey';
+    expected.uuid = UUID2;
+
+    expect(response.body).toEqual(expected);
+    expect(response.statusCode).toBe(200);
+  });
+
   afterAll(async () => await app.close());
 });

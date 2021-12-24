@@ -8,8 +8,8 @@ import { SurveyTemplate } from '../surveyTemplate/types/surveyTemplate.entity';
 import { Assignment } from '../assignment/types/assignment.entity';
 import { Reviewer } from 'src/reviewer/types/reviewer.entity';
 import { Youth } from 'src/youth/types/youth.entity';
-import { YouthRoles } from 'src/youth/types/youthRoles';
-import { AssignmentStatus } from 'src/assignment/types/assignmentStatus';
+import { YouthRoles } from '../youth/types/youthRoles';
+import { AssignmentStatus } from '../assignment/types/assignmentStatus';
 
 export const mockSurveyTemplate: SurveyTemplate = {
   id: 1,
@@ -171,7 +171,6 @@ describe('SurveyService', () => {
 
   it('should not filter the assignments because the given reviewer uuid does match', async () => {
     const goodResponse = await service.getBySurveyAndReviewerUUID(UUID, mockReviewer2.uuid);
-
     expect(goodResponse).toEqual(mockSurvey);
   });
 });
