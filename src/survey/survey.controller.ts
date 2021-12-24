@@ -41,10 +41,7 @@ export class SurveyController {
     @Param('survey_uuid', ParseUUIDPipe) survey_uuid: string,
     @Param('reviewer_uuid', ParseUUIDPipe) reviewer_uuid: string,
   ): Promise<Survey> {
-    return this.surveyService.getBySurveyAndReviewerUUID(
-      survey_uuid,
-      reviewer_uuid,
-    );
+    return this.surveyService.getBySurveyAndReviewerUUID(survey_uuid, reviewer_uuid);
   }
 
   @Get()
