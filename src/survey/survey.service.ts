@@ -47,6 +47,11 @@ export class SurveyService {
     });
   }
 
+  /**
+   * Creates a batch of Assignments given a surveyId and a list of pairs of Reviewers and Youth.
+   * Creates the Reviewers and Youth if they don't exist.
+   * @param dto
+   */
   async createBatchAssignments(dto: CreateBatchAssignmentsDto) {
     const survey = await this.surveyRepository.findOneOrFail(dto.surveyId);
     const [youth, reviewers] = await Promise.all([
