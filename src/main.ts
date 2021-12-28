@@ -25,6 +25,6 @@ async function bootstrap() {
     tracesSampleRate: 1.0,
   });
 
-  await app.listen(5000);
+  await app.listen(process.env.PORT || 5000);
 }
 bootstrap();
