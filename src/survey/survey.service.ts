@@ -38,11 +38,8 @@ export class SurveyService {
   async getBySurveyAndReviewerUUID(surveyUUID: string, reviewerUUID: string): Promise<Survey> {
     const survey = await this.getByUUID(surveyUUID);
 
-    if (survey.assignments) {
-      survey.assignments = survey.assignments.filter(
-        (surveyAssigment) => surveyAssigment.reviewer.uuid === reviewerUUID,
-      );
-    }
+    console.log('this is from survey service');
+    console.log('survey for the survey uuid ', survey);
 
     return survey;
   }
