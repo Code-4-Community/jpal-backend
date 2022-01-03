@@ -1,4 +1,4 @@
-type ReviewerOrYouth = {
+type PersonInfo = {
   email: string;
   firstName: string;
   lastName: string;
@@ -7,7 +7,7 @@ type ReviewerOrYouth = {
 export interface CreateBatchAssignmentsDto {
   surveyUUID: string;
   pairs: {
-    youth: ReviewerOrYouth;
-    reviewer: ReviewerOrYouth;
+    youth: PersonInfo;
+    reviewer: PersonInfo;
   }[];
 }
