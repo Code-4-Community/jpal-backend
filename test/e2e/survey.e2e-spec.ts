@@ -157,7 +157,7 @@ describe('Survey e2e', () => {
 
     const youthSave = jest.spyOn(youthRepository, 'save');
     const reviewerSave = jest.spyOn(reviewerRepository, 'save');
-    const assignmentCreate = jest.spyOn(assignmentRepository, 'create');
+    const assignmentSave = jest.spyOn(assignmentRepository, 'save');
 
     await request(app.getHttpServer())
       .patch(`/survey`)
@@ -165,7 +165,7 @@ describe('Survey e2e', () => {
       .send(dto);
     expect(youthSave).toHaveBeenCalledTimes(1);
     expect(reviewerSave).toHaveBeenCalledTimes(1);
-    expect(assignmentCreate).toHaveBeenCalledTimes(2);
+    expect(assignmentSave).toHaveBeenCalledTimes(1);
   });
 
   afterAll(async () => await app.close());

@@ -62,15 +62,13 @@ export class SurveyService {
      * Assumes that if there is a collision (by email) of one of the youths or reviewers, the corresponding value
      * in the returned array is the entity that already exists. This is likely to be true but needs testing to confirm.
      */
-    await Promise.all(
-      dto.pairs.map((pair, i) => {
-        return this.assignmentRepository.create({
-          survey,
-          reviewer: reviewers[i],
-          youth: youth[i],
-          responses: [],
-        });
-      }),
-    );
+    await this.assignmentRepository.save(dto.pairs.map((pair, i) => {
+      return {
+        survey,
+        reviewer: reviewers[i],
+        youth: youth[i],
+        responses: [],
+      }
+    }));
   }
 }
