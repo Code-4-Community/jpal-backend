@@ -53,7 +53,7 @@ export class SurveyService {
    * @param dto
    */
   async createBatchAssignments(dto: CreateBatchAssignmentsDto) {
-    const survey = await this.surveyRepository.findOneOrFail(dto.surveyId);
+    const survey = await this.getByUUID(dto.surveyUUID);
     const [youth, reviewers] = await Promise.all([
       this.youthRepository.save(dto.pairs.map((p) => p.youth)),
       this.reviewerRepository.save(dto.pairs.map((p) => p.reviewer)),

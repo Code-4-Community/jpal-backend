@@ -120,11 +120,11 @@ describe('SurveyService', () => {
 
   it('should create batch assignments', async () => {
     const dto: CreateBatchAssignmentsDto = {
-      surveyId: 1,
+      surveyUUID: "test",
       pairs: [
         {
           reviewer: {
-            email: 'alpha@gmail.com',
+            email: 'alpha@sgmail.com',
             firstName: 'Alpha',
             lastName: 'Beta',
           },

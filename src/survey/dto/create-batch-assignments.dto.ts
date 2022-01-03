@@ -5,7 +5,7 @@ type ReviewerOrYouth = {
 };
 
 export interface CreateBatchAssignmentsDto {
-  surveyId: number;
+  surveyUUID: string;
   pairs: {
     youth: ReviewerOrYouth;
     reviewer: ReviewerOrYouth;
