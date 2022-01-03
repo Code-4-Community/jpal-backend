@@ -1,12 +1,4 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Param,
-  ParseUUIDPipe,
-  Post,
-  Patch
-} from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseUUIDPipe, Post, Patch } from '@nestjs/common';
 import { Auth } from '../auth/decorators/auth.decorator';
 import { CreateSurveyDto } from './dto/create-survey.dto';
 import { Survey } from './types/survey.entity';

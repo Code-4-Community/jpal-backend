@@ -142,11 +142,13 @@ describe('SurveyService', () => {
     await service.createBatchAssignments(dto);
     expect(youthSave).toHaveBeenCalledWith([dto.pairs[0].youth]);
     expect(reviewerSave).toHaveBeenCalledWith([dto.pairs[0].reviewer]);
-    expect(assignmentSave).toHaveBeenCalledWith([{
-      survey: mockSurvey,
-      reviewer: dto.pairs[0].reviewer,
-      youth: dto.pairs[0].youth,
-      responses: [],
-    }]);
+    expect(assignmentSave).toHaveBeenCalledWith([
+      {
+        survey: mockSurvey,
+        reviewer: dto.pairs[0].reviewer,
+        youth: dto.pairs[0].youth,
+        responses: [],
+      },
+    ]);
   });
 });

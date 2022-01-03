@@ -9,15 +9,7 @@ import { Youth } from '../youth/types/youth.entity';
 import { Reviewer } from '../reviewer/types/reviewer.entity';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([
-      Survey,
-      SurveyTemplate,
-      Assignment,
-      Youth,
-      Reviewer,
-    ]),
-  ],
+  imports: [TypeOrmModule.forFeature([Survey, SurveyTemplate, Assignment, Youth, Reviewer])],
   providers: [SurveyService],
   controllers: [SurveyController],
 })

@@ -33,10 +33,6 @@ export class SurveyService {
     });
   }
 
-  /**
-   * Creates assignments for a survey given reviewer/youth pairs. Upserts the given reviewers and youth.
-   * @param dto
-   */
   async getByUUID(uuid: string): Promise<Survey> {
     return this.surveyRepository.findOneOrFail({ uuid });
   }
