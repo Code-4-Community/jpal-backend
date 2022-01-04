@@ -11,6 +11,10 @@ import { mockSurveyTemplate } from '../../src/survey/survey.service.spec';
 import { User } from '../../src/user/types/user.entity';
 import { SurveyTemplate } from '../../src/surveyTemplate/types/surveyTemplate.entity';
 import { Role } from '../../src/user/types/role';
+import { Assignment } from '../../src/assignment/types/assignment.entity';
+import { Youth } from '../../src/youth/types/youth.entity';
+import { Reviewer } from '../../src/reviewer/types/reviewer.entity';
+import { CreateBatchAssignmentsDto } from '../../src/survey/dto/create-batch-assignments.dto';
 
 const UUID = '123e4567-e89b-12d3-a456-426614174000';
 const UUID2 = 'a48bea54-4948-4f38-897e-f47a042c891d';
@@ -28,6 +32,9 @@ describe('Survey e2e', () => {
   let surveyRepository: Repository<Survey>;
   let userRepository: Repository<User>;
   let surveyTemplateRepository: Repository<SurveyTemplate>;
+  let assignmentRepository: Repository<Assignment>;
+  let youthRepository: Repository<Youth>;
+  let reviewerRepository: Repository<Reviewer>;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await overrideExternalDependencies(
@@ -39,6 +46,9 @@ describe('Survey e2e', () => {
     userRepository = moduleFixture.get('UserRepository');
     surveyTemplateRepository = moduleFixture.get('SurveyTemplateRepository');
     surveyRepository = moduleFixture.get('SurveyRepository');
+    assignmentRepository = moduleFixture.get('AssignmentRepository');
+    youthRepository = moduleFixture.get('YouthRepository');
+    reviewerRepository = moduleFixture.get('ReviewerRepository');
 
     app = moduleFixture.createNestApplication();
 
@@ -112,6 +122,50 @@ describe('Survey e2e', () => {
       .get(`/survey/invalid-uuid`)
       .set('Authorization', `Bearer ${JSON.stringify({ email: 'something@test.com' })}`);
     expect(response.statusCode).toBe(400);
+  });
+
+  it('should create batch assignments', async () => {
+    const dto: CreateBatchAssignmentsDto = {
+      surveyUUID: UUID,
+      pairs: [
+        {
+          youth: {
+            email: 'one@youth.com',
+            firstName: 'One',
+            lastName: 'Youth',
+          },
+          reviewer: {
+            email: 'one@reviewer.com',
+            firstName: 'One',
+            lastName: 'Reviewer',
+          },
+        },
+        {
+          youth: {
+            email: 'two@youth.com',
+            firstName: 'Two',
+            lastName: 'Youth',
+          },
+          reviewer: {
+            email: 'two@reviewer.com',
+            firstName: 'Two',
+            lastName: 'Reviewer',
+          },
+        },
+      ],
+    };
+
+    const youthSave = jest.spyOn(youthRepository, 'save');
+    const reviewerSave = jest.spyOn(reviewerRepository, 'save');
+    const assignmentSave = jest.spyOn(assignmentRepository, 'save');
+
+    await request(app.getHttpServer())
+      .patch(`/survey`)
+      .set('Authorization', `Bearer ${JSON.stringify({ email: 'something@test.com' })}`)
+      .send(dto);
+    expect(youthSave).toHaveBeenCalledTimes(1);
+    expect(reviewerSave).toHaveBeenCalledTimes(1);
+    expect(assignmentSave).toHaveBeenCalledTimes(1);
   });
 
   afterAll(async () => await app.close());

@@ -5,6 +5,11 @@ import { mockUser } from '../user/user.service.spec';
 import { DeepPartial, Repository } from 'typeorm';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { SurveyTemplate } from '../surveyTemplate/types/surveyTemplate.entity';
+import { MockRepository } from '../../test/db/MockRepository';
+import { Assignment } from '../assignment/types/assignment.entity';
+import { Youth } from '../youth/types/youth.entity';
+import { Reviewer } from '../reviewer/types/reviewer.entity';
+import { CreateBatchAssignmentsDto } from './dto/create-batch-assignments.dto';
 
 export const mockSurveyTemplate: SurveyTemplate = {
   id: 1,
@@ -57,8 +62,14 @@ export const mockSurveyTemplateRepository: Partial<Repository<SurveyTemplate>> =
 
 describe('SurveyService', () => {
   let service: SurveyService;
+  let mockAssignmentRepository: MockRepository<Assignment>;
+  let mockYouthRepository: MockRepository<Youth>;
+  let mockReviewerRepository: MockRepository<Reviewer>;
 
   beforeEach(async () => {
+    mockAssignmentRepository = new MockRepository<Assignment>();
+    mockYouthRepository = new MockRepository<Youth>();
+    mockReviewerRepository = new MockRepository<Reviewer>();
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         SurveyService,
@@ -69,6 +80,18 @@ describe('SurveyService', () => {
         {
           provide: getRepositoryToken(SurveyTemplate),
           useValue: mockSurveyTemplateRepository,
+        },
+        {
+          provide: getRepositoryToken(Assignment),
+          useValue: mockAssignmentRepository,
+        },
+        {
+          provide: getRepositoryToken(Youth),
+          useValue: mockYouthRepository,
+        },
+        {
+          provide: getRepositoryToken(Reviewer),
+          useValue: mockReviewerRepository,
         },
       ],
     }).compile();
@@ -93,5 +116,39 @@ describe('SurveyService', () => {
   it('should fetch all surveys created by current user', async () => {
     const goodResponse = await service.findAllSurveys(mockUser);
     expect(goodResponse).toEqual(listMockSurveys);
+  });
+
+  it('should create batch assignments', async () => {
+    const dto: CreateBatchAssignmentsDto = {
+      surveyUUID: 'test',
+      pairs: [
+        {
+          reviewer: {
+            email: 'alpha@sgmail.com',
+            firstName: 'Alpha',
+            lastName: 'Beta',
+          },
+          youth: {
+            email: 'gamma@gmail.com',
+            firstName: 'Gamma',
+            lastName: 'Delta',
+          },
+        },
+      ],
+    };
+    const youthSave = jest.spyOn(mockYouthRepository, 'save').mockImplementation((i) => i);
+    const reviewerSave = jest.spyOn(mockReviewerRepository, 'save').mockImplementation((i) => i);
+    const assignmentSave = jest.spyOn(mockAssignmentRepository, 'save');
+    await service.createBatchAssignments(dto);
+    expect(youthSave).toHaveBeenCalledWith([dto.pairs[0].youth]);
+    expect(reviewerSave).toHaveBeenCalledWith([dto.pairs[0].reviewer]);
+    expect(assignmentSave).toHaveBeenCalledWith([
+      {
+        survey: mockSurvey,
+        reviewer: dto.pairs[0].reviewer,
+        youth: dto.pairs[0].youth,
+        responses: [],
+      },
+    ]);
   });
 });

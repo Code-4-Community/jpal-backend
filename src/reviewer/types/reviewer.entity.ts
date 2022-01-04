@@ -6,7 +6,9 @@ export class Reviewer {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({
+    unique: true,
+  })
   @Generated('uuid')
   uuid: string;
 
