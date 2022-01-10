@@ -11,6 +11,7 @@ export const mockSurveyService: Partial<SurveyService> = {
       surveyTemplate: mockSurveyTemplate,
       name,
       creator,
+      assignments: []
     };
   },
 };

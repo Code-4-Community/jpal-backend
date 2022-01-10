@@ -25,6 +25,7 @@ export const mockSurvey: Survey = {
   name: 'Test Survey',
   surveyTemplate: mockSurveyTemplate,
   creator: mockUser,
+  assignments: []
 };
 
 const listMockSurveys: Survey[] = [mockSurvey];

@@ -1,6 +1,7 @@
-import { Column, Entity, Generated, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, Generated, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { User } from '../../user/types/user.entity';
 import { SurveyTemplate } from '../../surveyTemplate/types/surveyTemplate.entity';
+import { Assignment } from '../../assignment/types/assignment.entity';
 
 @Entity()
 export class Survey {
@@ -19,4 +20,10 @@ export class Survey {
 
   @Column()
   name: string;
+
+  @OneToMany(() => Assignment, (assignment) => assignment.survey, {
+    cascade: true,
+  })
+  assignments: Assignment[];
+
 }
