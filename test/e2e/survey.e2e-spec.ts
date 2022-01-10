@@ -15,6 +15,8 @@ import { Assignment } from '../../src/assignment/types/assignment.entity';
 import { Youth } from '../../src/youth/types/youth.entity';
 import { Reviewer } from '../../src/reviewer/types/reviewer.entity';
 import { CreateBatchAssignmentsDto } from '../../src/survey/dto/create-batch-assignments.dto';
+import { AssignmentStatus } from '../../src/assignment/types/assignmentStatus';
+import { YouthRoles } from '../../src/youth/types/youthRoles';
 
 const UUID = '123e4567-e89b-12d3-a456-426614174000';
 const UUID2 = 'a48bea54-4948-4f38-897e-f47a042c891d';
@@ -35,6 +37,7 @@ describe('Survey e2e', () => {
   let assignmentRepository: Repository<Assignment>;
   let youthRepository: Repository<Youth>;
   let reviewerRepository: Repository<Reviewer>;
+  let user: User;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await overrideExternalDependencies(
@@ -57,7 +60,7 @@ describe('Survey e2e', () => {
 
   beforeEach(async () => {
     await clearDb();
-    const user = await userRepository.save(mockUser);
+    user = await userRepository.save(mockUser);
     const user2 = await userRepository.save(mockUser2);
 
     mockSurveyTemplate.creator = user;
@@ -168,5 +171,104 @@ describe('Survey e2e', () => {
     expect(assignmentSave).toHaveBeenCalledTimes(1);
   });
 
+  it('should fetch a survey for a reviewer', async () => {
+    // Setup
+    const questionText = 'Do you like writing integration tests?'
+    const optionText = 'Yes!'
+    const template = await surveyTemplateRepository.save({
+      user,
+      questions: [
+        {
+          text: questionText,
+          options: [
+            {
+              text: optionText
+            }
+          ]
+        }
+      ]
+    })
+
+    const reviewer = await reviewerRepository.save({
+      email: 'reviewer.email@email.com',
+      firstName: 'Jonathan',
+      lastName: 'Frakes'
+    })
+
+    const youthControl = await youthRepository.save({
+      email: 'youth1@email.com',
+      firstName: 'Alan',
+      lastName: 'Turing',
+      role: YouthRoles.CONTROL
+    })
+
+    const youthTreatment1 = await youthRepository.save({
+      email: 'youth2@email.com',
+      firstName: 'Alonzo',
+      lastName: 'Church'
+    })
+
+    const youthTreatment2 = await youthRepository.save({
+      email: 'youth3@email.com',
+      firstName: 'Kurt',
+      lastName: 'Godel'
+    })
+
+    const survey = await surveyRepository.save({
+      surveyTemplate: template,
+      user,
+      name: 'E2E Survey',
+      assignments: [
+        { // control
+          reviewer,
+          youth: youthControl
+        },
+        { // treatment
+          reviewer,
+          youth: youthTreatment1
+        },
+        { // completed (should be ignored)
+          reviewer,
+          youth: youthTreatment2,
+          status: AssignmentStatus.COMPLETED
+        }
+      ]
+    })
+
+    // Act
+    const response = await request(app.getHttpServer()).get(`/survey/${survey.uuid}/${reviewer.uuid}`)
+
+    // Assert
+    expect(response.body).toEqual({
+        reviewer: {
+          email: reviewer.email,
+          firstName: reviewer.firstName,
+          lastName: reviewer.lastName
+        },
+        controlYouth: [
+          {
+            assignmentUuid: survey.assignments[0].uuid,
+            firstName: youthControl.firstName,
+            lastName: youthControl.lastName,
+            email: youthControl.email
+          }
+        ],
+        treatmentYouth: [
+          {
+            assignmentUuid: survey.assignments[1].uuid,
+            firstName: youthTreatment1.firstName,
+            lastName: youthTreatment1.lastName,
+            email: youthTreatment1.email
+          }
+        ],
+        questions: [
+          {
+            question: questionText,
+            options: [optionText]
+          }
+        ]
+    });
+
+  })
   afterAll(async () => await app.close());
 });
