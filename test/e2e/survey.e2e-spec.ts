@@ -173,8 +173,8 @@ describe('Survey e2e', () => {
 
   it('should fetch a survey for a reviewer', async () => {
     // Setup
-    const questionText = 'Do you like writing integration tests?'
-    const optionText = 'Yes!'
+    const questionText = 'Do you like writing integration tests?';
+    const optionText = 'Yes!';
     const template = await surveyTemplateRepository.save({
       user,
       questions: [
@@ -182,93 +182,97 @@ describe('Survey e2e', () => {
           text: questionText,
           options: [
             {
-              text: optionText
-            }
-          ]
-        }
-      ]
-    })
+              text: optionText,
+            },
+          ],
+        },
+      ],
+    });
 
     const reviewer = await reviewerRepository.save({
       email: 'reviewer.email@email.com',
       firstName: 'Jonathan',
-      lastName: 'Frakes'
-    })
+      lastName: 'Frakes',
+    });
 
     const youthControl = await youthRepository.save({
       email: 'youth1@email.com',
       firstName: 'Alan',
       lastName: 'Turing',
-      role: YouthRoles.CONTROL
-    })
+      role: YouthRoles.CONTROL,
+    });
 
     const youthTreatment1 = await youthRepository.save({
       email: 'youth2@email.com',
       firstName: 'Alonzo',
-      lastName: 'Church'
-    })
+      lastName: 'Church',
+    });
 
     const youthTreatment2 = await youthRepository.save({
       email: 'youth3@email.com',
       firstName: 'Kurt',
-      lastName: 'Godel'
-    })
+      lastName: 'Godel',
+    });
 
     const survey = await surveyRepository.save({
       surveyTemplate: template,
       user,
       name: 'E2E Survey',
       assignments: [
-        { // control
+        {
+          // control
           reviewer,
-          youth: youthControl
+          youth: youthControl,
         },
-        { // treatment
+        {
+          // treatment
           reviewer,
-          youth: youthTreatment1
+          youth: youthTreatment1,
         },
-        { // completed (should be ignored)
+        {
+          // completed (should be ignored)
           reviewer,
           youth: youthTreatment2,
-          status: AssignmentStatus.COMPLETED
-        }
-      ]
-    })
+          status: AssignmentStatus.COMPLETED,
+        },
+      ],
+    });
 
     // Act
-    const response = await request(app.getHttpServer()).get(`/survey/${survey.uuid}/${reviewer.uuid}`)
+    const response = await request(app.getHttpServer()).get(
+      `/survey/${survey.uuid}/${reviewer.uuid}`,
+    );
 
     // Assert
     expect(response.body).toEqual({
-        reviewer: {
-          email: reviewer.email,
-          firstName: reviewer.firstName,
-          lastName: reviewer.lastName
+      reviewer: {
+        email: reviewer.email,
+        firstName: reviewer.firstName,
+        lastName: reviewer.lastName,
+      },
+      controlYouth: [
+        {
+          assignmentUuid: survey.assignments[0].uuid,
+          firstName: youthControl.firstName,
+          lastName: youthControl.lastName,
+          email: youthControl.email,
         },
-        controlYouth: [
-          {
-            assignmentUuid: survey.assignments[0].uuid,
-            firstName: youthControl.firstName,
-            lastName: youthControl.lastName,
-            email: youthControl.email
-          }
-        ],
-        treatmentYouth: [
-          {
-            assignmentUuid: survey.assignments[1].uuid,
-            firstName: youthTreatment1.firstName,
-            lastName: youthTreatment1.lastName,
-            email: youthTreatment1.email
-          }
-        ],
-        questions: [
-          {
-            question: questionText,
-            options: [optionText]
-          }
-        ]
+      ],
+      treatmentYouth: [
+        {
+          assignmentUuid: survey.assignments[1].uuid,
+          firstName: youthTreatment1.firstName,
+          lastName: youthTreatment1.lastName,
+          email: youthTreatment1.email,
+        },
+      ],
+      questions: [
+        {
+          question: questionText,
+          options: [optionText],
+        },
+      ],
     });
-
-  })
+  });
   afterAll(async () => await app.close());
 });

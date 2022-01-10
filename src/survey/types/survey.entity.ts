@@ -25,5 +25,4 @@ export class Survey {
     cascade: true,
   })
   assignments: Assignment[];
-
 }

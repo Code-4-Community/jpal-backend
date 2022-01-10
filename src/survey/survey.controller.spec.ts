@@ -17,6 +17,7 @@ export const mockSurveyService: Partial<SurveyService> = {
       surveyTemplate: mockSurveyTemplate,
       name,
       creator,
+      assignments: [],
     };
   },
   async getByUUID(): Promise<Survey> {

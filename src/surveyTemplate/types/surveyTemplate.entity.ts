@@ -11,7 +11,7 @@ export class SurveyTemplate {
   creator: User;
 
   @OneToMany(() => Question, (question) => question.surveyTemplate, {
-    cascade: true
+    cascade: true,
   })
   questions: Question[];
 }

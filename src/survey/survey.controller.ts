@@ -36,6 +36,14 @@ export class SurveyController {
     await this.surveyService.createBatchAssignments(createBatchAssignmentsDto);
   }
 
+  @Get(':surveyUuid/:reviewerUuid')
+  getReviewerSurvey(
+    @Param('surveyUuid', ParseUUIDPipe) surveyUuid: string,
+    @Param('reviewerUuid', ParseUUIDPipe) reviewerUuid: string,
+  ): Promise<any> {
+    return this.surveyService.getReviewerSurvey(surveyUuid, reviewerUuid);
+  }
+
   @Get(':uuid')
   @Auth(Role.RESEARCHER, Role.ADMIN)
   getByUUID(@Param('uuid', ParseUUIDPipe) uuid: string): Promise<Survey> {

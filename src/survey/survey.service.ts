@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Survey } from './types/survey.entity';
@@ -8,6 +8,9 @@ import { CreateBatchAssignmentsDto } from './dto/create-batch-assignments.dto';
 import { Assignment } from '../assignment/types/assignment.entity';
 import { Youth } from '../youth/types/youth.entity';
 import { Reviewer } from '../reviewer/types/reviewer.entity';
+import { AssignmentStatus } from '../assignment/types/assignmentStatus';
+import { YouthRoles } from '../youth/types/youthRoles';
+import { Question } from '../question/types/question.entity';
 
 @Injectable()
 export class SurveyService {
@@ -30,6 +33,7 @@ export class SurveyService {
       surveyTemplate,
       name,
       creator,
+      assignments: [],
     });
   }
 
@@ -68,5 +72,77 @@ export class SurveyService {
         };
       }),
     );
+  }
+
+  async getReviewerSurvey(surveyUuid: string, reviewerUuid: string): Promise<any> {
+    const survey = await this.surveyRepository.findOne({
+      where: { uuid: surveyUuid },
+      relations: [
+        'assignments',
+        'assignments.reviewer',
+        'assignments.youth',
+        'surveyTemplate',
+        'surveyTemplate.questions',
+        'surveyTemplate.questions.options',
+      ],
+    });
+    const reviewer = await this.reviewerRepository.findOne({ where: { uuid: reviewerUuid } });
+
+    const assignmentsForReviewer = survey.assignments.filter(
+      (assignment) =>
+        assignment.reviewer.id === reviewer.id && assignment.status === AssignmentStatus.INCOMPLETE,
+    );
+
+    if (assignmentsForReviewer.length === 0) {
+      throw new BadRequestException('Reviewer is not invited to complete this survey');
+    }
+
+    const response = this.transformToFrontendSurveyData(
+      assignmentsForReviewer,
+      survey.surveyTemplate.questions,
+      reviewer,
+    );
+
+    return response;
+  }
+
+  transformToFrontendSurveyData(
+    assignmentsForReviewer: Assignment[],
+    questionEntities: Question[],
+    reviewerEntity: Reviewer,
+  ) {
+    // TODO: Break into 4+ smaller methods for unit testing, reuse frontend types in output signature
+
+    const assignmentToYouth = (a: Assignment) => ({
+      assignmentUuid: a.uuid,
+      firstName: a.youth.firstName,
+      lastName: a.youth.lastName,
+      email: a.youth.email,
+    });
+
+    const controlYouth = assignmentsForReviewer
+      .filter((a) => a.youth.role === YouthRoles.CONTROL)
+      .map(assignmentToYouth);
+    const treatmentYouth = assignmentsForReviewer
+      .filter((a) => a.youth.role === YouthRoles.TREATMENT)
+      .map(assignmentToYouth);
+
+    const questions = questionEntities.map((q) => ({
+      question: q.text,
+      options: q.options.map((o) => o.text),
+    }));
+
+    const reviewer = {
+      firstName: reviewerEntity.firstName,
+      lastName: reviewerEntity.lastName,
+      email: reviewerEntity.email,
+    };
+
+    return {
+      reviewer,
+      controlYouth,
+      treatmentYouth,
+      questions,
+    };
   }
 }
