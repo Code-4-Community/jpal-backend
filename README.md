@@ -33,7 +33,7 @@ Runs all e2e tests, requires a running DB.
 
 ### `npm run seed`
 
-Runs the seed files in the correct order so that you have data in your database for development! 
+Runs the seed files in the correct order so that you have data in your database for development!
 
 ## `npm run seed:run -- -s <specific seeder class>`
 
@@ -43,10 +43,10 @@ Runs a specific seed file.
 
 Runs all migrations in migrations folder that have not been recorded yet.
 
-### `npm run typeorm migration:generate -- -n [name]`
+### `npm run miration:create -- [name]`
 
 Automatically generates a migration based off changes to TypeORM entities.
-Example usage: `npm run typeorm migration:generate -- -n "createdUserProfiles"`
+Example usage: `npm run miration:create -- -n "createdUserProfiles"`
 
 ### `npm run schema:drop`
 

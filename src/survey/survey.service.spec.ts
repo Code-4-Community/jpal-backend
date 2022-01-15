@@ -1,15 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { SurveyService } from './survey.service';
 import { Survey } from './types/survey.entity';
-import { mockUser, mockUser2 } from '../user/user.service.spec';
+import { mockUser } from '../user/user.service.spec';
 import { DeepPartial, Repository } from 'typeorm';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { SurveyTemplate } from '../surveyTemplate/types/surveyTemplate.entity';
+import { MockRepository } from '../../test/db/MockRepository';
 import { Assignment } from '../assignment/types/assignment.entity';
-import { Reviewer } from 'src/reviewer/types/reviewer.entity';
-import { Youth } from 'src/youth/types/youth.entity';
-import { YouthRoles } from '../youth/types/youthRoles';
-import { AssignmentStatus } from '../assignment/types/assignmentStatus';
+import { Youth } from '../youth/types/youth.entity';
+import { Reviewer } from '../reviewer/types/reviewer.entity';
+import { CreateBatchAssignmentsDto } from './dto/create-batch-assignments.dto';
 
 export const mockSurveyTemplate: SurveyTemplate = {
   id: 1,
@@ -18,31 +18,6 @@ export const mockSurveyTemplate: SurveyTemplate = {
 };
 
 const UUID = '123e4567-e89b-12d3-a456-426614174000';
-const UUID2 = 'a48bea54-4948-4f38-897e-f47a042c891d';
-
-export const mockReviewer: Reviewer = {
-  id: 1,
-  uuid: UUID2,
-  email: `mock@reviewer.com`,
-  firstName: `Mock`,
-  lastName: `Reviewer`,
-};
-
-export const mockReviewer2: Reviewer = {
-  id: 2,
-  uuid: `123443`,
-  email: `mock2@reviewer.com`,
-  firstName: `Mock2`,
-  lastName: `Reviewer2`,
-};
-
-export const mockYouth: Youth = {
-  id: 1,
-  email: `mock@youth.com`,
-  firstName: `Mock`,
-  lastName: `Youth`,
-  role: YouthRoles.CONTROL,
-};
 
 export const mockSurvey: Survey = {
   id: 1,
@@ -53,38 +28,6 @@ export const mockSurvey: Survey = {
   assignments: [],
 };
 
-export const mockSurvey2: Survey = {
-  id: 2,
-  uuid: UUID2,
-  name: 'Test Survey 2',
-  surveyTemplate: mockSurveyTemplate,
-  creator: mockUser2,
-  assignments: [],
-};
-
-export const mockAssignment: Assignment = {
-  id: 1,
-  uuid: '123',
-  survey: mockSurvey,
-  reviewer: mockReviewer,
-  youth: mockYouth,
-  status: AssignmentStatus.INCOMPLETE,
-  responses: [],
-};
-
-export const mockAssignment2: Assignment = {
-  id: 2,
-  uuid: '1234',
-  survey: mockSurvey2,
-  reviewer: mockReviewer2,
-  youth: mockYouth,
-  status: AssignmentStatus.INCOMPLETE,
-  responses: [],
-};
-
-mockSurvey.assignments = [mockAssignment2];
-
-export const mockAssignments: Assignment[] = [mockAssignment];
 const listMockSurveys: Survey[] = [mockSurvey];
 
 export const mockSurveyRepository: Partial<Repository<Survey>> = {
@@ -120,8 +63,14 @@ export const mockSurveyTemplateRepository: Partial<Repository<SurveyTemplate>> =
 
 describe('SurveyService', () => {
   let service: SurveyService;
+  let mockAssignmentRepository: MockRepository<Assignment>;
+  let mockYouthRepository: MockRepository<Youth>;
+  let mockReviewerRepository: MockRepository<Reviewer>;
 
   beforeEach(async () => {
+    mockAssignmentRepository = new MockRepository<Assignment>();
+    mockYouthRepository = new MockRepository<Youth>();
+    mockReviewerRepository = new MockRepository<Reviewer>();
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         SurveyService,
@@ -132,6 +81,18 @@ describe('SurveyService', () => {
         {
           provide: getRepositoryToken(SurveyTemplate),
           useValue: mockSurveyTemplateRepository,
+        },
+        {
+          provide: getRepositoryToken(Assignment),
+          useValue: mockAssignmentRepository,
+        },
+        {
+          provide: getRepositoryToken(Youth),
+          useValue: mockYouthRepository,
+        },
+        {
+          provide: getRepositoryToken(Reviewer),
+          useValue: mockReviewerRepository,
         },
       ],
     }).compile();
@@ -144,12 +105,7 @@ describe('SurveyService', () => {
   });
 
   it('should create a survey', async () => {
-    const survey = await service.create(
-      mockSurveyTemplate.id,
-      mockSurvey.name,
-      mockSurvey.creator,
-      mockSurvey.assignments,
-    );
+    const survey = await service.create(mockSurveyTemplate.id, mockSurvey.name, mockSurvey.creator);
     expect(survey).toEqual(mockSurvey);
   });
 
@@ -163,14 +119,37 @@ describe('SurveyService', () => {
     expect(goodResponse).toEqual(listMockSurveys);
   });
 
-  it('should filter the assignments of the survey because the given reviewer uuid does not match', async () => {
-    const goodResponse = await service.getBySurveyAndReviewerUUID(UUID, mockReviewer.uuid);
-
-    expect(goodResponse).toEqual(mockSurvey);
-  });
-
-  it('should not filter the assignments because the given reviewer uuid does match', async () => {
-    const goodResponse = await service.getBySurveyAndReviewerUUID(UUID, mockReviewer2.uuid);
-    expect(goodResponse).toEqual(mockSurvey);
+  it('should create batch assignments', async () => {
+    const dto: CreateBatchAssignmentsDto = {
+      surveyUUID: 'test',
+      pairs: [
+        {
+          reviewer: {
+            email: 'alpha@sgmail.com',
+            firstName: 'Alpha',
+            lastName: 'Beta',
+          },
+          youth: {
+            email: 'gamma@gmail.com',
+            firstName: 'Gamma',
+            lastName: 'Delta',
+          },
+        },
+      ],
+    };
+    const youthSave = jest.spyOn(mockYouthRepository, 'save').mockImplementation((i) => i);
+    const reviewerSave = jest.spyOn(mockReviewerRepository, 'save').mockImplementation((i) => i);
+    const assignmentSave = jest.spyOn(mockAssignmentRepository, 'save');
+    await service.createBatchAssignments(dto);
+    expect(youthSave).toHaveBeenCalledWith([dto.pairs[0].youth]);
+    expect(reviewerSave).toHaveBeenCalledWith([dto.pairs[0].reviewer]);
+    expect(assignmentSave).toHaveBeenCalledWith([
+      {
+        survey: mockSurvey,
+        reviewer: dto.pairs[0].reviewer,
+        youth: dto.pairs[0].youth,
+        responses: [],
+      },
+    ]);
   });
 });

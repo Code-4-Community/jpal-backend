@@ -27,6 +27,7 @@
     "test:pact": "jest --config ./test/jest-pact.json",
     "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js --config ormconfig.ts",
     "migration": "npm run build && npm run typeorm migration:run",
+    "migration:create": "npm run typeorm migration:generate -- -n",
     "migration:revert": "npm run build && npm run typeorm migration:revert",
     "seed:config": "ts-node ./node_modules/typeorm-seeding/dist/cli.js config",
     "seed:run": "ts-node ./node_modules/typeorm-seeding/dist/cli.js seed",
