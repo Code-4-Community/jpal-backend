@@ -13,7 +13,6 @@ import { UserController } from './user/user.controller';
 import { UserModule } from './user/user.module';
 import { UtilModule } from './util/util.module';
 import { SurveyModule } from './survey/survey.module';
-import { ScheduleModule } from '@nestjs/schedule';
 import { AssignmentModule } from './assignment/assignment.module';
 @Module({
   imports: [
@@ -21,7 +20,6 @@ import { AssignmentModule } from './assignment/assignment.module';
       isGlobal: true,
     }),
     TypeOrmModule.forRoot(TypeOrmConfig),
-    ScheduleModule.forRoot(),
     UserModule,
     AuthModule,
     UtilModule,
