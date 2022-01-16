@@ -43,7 +43,7 @@ describe('EmailService', () => {
     }
     await Promise.all(tasks);
     // Expect that email tasks clear at approx. 14 emails per second.
-    // We allow that the queue finishs at most 100ms early.
+    // We allow that the queue finishes at most 100ms early.
     expect(new Date().getTime() - startTime).toBeGreaterThan((EMAILS / 14) * 1000 - 100);
   });
 });
