@@ -3,7 +3,7 @@ import { Repository } from 'typeorm';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Assignment } from './types/assignment.entity';
 import { AssignmentService } from './assignment.service';
-import { mockSurvey, mockSurveyTemplate } from '../survey/survey.service.spec';
+import { mockSurvey, mockSurveyTemplate } from '../survey/survey.controller.spec';
 import { reviewerExamples } from '../reviewer/reviewer.examples';
 import { youthExamples } from '../youth/youth.examples';
 import { AssignmentStatus } from './types/assignmentStatus';
