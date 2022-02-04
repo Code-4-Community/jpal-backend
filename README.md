@@ -7,6 +7,8 @@ You also need a PostgreSQL DB ([instructions here](https://www.postgresql.org/do
 
 Copy `.example.env` and rename it to `.env`, then fill out the environment variables for the DB.
 
+After starting the server by following the below instructions, the API docs can be found at http://localhost:5000/api.
+
 ### `npm install`
 
 Installs all dependencies
