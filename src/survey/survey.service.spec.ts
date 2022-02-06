@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { SurveyService } from './survey.service';
 import { Survey } from './types/survey.entity';
 import { mockResearcher, mockUser } from '../user/user.service.spec';
-import { DeepPartial, Repository } from 'typeorm';
+import { DeepPartial, FindConditions, FindManyOptions, Repository } from 'typeorm';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { SurveyTemplate } from '../surveyTemplate/types/surveyTemplate.entity';
 import { MockRepository } from '../../test/db/MockRepository';
@@ -26,7 +26,11 @@ export const mockSurveyRepository: Partial<Repository<Survey>> = {
   findOne(): any {
     return undefined;
   },
-  find(): Promise<Survey[]> {
+  find(options?: FindManyOptions<Survey> | FindConditions<Survey>): Promise<Survey[]> {
+    // this checks to see if a find call is trying to filter the results by creator
+    if (options && 'where' in options) {
+      return Promise.resolve([mockSurvey]);
+    }
     return Promise.resolve(listMockSurveys);
   },
   findOneOrFail(): Promise<Survey> {

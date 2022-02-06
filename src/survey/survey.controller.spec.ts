@@ -74,7 +74,7 @@ describe('SurveyController', () => {
   it('should create a user', async () => {
     const survey = await controller.create(
       {
-        name: 'Test Survey',
+        name: 'Survey 1',
         surveyTemplateId: 1,
       },
       mockUser,
