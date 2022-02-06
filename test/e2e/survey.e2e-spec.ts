@@ -68,12 +68,14 @@ describe('Survey e2e', () => {
       creator: user,
       uuid: UUID,
       surveyTemplate,
+      date: new Date('02-06-2022'),
     });
     await surveyRepository.save({
       name: 'My survey',
       creator: user2,
       uuid: UUID2,
       surveyTemplate,
+      date: new Date('02-06-2022'),
     });
   });
 
@@ -82,10 +84,12 @@ describe('Survey e2e', () => {
       .get('/survey')
       .set('Authorization', `Bearer ${JSON.stringify({ email: 'test@test.com' })}`);
 
-    const expected = new Survey();
-    expected.id = 1;
-    expected.name = "Joe's favorite survey";
-    expected.uuid = UUID;
+    const expected = {
+      id: 1,
+      name: "Joe's favorite survey",
+      uuid: UUID,
+      date: new Date('02-06-2022').toJSON(),
+    };
 
     expect(response.body).toEqual([expected]);
     expect(response.statusCode).toBe(200);
@@ -96,10 +100,13 @@ describe('Survey e2e', () => {
       .get(`/survey/${UUID}`)
       .set('Authorization', `Bearer ${JSON.stringify({ email: 'test@test.com' })}`);
 
-    const expected = new Survey();
-    expected.id = 1;
-    expected.name = "Joe's favorite survey";
-    expected.uuid = UUID;
+    const expected = {
+      id: 1,
+      name: "Joe's favorite survey",
+      uuid: UUID,
+      date: new Date('02-06-2022').toJSON(),
+    };
+
     expect(response.body).toEqual(expected);
     expect(response.statusCode).toBe(200);
   });
@@ -109,10 +116,13 @@ describe('Survey e2e', () => {
       .get(`/survey/${UUID2}`)
       .set('Authorization', `Bearer ${JSON.stringify({ email: 'something@test.com' })}`);
 
-    const expected = new Survey();
-    expected.id = 2;
-    expected.name = 'My survey';
-    expected.uuid = UUID2;
+    const expected = {
+      id: 2,
+      name: 'My survey',
+      uuid: UUID2,
+      date: new Date('02-06-2022').toJSON(),
+    };
+
     expect(response.body).toEqual(expected);
     expect(response.statusCode).toBe(200);
   });
