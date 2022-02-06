@@ -24,7 +24,7 @@ export class SurveyService {
 
   async create(surveyTemplateId: number, name: string, creator: User) {
     const surveyTemplate = await this.surveyTemplateRepository.findOneOrFail({
-      id: surveyTemplateId, 
+      id: surveyTemplateId,
     });
     return this.surveyRepository.create({
       surveyTemplate,

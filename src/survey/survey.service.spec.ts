@@ -25,7 +25,7 @@ export const mockSurvey: Survey = {
   name: 'Test Survey',
   surveyTemplate: mockSurveyTemplate,
   creator: mockUser,
-  date: new Date("2-6-2022")
+  date: new Date('2-6-2022'),
 };
 
 const listMockSurveys: Survey[] = [mockSurvey];
@@ -78,7 +78,7 @@ describe('SurveyService', () => {
         {
           provide: getRepositoryToken(Survey),
           useValue: mockSurveyRepository,
-        }, 
+        },
         {
           provide: getRepositoryToken(SurveyTemplate),
           useValue: mockSurveyTemplateRepository,
