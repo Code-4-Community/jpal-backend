@@ -24,7 +24,7 @@ export class SurveyController {
     return this.surveyService.create(
       createSurveyDto.surveyTemplateId,
       createSurveyDto.name,
-      reqUser,
+      reqUser, 
     );
   }
 

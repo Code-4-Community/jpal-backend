@@ -1,4 +1,4 @@
-import { Column, Entity, Generated, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, Generated, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { User } from '../../user/types/user.entity';
 import { SurveyTemplate } from '../../surveyTemplate/types/surveyTemplate.entity';
 
@@ -19,4 +19,7 @@ export class Survey {
 
   @Column()
   name: string;
+
+  @CreateDateColumn()
+  date: Date;
 }
