@@ -25,6 +25,7 @@ export const mockSurvey: Survey = {
   name: 'Test Survey',
   surveyTemplate: mockSurveyTemplate,
   creator: mockUser,
+  date: new Date('02-06-2022'),
 };
 
 const listMockSurveys: Survey[] = [mockSurvey];
@@ -34,6 +35,7 @@ export const mockSurveyRepository: Partial<Repository<Survey>> = {
     return {
       id: 1,
       uuid: UUID,
+      date: new Date("2-6'2022"),
       ...survey,
     };
   },
