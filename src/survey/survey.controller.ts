@@ -7,6 +7,7 @@ import { Role } from '../user/types/role';
 import { ReqUser } from '../auth/decorators/user.decorator';
 import { CreateBatchAssignmentsDto } from './dto/create-batch-assignments.dto';
 import { User } from '../user/types/user.entity';
+import { SurveyData } from './dto/survey-assignment.dto';
 
 @Controller('survey')
 export class SurveyController {
@@ -40,7 +41,7 @@ export class SurveyController {
   getReviewerSurvey(
     @Param('surveyUuid', ParseUUIDPipe) surveyUuid: string,
     @Param('reviewerUuid', ParseUUIDPipe) reviewerUuid: string,
-  ): Promise<any> {
+  ): Promise<SurveyData> {
     return this.surveyService.getReviewerSurvey(surveyUuid, reviewerUuid);
   }
 

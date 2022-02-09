@@ -1,4 +1,12 @@
-import { Column, Entity, Generated, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  Generated,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { User } from '../../user/types/user.entity';
 import { SurveyTemplate } from '../../surveyTemplate/types/surveyTemplate.entity';
 import { Assignment } from '../../assignment/types/assignment.entity';
@@ -20,6 +28,11 @@ export class Survey {
   @Column()
   name: string;
 
-  @OneToMany(() => Assignment, (assignment) => assignment.survey)
+  @OneToMany(() => Assignment, (assignment) => assignment.survey, {
+    cascade: true,
+  })
   assignments: Assignment[];
+
+  @CreateDateColumn()
+  date: Date;
 }

@@ -12,6 +12,7 @@ export const mockSurveyService: Partial<SurveyService> = {
       name,
       creator,
       assignments: [],
+      date: new Date('02-06-2022'),
     };
   },
 };

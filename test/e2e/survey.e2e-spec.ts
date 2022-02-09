@@ -4,9 +4,6 @@ import * as request from 'supertest';
 import { AppModule } from '../../src/app.module';
 import { Survey } from '../../src/survey/types/survey.entity';
 import { Repository } from 'typeorm';
-
-import { mockAssignment } from '../../src/survey/survey.service.spec';
-
 import { clearDb } from '../e2e.utils';
 import { overrideExternalDependencies } from '../mockProviders';
 import { mockUser } from '../../src/user/user.service.spec';
@@ -18,6 +15,9 @@ import { Assignment } from '../../src/assignment/types/assignment.entity';
 import { Youth } from '../../src/youth/types/youth.entity';
 import { Reviewer } from '../../src/reviewer/types/reviewer.entity';
 import { CreateBatchAssignmentsDto } from '../../src/survey/dto/create-batch-assignments.dto';
+import { mockAssignment } from '../../src/assignment/assignment.service.spec';
+import { YouthRoles } from '../../src/youth/types/youthRoles';
+import { AssignmentStatus } from '../../src/assignment/types/assignmentStatus';
 
 const UUID = '123e4567-e89b-12d3-a456-426614174000';
 const UUID2 = 'a48bea54-4948-4f38-897e-f47a042c891d';
@@ -38,7 +38,7 @@ describe('Survey e2e', () => {
   let assignmentRepository: Repository<Assignment>;
   let youthRepository: Repository<Youth>;
   let reviewerRepository: Repository<Reviewer>;
-
+  let user;
   beforeAll(async () => {
     const moduleFixture: TestingModule = await overrideExternalDependencies(
       Test.createTestingModule({
@@ -60,7 +60,7 @@ describe('Survey e2e', () => {
 
   beforeEach(async () => {
     await clearDb();
-    const user = await userRepository.save(mockUser);
+    user = await userRepository.save(mockUser);
     const user2 = await userRepository.save(mockUser2);
 
     mockSurveyTemplate.creator = user;
@@ -71,15 +71,17 @@ describe('Survey e2e', () => {
       creator: user,
       uuid: UUID,
       surveyTemplate,
-      assignments: [mockAssignment],
-    } as Survey);
+      assignments: [],
+      date: new Date('02-06-2022'),
+    });
 
     await surveyRepository.save({
       name: 'My survey',
       creator: user2,
       uuid: UUID2,
       surveyTemplate,
-      assignments: [mockAssignment],
+      assignments: [],
+      date: new Date('02-06-2022'),
     });
   });
 
@@ -88,10 +90,12 @@ describe('Survey e2e', () => {
       .get('/survey')
       .set('Authorization', `Bearer ${JSON.stringify({ email: 'test@test.com' })}`);
 
-    const expected = new Survey();
-    expected.id = 1;
-    expected.name = "Joe's favorite survey";
-    expected.uuid = UUID;
+    const expected = {
+      id: 1,
+      name: "Joe's favorite survey",
+      uuid: UUID,
+      date: new Date('02-06-2022').toJSON(),
+    };
 
     expect(response.body).toEqual([expected]);
     expect(response.statusCode).toBe(200);
@@ -102,10 +106,13 @@ describe('Survey e2e', () => {
       .get(`/survey/${UUID}`)
       .set('Authorization', `Bearer ${JSON.stringify({ email: 'test@test.com' })}`);
 
-    const expected = new Survey();
-    expected.id = 1;
-    expected.name = "Joe's favorite survey";
-    expected.uuid = UUID;
+    const expected = {
+      id: 1,
+      name: "Joe's favorite survey",
+      uuid: UUID,
+      date: new Date('02-06-2022').toJSON(),
+    };
+
     expect(response.body).toEqual(expected);
     expect(response.statusCode).toBe(200);
   });
@@ -115,10 +122,13 @@ describe('Survey e2e', () => {
       .get(`/survey/${UUID2}`)
       .set('Authorization', `Bearer ${JSON.stringify({ email: 'something@test.com' })}`);
 
-    const expected = new Survey();
-    expected.id = 2;
-    expected.name = 'My survey';
-    expected.uuid = UUID2;
+    const expected = {
+      id: 2,
+      name: 'My survey',
+      uuid: UUID2,
+      date: new Date('02-06-2022').toJSON(),
+    };
+
     expect(response.body).toEqual(expected);
     expect(response.statusCode).toBe(200);
   });
@@ -130,19 +140,110 @@ describe('Survey e2e', () => {
     expect(response.statusCode).toBe(400);
   });
 
-<<<<<<< HEAD
-  it('should send the survey for the specific reviewer', async () => {
-    const response = await request(app.getHttpServer())
-      .get(`/survey/${UUID2}/${UUID}`)
-      .set('Authorization', `Bearer ${JSON.stringify({ email: 'something@test.com' })}`);
-    const expected = new Survey();
-    expected.id = 2;
-    expected.name = 'My survey';
-    expected.uuid = UUID2;
+  it('should fetch a survey for a reviewer', async () => {
+    // Setup
+    const questionText = 'Do you like writing integration tests?';
+    const optionText = 'Yes!';
+    const template = await surveyTemplateRepository.save({
+      user,
+      questions: [
+        {
+          text: questionText,
+          options: [
+            {
+              text: optionText,
+            },
+          ],
+        },
+      ],
+    });
 
-    expect(response.body).toEqual(expected);
-    expect(response.statusCode).toBe(200);
-=======
+    const reviewer = await reviewerRepository.save({
+      email: 'reviewer.email@email.com',
+      firstName: 'Jonathan',
+      lastName: 'Frakes',
+    });
+
+    const youthControl = await youthRepository.save({
+      email: 'youth1@email.com',
+      firstName: 'Alan',
+      lastName: 'Turing',
+      role: YouthRoles.CONTROL,
+    });
+
+    const youthTreatment1 = await youthRepository.save({
+      email: 'youth2@email.com',
+      firstName: 'Alonzo',
+      lastName: 'Church',
+    });
+
+    const youthTreatment2 = await youthRepository.save({
+      email: 'youth3@email.com',
+      firstName: 'Kurt',
+      lastName: 'Godel',
+    });
+
+    const survey = await surveyRepository.save({
+      surveyTemplate: template,
+      user,
+      name: 'E2E Survey',
+      assignments: [
+        {
+          // control
+          reviewer,
+          youth: youthControl,
+        },
+        {
+          // treatment
+          reviewer,
+          youth: youthTreatment1,
+        },
+        {
+          // completed (should be ignored)
+          reviewer,
+          youth: youthTreatment2,
+          status: AssignmentStatus.COMPLETED,
+        },
+      ],
+    });
+
+    // Act
+    const response = await request(app.getHttpServer()).get(
+      `/survey/${survey.uuid}/${reviewer.uuid}`,
+    );
+
+    // Assert
+    expect(response.body).toEqual({
+      reviewer: {
+        email: reviewer.email,
+        firstName: reviewer.firstName,
+        lastName: reviewer.lastName,
+      },
+      controlYouth: [
+        {
+          assignmentUuid: survey.assignments[0].uuid,
+          firstName: youthControl.firstName,
+          lastName: youthControl.lastName,
+          email: youthControl.email,
+        },
+      ],
+      treatmentYouth: [
+        {
+          assignmentUuid: survey.assignments[1].uuid,
+          firstName: youthTreatment1.firstName,
+          lastName: youthTreatment1.lastName,
+          email: youthTreatment1.email,
+        },
+      ],
+      questions: [
+        {
+          question: questionText,
+          options: [optionText],
+        },
+      ],
+    });
+  });
+
   it('should create batch assignments', async () => {
     const dto: CreateBatchAssignmentsDto = {
       surveyUUID: UUID,
@@ -185,7 +286,6 @@ describe('Survey e2e', () => {
     expect(youthSave).toHaveBeenCalledTimes(1);
     expect(reviewerSave).toHaveBeenCalledTimes(1);
     expect(assignmentSave).toHaveBeenCalledTimes(1);
->>>>>>> master
   });
 
   afterAll(async () => await app.close());

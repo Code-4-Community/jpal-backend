@@ -11,6 +11,9 @@ import { Reviewer } from '../reviewer/types/reviewer.entity';
 import { AssignmentStatus } from '../assignment/types/assignmentStatus';
 import { YouthRoles } from '../youth/types/youthRoles';
 import { Question } from '../question/types/question.entity';
+import { SurveyData } from './dto/survey-assignment.dto';
+import { Youth as SurveyDataYouth } from './dto/survey-assignment.dto';
+import { Question as SurveyDataQuestion } from './dto/survey-assignment.dto';
 
 @Injectable()
 export class SurveyService {
@@ -74,7 +77,7 @@ export class SurveyService {
     );
   }
 
-  async getReviewerSurvey(surveyUuid: string, reviewerUuid: string): Promise<any> {
+  async getReviewerSurvey(surveyUuid: string, reviewerUuid: string): Promise<SurveyData> {
     const survey = await this.surveyRepository.findOne({
       where: { uuid: surveyUuid },
       relations: [
@@ -111,38 +114,42 @@ export class SurveyService {
     questionEntities: Question[],
     reviewerEntity: Reviewer,
   ) {
-    // TODO: Break into 4+ smaller methods for unit testing, reuse frontend types in output signature
+    return {
+      reviewer: this.transformReviewerToSurveyDataReviewer(reviewerEntity),
+      controlYouth: this.extractYouthByRole(YouthRoles.CONTROL, assignmentsForReviewer),
+      treatmentYouth: this.extractYouthByRole(YouthRoles.TREATMENT, assignmentsForReviewer),
+      questions: this.transformQuestionToSurveyDataQuestion(questionEntities),
+    };
+  }
 
-    const assignmentToYouth = (a: Assignment) => ({
-      assignmentUuid: a.uuid,
-      firstName: a.youth.firstName,
-      lastName: a.youth.lastName,
-      email: a.youth.email,
-    });
-
-    const controlYouth = assignmentsForReviewer
-      .filter((a) => a.youth.role === YouthRoles.CONTROL)
-      .map(assignmentToYouth);
-    const treatmentYouth = assignmentsForReviewer
-      .filter((a) => a.youth.role === YouthRoles.TREATMENT)
-      .map(assignmentToYouth);
-
-    const questions = questionEntities.map((q) => ({
-      question: q.text,
-      options: q.options.map((o) => o.text),
-    }));
-
-    const reviewer = {
+  private transformReviewerToSurveyDataReviewer(reviewerEntity: Reviewer) {
+    return {
       firstName: reviewerEntity.firstName,
       lastName: reviewerEntity.lastName,
       email: reviewerEntity.email,
     };
+  }
 
+  private transformQuestionToSurveyDataQuestion(
+    questionEntities: Question[],
+  ): SurveyDataQuestion[] {
+    return questionEntities.map((q) => ({
+      question: q.text,
+      options: q.options.map((o) => o.text),
+    }));
+  }
+
+  private extractYouthByRole(youthRole: YouthRoles, assignments: Assignment[]): SurveyDataYouth[] {
+    return assignments
+      .filter((a) => a.youth.role === youthRole)
+      .map(this.extractYouthFromAssignment);
+  }
+  private extractYouthFromAssignment(a: Assignment): SurveyDataYouth {
     return {
-      reviewer,
-      controlYouth,
-      treatmentYouth,
-      questions,
+      assignmentUuid: a.uuid,
+      firstName: a.youth.firstName,
+      lastName: a.youth.lastName,
+      email: a.youth.email,
     };
   }
 }
