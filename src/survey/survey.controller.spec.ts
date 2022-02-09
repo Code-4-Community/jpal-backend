@@ -17,11 +17,8 @@ export const mockSurveyService: Partial<SurveyService> = {
       surveyTemplate: mockSurveyTemplate,
       name,
       creator,
-<<<<<<< HEAD
       assignments: [],
-=======
       date: new Date('02-06-2022'),
->>>>>>> master
     };
   },
   async getByUUID(): Promise<Survey> {
