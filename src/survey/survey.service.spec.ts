@@ -25,6 +25,7 @@ export const mockSurvey: Survey = {
   name: 'Test Survey',
   surveyTemplate: mockSurveyTemplate,
   creator: mockUser,
+  assignments: [],
   date: new Date('02-06-2022'),
 };
 

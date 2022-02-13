@@ -7,6 +7,7 @@ import { Role } from '../user/types/role';
 import { ReqUser } from '../auth/decorators/user.decorator';
 import { CreateBatchAssignmentsDto } from './dto/create-batch-assignments.dto';
 import { User } from '../user/types/user.entity';
+import { SurveyData } from './dto/survey-assignment.dto';
 
 @Controller('survey')
 export class SurveyController {
@@ -34,6 +35,14 @@ export class SurveyController {
     @Body() createBatchAssignmentsDto: CreateBatchAssignmentsDto,
   ): Promise<void> {
     await this.surveyService.createBatchAssignments(createBatchAssignmentsDto);
+  }
+
+  @Get(':surveyUuid/:reviewerUuid')
+  getReviewerSurvey(
+    @Param('surveyUuid', ParseUUIDPipe) surveyUuid: string,
+    @Param('reviewerUuid', ParseUUIDPipe) reviewerUuid: string,
+  ): Promise<SurveyData> {
+    return this.surveyService.getReviewerSurvey(surveyUuid, reviewerUuid);
   }
 
   @Get(':uuid')
