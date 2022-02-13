@@ -43,22 +43,16 @@ export const mockSurveyRepository: Partial<Repository<Survey>> = {
   save<T>(survey): T {
     return survey;
   },
-  findOne(): any {
-    return undefined;
-  },
   find(): Promise<Survey[]> {
     return Promise.resolve(listMockSurveys);
   },
-  findOneOrFail(): Promise<Survey> {
+  findOne(): Promise<Survey> {
     return Promise.resolve(mockSurvey);
   },
 };
 
 export const mockSurveyTemplateRepository: Partial<Repository<SurveyTemplate>> = {
   async findOne() {
-    return mockSurveyTemplate;
-  },
-  async findOneOrFail(): Promise<SurveyTemplate> {
     return mockSurveyTemplate;
   },
 };
