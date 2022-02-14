@@ -18,19 +18,23 @@ export const mockSurvey: Survey = {
   id: 1,
   uuid: UUID,
   surveyTemplate: mockSurveyTemplate,
-  name: "Survey 1",
-  creator: mockUser
-}
+  name: 'Survey 1',
+  creator: mockUser,
+  assignments: [],
+  date: new Date('02-06-2022'),
+};
 
 export const mockSurvey2: Survey = {
   id: 2,
   uuid: UUID,
   surveyTemplate: mockSurveyTemplate,
-  name: "Survey 2",
-  creator: mockResearcher
-}
+  name: 'Survey 2',
+  creator: mockResearcher,
+  assignments: [],
+  date: new Date('02-06-2022'),
+};
 
-export const listMockSurveys: Survey[] = [mockSurvey, mockSurvey2]
+export const listMockSurveys: Survey[] = [mockSurvey, mockSurvey2];
 
 export const mockSurveyService: Partial<SurveyService> = {
   async create(surveyTemplateId: number, name: string, creator: User): Promise<Survey> {
@@ -95,5 +99,5 @@ describe('SurveyController', () => {
   it('should get all surveys for researcher', async () => {
     expect(await controller.findAllSurveys(mockResearcher)).toEqual(listMockSurveys);
     expect(mockSurveyService.getAllSurveys).toHaveBeenCalled();
-  })
+  });
 });

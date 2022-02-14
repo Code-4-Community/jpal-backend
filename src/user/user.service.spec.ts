@@ -22,7 +22,7 @@ export const mockResearcher: User = {
   firstName: 'Paige',
   lastName: 'Turner',
   role: Role.RESEARCHER,
-}
+};
 
 const listMockUsers: User[] = [mockUser, mockResearcher];
 

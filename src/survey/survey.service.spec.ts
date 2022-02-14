@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { SurveyService } from './survey.service';
 import { Survey } from './types/survey.entity';
-import { mockResearcher, mockUser } from '../user/user.service.spec';
+import { mockUser } from '../user/user.service.spec';
 import { DeepPartial, FindConditions, FindManyOptions, Repository } from 'typeorm';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { SurveyTemplate } from '../surveyTemplate/types/surveyTemplate.entity';
