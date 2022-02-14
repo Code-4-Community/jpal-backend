@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Survey } from './types/survey.entity';
@@ -8,6 +8,12 @@ import { CreateBatchAssignmentsDto } from './dto/create-batch-assignments.dto';
 import { Assignment } from '../assignment/types/assignment.entity';
 import { Youth } from '../youth/types/youth.entity';
 import { Reviewer } from '../reviewer/types/reviewer.entity';
+import { AssignmentStatus } from '../assignment/types/assignmentStatus';
+import { YouthRoles } from '../youth/types/youthRoles';
+import { Question } from '../question/types/question.entity';
+import { SurveyData } from './dto/survey-assignment.dto';
+import { Youth as SurveyDataYouth } from './dto/survey-assignment.dto';
+import { Question as SurveyDataQuestion } from './dto/survey-assignment.dto';
 
 @Injectable()
 export class SurveyService {
@@ -30,6 +36,7 @@ export class SurveyService {
       surveyTemplate,
       name,
       creator,
+      assignments: [],
     });
   }
 
@@ -72,5 +79,81 @@ export class SurveyService {
         };
       }),
     );
+  }
+
+  async getReviewerSurvey(surveyUuid: string, reviewerUuid: string): Promise<SurveyData> {
+    const survey = await this.surveyRepository.findOne({
+      where: { uuid: surveyUuid },
+      relations: [
+        'assignments',
+        'assignments.reviewer',
+        'assignments.youth',
+        'surveyTemplate',
+        'surveyTemplate.questions',
+        'surveyTemplate.questions.options',
+      ],
+    });
+    const reviewer = await this.reviewerRepository.findOne({ where: { uuid: reviewerUuid } });
+
+    const assignmentsForReviewer = survey.assignments.filter(
+      (assignment) =>
+        assignment.reviewer.id === reviewer.id && assignment.status === AssignmentStatus.INCOMPLETE,
+    );
+
+    if (assignmentsForReviewer.length === 0) {
+      throw new BadRequestException('Reviewer is not invited to complete this survey');
+    }
+
+    const response = this.transformToFrontendSurveyData(
+      assignmentsForReviewer,
+      survey.surveyTemplate.questions,
+      reviewer,
+    );
+
+    return response;
+  }
+
+  transformToFrontendSurveyData(
+    assignmentsForReviewer: Assignment[],
+    questionEntities: Question[],
+    reviewerEntity: Reviewer,
+  ) {
+    return {
+      reviewer: this.transformReviewerToSurveyDataReviewer(reviewerEntity),
+      controlYouth: this.extractYouthByRole(YouthRoles.CONTROL, assignmentsForReviewer),
+      treatmentYouth: this.extractYouthByRole(YouthRoles.TREATMENT, assignmentsForReviewer),
+      questions: this.transformQuestionToSurveyDataQuestion(questionEntities),
+    };
+  }
+
+  private transformReviewerToSurveyDataReviewer(reviewerEntity: Reviewer) {
+    return {
+      firstName: reviewerEntity.firstName,
+      lastName: reviewerEntity.lastName,
+      email: reviewerEntity.email,
+    };
+  }
+
+  private transformQuestionToSurveyDataQuestion(
+    questionEntities: Question[],
+  ): SurveyDataQuestion[] {
+    return questionEntities.map((q) => ({
+      question: q.text,
+      options: q.options.map((o) => o.text),
+    }));
+  }
+
+  private extractYouthByRole(youthRole: YouthRoles, assignments: Assignment[]): SurveyDataYouth[] {
+    return assignments
+      .filter((a) => a.youth.role === youthRole)
+      .map(this.extractYouthFromAssignment);
+  }
+  private extractYouthFromAssignment(a: Assignment): SurveyDataYouth {
+    return {
+      assignmentUuid: a.uuid,
+      firstName: a.youth.firstName,
+      lastName: a.youth.lastName,
+      email: a.youth.email,
+    };
   }
 }
