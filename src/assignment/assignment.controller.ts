@@ -13,11 +13,11 @@ export class AssignmentController {
    * @returns Assignment
    */
   @Post(':uuid')
-  complete(
+  async complete(
     @Param('uuid', ParseUUIDPipe) uuid: string,
     @Body() completeAssignmentDto: CompleteAssignmentDto,
   ): Promise<Assignment> {
-    if (!this.assignmentService.getByUuid(uuid)) {
+    if (!(await this.assignmentService.getByUuid(uuid))) {
       throw new BadRequestException('This assignment does not exist.');
     }
     return this.assignmentService.complete(uuid, completeAssignmentDto.responses);
