@@ -1,24 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import exp from 'constants';
+import { mock } from 'jest-mock-extended';
 import { mockSurveyService } from '../survey/survey.controller.spec';
 import { SurveyService } from '../survey/survey.service';
 import { AssignmentController } from './assignment.controller';
 import { AssignmentService } from './assignment.service';
-import {
-  assignment_UUID,
-  mockAssignment,
-  mockAssignment2,
-  mockResponses,
-} from './assignment.service.spec';
-import { Assignment } from './types/assignment.entity';
+import { assignment_UUID, mockAssignment, mockResponses } from './assignment.service.spec';
 
-const mockAssignmentService: Partial<AssignmentService> = {
-  async complete(): Promise<Assignment> {
-    return mockAssignment;
-  },
-  async getByUuid(): Promise<Assignment> {
-    return mockAssignment2;
-  },
-};
+const mockAssignmentService = mock<AssignmentService>();
 
 const mockCompleteAssignmentDto = {
   responses: mockResponses,
@@ -49,12 +38,16 @@ describe('AssignmentController', () => {
     expect(controller).toBeDefined();
   });
 
-  it('should complete an assignment', async () => {
-    const assignment = () => controller.complete('bad!', mockCompleteAssignmentDto);
-    expect(assignment).rejects.toThrow();
+  it('should fail to complete an assignment when given a bad ID', async () => {
+    expect.assertions(1);
+    mockAssignmentService.getByUuid.mockResolvedValue(undefined);
+    expect(controller.complete('bad!', mockCompleteAssignmentDto)).rejects.toThrow();
   });
 
   it('should complete an assignment', async () => {
+    expect.assertions(1);
+    mockAssignmentService.getByUuid.mockResolvedValue(mockAssignment);
+    mockAssignmentService.complete.mockResolvedValue(mockAssignment);
     const assignment = await controller.complete(assignment_UUID, mockCompleteAssignmentDto);
     expect(assignment).toEqual(mockAssignment);
   });
