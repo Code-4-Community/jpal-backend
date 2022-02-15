@@ -40,6 +40,16 @@ export const incompleteMockAssignment: Assignment = {
   responses: [],
 };
 
+export const inProgressMockAssignment: Assignment = {
+  uuid: assignment_UUID,
+  reviewer: mockReviewer,
+  youth: mockYouth,
+  id: 1,
+  survey: mockSurvey,
+  status: AssignmentStatus.IN_PROGRESS,
+  responses: [],
+};
+
 export const mockAssignment: Assignment = {
   uuid: assignment_UUID,
   reviewer: mockReviewer,
@@ -134,5 +144,17 @@ describe('AssignmentService', () => {
   it('should complete an assignment', async () => {
     const assignment = await service.complete(mockAssignment.uuid, mockResponses);
     expect(assignment).toEqual(mockAssignment);
+  });
+
+  it('should not start an assignment that is complete', async () => {
+    jest.spyOn(mockAssignmentRepository, 'findOne').mockResolvedValueOnce(mockAssignment);
+    const assignment = () => service.start(mockAssignment.uuid);
+    expect(assignment).rejects.toThrow();
+  });
+
+  it('should start an assignment', async () => {
+    jest.spyOn(mockAssignmentRepository, 'findOne').mockResolvedValueOnce(incompleteMockAssignment);
+    const assignment = await service.start(assignment_UUID);
+    expect(assignment).toEqual(inProgressMockAssignment);
   });
 });

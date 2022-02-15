@@ -5,6 +5,7 @@ import { AssignmentController } from './assignment.controller';
 import { AssignmentService } from './assignment.service';
 import {
   assignment_UUID,
+  incompleteMockAssignment,
   mockAssignment,
   mockAssignment2,
   mockResponses,
@@ -16,7 +17,10 @@ const mockAssignmentService: Partial<AssignmentService> = {
     return mockAssignment;
   },
   async getByUuid(): Promise<Assignment> {
-    return mockAssignment2;
+    return incompleteMockAssignment;
+  },
+  async start(): Promise<Assignment> {
+    return mockAssignment;
   },
 };
 
@@ -56,6 +60,16 @@ describe('AssignmentController', () => {
 
   it('should complete an assignment', async () => {
     const assignment = await controller.complete(assignment_UUID, mockCompleteAssignmentDto);
+    expect(assignment).toEqual(mockAssignment);
+  });
+
+  it('should mark an assignment as in progress', async () => {
+    const assignment = () => controller.start('bad!');
+    expect(assignment).rejects.toThrow();
+  });
+
+  it('should mark an assignment as in progress', async () => {
+    const assignment = await controller.start(assignment_UUID);
     expect(assignment).toEqual(mockAssignment);
   });
 });

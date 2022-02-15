@@ -1,4 +1,13 @@
-import { BadRequestException, Body, Controller, Param, ParseUUIDPipe, Post } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Param,
+  ParseUUIDPipe,
+  Patch,
+  Post,
+  Put,
+} from '@nestjs/common';
 import { AssignmentService } from './assignment.service';
 import { CompleteAssignmentDto } from './dto/complete-assignment.dto';
 import { Assignment } from './types/assignment.entity';
@@ -21,5 +30,13 @@ export class AssignmentController {
       throw new BadRequestException('This assignment does not exist.');
     }
     return this.assignmentService.complete(uuid, completeAssignmentDto.responses);
+  }
+
+  @Patch(':uuid')
+  start(@Param('uuid', ParseUUIDPipe) uuid: string): Promise<Assignment> {
+    if (!this.assignmentService.getByUuid(uuid)) {
+      throw new BadRequestException('This assignment does not exist.');
+    }
+    return this.assignmentService.start(uuid);
   }
 }

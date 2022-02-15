@@ -67,7 +67,15 @@ export class AssignmentService {
     await this.responseRepository.save(responsesToSave);
     assignment = await this.getByUuid(uuid);
     assignment.status = AssignmentStatus.COMPLETED;
-    await this.assignmentRepository.save(assignment);
-    return await this.getByUuid(uuid);
+    return this.assignmentRepository.save(assignment);
+  }
+
+  async start(uuid: string): Promise<Assignment> {
+    const assignment = await this.getByUuid(uuid);
+    if (assignment.status === AssignmentStatus.COMPLETED) {
+      throw new BadRequestException('This assignment has already been completed');
+    }
+    assignment.status = AssignmentStatus.IN_PROGRESS;
+    return await this.assignmentRepository.save(assignment);
   }
 }
