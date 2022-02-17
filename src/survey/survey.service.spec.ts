@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { SurveyService } from './survey.service';
 import { Survey } from './types/survey.entity';
 import { mockUser } from '../user/user.service.spec';
-import { DeepPartial, Repository } from 'typeorm';
+import { DeepPartial, FindConditions, FindManyOptions, Repository } from 'typeorm';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { SurveyTemplate } from '../surveyTemplate/types/surveyTemplate.entity';
 import { MockRepository } from '../../test/db/MockRepository';
@@ -10,26 +10,7 @@ import { Assignment } from '../assignment/types/assignment.entity';
 import { Youth } from '../youth/types/youth.entity';
 import { Reviewer } from '../reviewer/types/reviewer.entity';
 import { CreateBatchAssignmentsDto } from './dto/create-batch-assignments.dto';
-
-export const mockSurveyTemplate: SurveyTemplate = {
-  id: 1,
-  creator: mockUser,
-  questions: [],
-};
-
-const UUID = '123e4567-e89b-12d3-a456-426614174000';
-
-export const mockSurvey: Survey = {
-  id: 1,
-  uuid: UUID,
-  name: 'Test Survey',
-  surveyTemplate: mockSurveyTemplate,
-  creator: mockUser,
-  assignments: [],
-  date: new Date('02-06-2022'),
-};
-
-const listMockSurveys: Survey[] = [mockSurvey];
+import { listMockSurveys, mockSurvey, mockSurveyTemplate, UUID } from './survey.controller.spec';
 
 export const mockSurveyRepository: Partial<Repository<Survey>> = {
   create(survey?: DeepPartial<Survey> | DeepPartial<Survey>[]): any {
@@ -46,7 +27,11 @@ export const mockSurveyRepository: Partial<Repository<Survey>> = {
   findOne(): any {
     return undefined;
   },
-  find(): Promise<Survey[]> {
+  find(options?: FindManyOptions<Survey> | FindConditions<Survey>): Promise<Survey[]> {
+    // this checks to see if a find call is trying to filter the results by creator
+    if (options && 'where' in options) {
+      return Promise.resolve([mockSurvey]);
+    }
     return Promise.resolve(listMockSurveys);
   },
   findOneOrFail(): Promise<Survey> {
@@ -117,7 +102,12 @@ describe('SurveyService', () => {
   });
 
   it('should fetch all surveys created by current user', async () => {
-    const goodResponse = await service.findAllSurveys(mockUser);
+    const goodResponse = await service.findAllSurveysByUser(mockUser);
+    expect(goodResponse).toEqual([mockSurvey]);
+  });
+
+  it('should fetch all surveys', async () => {
+    const goodResponse = await service.getAllSurveys();
     expect(goodResponse).toEqual(listMockSurveys);
   });
 

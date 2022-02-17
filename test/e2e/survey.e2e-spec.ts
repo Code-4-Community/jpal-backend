@@ -7,7 +7,7 @@ import { Repository } from 'typeorm';
 import { clearDb } from '../e2e.utils';
 import { overrideExternalDependencies } from '../mockProviders';
 import { mockUser } from '../../src/user/user.service.spec';
-import { mockSurveyTemplate } from '../../src/survey/survey.service.spec';
+import { mockSurveyTemplate } from '../../src/survey/survey.controller.spec';
 import { User } from '../../src/user/types/user.entity';
 import { SurveyTemplate } from '../../src/surveyTemplate/types/surveyTemplate.entity';
 import { Role } from '../../src/user/types/role';

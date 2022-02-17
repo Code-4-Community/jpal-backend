@@ -8,7 +8,7 @@ import { AssignmentStatus } from '../../src/assignment/types/assignmentStatus';
 import { Option } from '../../src/option/types/option.entity';
 import { Question } from '../../src/question/types/question.entity';
 import { reviewerExamples } from '../../src/reviewer/reviewer.examples';
-import { mockSurveyTemplate } from '../../src/survey/survey.service.spec';
+import { mockSurveyTemplate } from '../../src/survey/survey.controller.spec';
 import { Survey } from '../../src/survey/types/survey.entity';
 import { SurveyTemplate } from '../../src/surveyTemplate/types/surveyTemplate.entity';
 import { User } from '../../src/user/types/user.entity';
