@@ -5,9 +5,8 @@ import { AssignmentController } from './assignment.controller';
 import { AssignmentService } from './assignment.service';
 import {
   assignment_UUID,
-  incompleteMockAssignment,
+  incompleteMockAssignment, inProgressMockAssignment,
   mockAssignment,
-  mockAssignment2,
   mockResponses,
 } from './assignment.service.spec';
 import { Assignment } from './types/assignment.entity';
@@ -20,7 +19,7 @@ const mockAssignmentService: Partial<AssignmentService> = {
     return incompleteMockAssignment;
   },
   async start(): Promise<Assignment> {
-    return mockAssignment;
+    return inProgressMockAssignment;
   },
 };
 
@@ -70,6 +69,6 @@ describe('AssignmentController', () => {
 
   it('should mark an assignment as in progress', async () => {
     const assignment = await controller.start(assignment_UUID);
-    expect(assignment).toEqual(mockAssignment);
+    expect(assignment).toEqual(inProgressMockAssignment);
   });
 });

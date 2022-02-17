@@ -19,7 +19,7 @@
     "check": "npm run prepush",
     "prepush:fix": "npm run format && tsc --noEmit && npm run lint",
     "prepush": "npm run format:check && tsc --noEmit && npm run lint:check",
-    "test": "jest",
+    "test": "jest -w 1",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
