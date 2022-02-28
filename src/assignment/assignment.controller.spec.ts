@@ -58,9 +58,8 @@ describe('AssignmentController', () => {
     expect(assignment).toEqual(mockAssignment);
   });
 
-  it('should mark an assignment as in progress', async () => {
-    const assignment = () => controller.start('bad!');
-    expect(assignment).rejects.toThrow();
+  it('should mark an assignment as in progress', () => {
+    expect(controller.start('bad!')).rejects.toThrow();
   });
 
   it('should mark an assignment as in progress', async () => {
