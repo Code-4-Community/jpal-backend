@@ -158,10 +158,9 @@ describe('AssignmentService', () => {
     expect(assignment).toEqual(mockAssignment);
   });
 
-  it('should not start an assignment that is complete', async () => {
+  it('should not start an assignment that is complete', () => {
     jest.spyOn(mockAssignmentRepository, 'findOne').mockResolvedValueOnce(mockAssignment);
-    const assignment = () => service.start(mockAssignment.uuid);
-    expect(assignment).rejects.toThrow();
+    expect(service.start(mockAssignment.uuid)).rejects.toThrow();
   });
 
   it('should start an assignment', async () => {
