@@ -73,7 +73,7 @@ export default function generateLetter(
   rules: LetterGenerationRules,
   currentDate: Date = new Date(),
 ): Letter {
-  const metadata = extractMetaData(assignment);
+  const metadata = extractMetaData(assignment, currentDate);
 
   return {
     date: currentDate,
@@ -123,7 +123,7 @@ function generateSentence(
   }
 }
 
-function extractMetaData(assignment: Assignment): AssignmentMetaData {
+function extractMetaData(assignment: Assignment, currentDate: Date): AssignmentMetaData {
   return {
     youth: {
       firstName: assignment.youth.firstName,
@@ -137,7 +137,7 @@ function extractMetaData(assignment: Assignment): AssignmentMetaData {
       email: assignment.reviewer.email,
     },
     organization: 'The Wharton School', // TODO: Add organization to the assignment entity
-    dateOfLetterGeneration: new Date(),
+    dateOfLetterGeneration: currentDate,
   };
 }
 
