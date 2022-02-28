@@ -37,7 +37,7 @@ A `LetterGenerationRules` is of the form:
 
 Some of the sentence generation rules get a little ugly, but that's the price we pay for flexibility!
 
-To help alleivate this somewhat, we have some helper functions:
+To help alleviate this somewhat, we have some helper functions:
 
 `findByRegex` is useful for `selectResponse`, and just finds the response which as a question text matching the regex provided.
 
@@ -56,6 +56,6 @@ Finally we have helpers for building sentences.
 
 - If a response cannot be found for any reason, the sentence is elided. We may decide that want to log this, or throw an error instead. Ignoring the error is chosen for simplicity.
 
-- If none of a paragaph's sentences are valid for inclusion, then the entire paragraph is omitted.
+- If none of a paragraph's sentences are valid for inclusion, then the entire paragraph is omitted.
 
 - Response option text is guaranteed to be lower cases in `toSentence`, but not anywhere else. Some thought must be put into if the option text is capitalized. Use .toLowerCase() when unsure.
