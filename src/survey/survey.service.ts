@@ -51,10 +51,14 @@ export class SurveyService {
     return survey;
   }
 
-  async findAllSurveys(user: User): Promise<Survey[]> {
+  async findAllSurveysByUser(user: User): Promise<Survey[]> {
     return this.surveyRepository.find({
       where: { creator: user },
     });
+  }
+
+  async getAllSurveys(): Promise<Survey[]> {
+    return this.surveyRepository.find();
   }
 
   /**
