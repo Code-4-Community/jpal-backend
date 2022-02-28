@@ -1,17 +1,16 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import exp from 'constants';
 import { mock } from 'jest-mock-extended';
 import { mockSurveyService } from '../survey/survey.controller.spec';
 import { SurveyService } from '../survey/survey.service';
 import { AssignmentController } from './assignment.controller';
 import { AssignmentService } from './assignment.service';
-import { AssignmentStatus } from './types/assignmentStatus';
 import {
   assignment_UUID,
+  inProgressMockAssignment,
   mockAssignment,
   mockResponses,
-  inProgressMockAssignment,
 } from './assignment.service.spec';
+import { AssignmentStatus } from './types/assignmentStatus';
 
 const mockAssignmentService = mock<AssignmentService>();
 
@@ -47,7 +46,7 @@ describe('AssignmentController', () => {
   it('should fail to complete an assignment when given a bad ID', async () => {
     expect.assertions(1);
     mockAssignmentService.getByUuid.mockResolvedValue(undefined);
-    expect(controller.complete('bad!', mockCompleteAssignmentDto)).rejects.toThrow();
+    await expect(controller.complete('bad!', mockCompleteAssignmentDto)).rejects.toThrow();
   });
 
   it('should complete an assignment', async () => {
@@ -58,11 +57,15 @@ describe('AssignmentController', () => {
     expect(assignment).toEqual(mockAssignment);
   });
 
-  it('should mark an assignment as in progress', () => {
-    expect(controller.start('bad!')).rejects.toThrow();
+  it('should fail to start an assignment that does not exist', async () => {
+    expect.assertions(1);
+    mockAssignmentService.getByUuid.mockResolvedValue(undefined);
+    await expect(controller.start('bad!')).rejects.toThrow();
   });
 
   it('should mark an assignment as in progress', async () => {
+    expect.assertions(1);
+    mockAssignmentService.getByUuid.mockResolvedValue(mockAssignment);
     mockAssignmentService.start.mockResolvedValue(inProgressMockAssignment);
     const assignment = await controller.start(assignment_UUID);
     expect(assignment.status).toEqual(AssignmentStatus.IN_PROGRESS);
