@@ -24,9 +24,6 @@ export const mockSurveyRepository: Partial<Repository<Survey>> = {
   save<T>(survey): T {
     return survey;
   },
-  findOne(): any {
-    return undefined;
-  },
   find(options?: FindManyOptions<Survey> | FindConditions<Survey>): Promise<Survey[]> {
     // this checks to see if a find call is trying to filter the results by creator
     if (options && 'where' in options) {
@@ -34,16 +31,13 @@ export const mockSurveyRepository: Partial<Repository<Survey>> = {
     }
     return Promise.resolve(listMockSurveys);
   },
-  findOneOrFail(): Promise<Survey> {
+  findOne(): Promise<Survey> {
     return Promise.resolve(mockSurvey);
   },
 };
 
 export const mockSurveyTemplateRepository: Partial<Repository<SurveyTemplate>> = {
   async findOne() {
-    return mockSurveyTemplate;
-  },
-  async findOneOrFail(): Promise<SurveyTemplate> {
     return mockSurveyTemplate;
   },
 };
