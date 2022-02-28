@@ -114,10 +114,11 @@ function generateSentence(
     return sentence(metadata);
   } else {
     const response = sentence.selectResponse(responses);
+    // TODO: log if no response is found
     if (response === undefined) {
       return undefined;
     } else {
-      return sentence.toSentence(response.option.text, metadata);
+      return sentence.toSentence(response.option.text.toLowerCase(), metadata);
     }
   }
 }

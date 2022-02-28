@@ -1,4 +1,4 @@
-## Extra documentation on how to write a letter generation strategy
+## Extra documentation on the letter generation strategy
 
 We designed the letter generation such that all you need to do is write out the structure of the letter in the form of a Javscript object. Here's a little guide on how you can get the letter you want!
 
@@ -51,3 +51,11 @@ Finally we have helpers for building sentences.
 
 `joinEndingWithAnd` joins a list into a comma-space separated list ending with and (omitting the oxford comma).
 `Ex. ["a", "b", "c"] => "a, b and c"`
+
+### Edge Cases
+
+- If a response cannot be found for any reason, the sentence is elided. We may decide that want to log this, or throw an error instead. Ignoring the error is chosen for simplicity.
+
+- If none of a paragaph's sentences are valid for inclusion, then the entire paragraph is omitted.
+
+- Response option text is guaranteed to be lower cases in `toSentence`, but not anywhere else. Some thought must be put into if the option text is capitalized. Use .toLowerCase() when unsure.
