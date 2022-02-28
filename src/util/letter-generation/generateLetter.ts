@@ -1,5 +1,5 @@
-import { Response } from '../../src/response/types/response.entity';
-import { Assignment } from '../assignment/types/assignment.entity';
+import { Response } from '../../../src/response/types/response.entity';
+import { Assignment } from '../../assignment/types/assignment.entity';
 
 export type Letter = {
   date: Date;
@@ -42,6 +42,7 @@ type AssignmentMetaData = {
     firstName: string;
     lastName: string;
     fullName: string;
+    email: string;
   };
   organization: string;
   dateOfLetterGeneration: Date;
@@ -132,6 +133,7 @@ function extractMetaData(assignment: Assignment): AssignmentMetaData {
       firstName: assignment.reviewer.firstName,
       lastName: assignment.reviewer.lastName,
       fullName: getFullName(assignment.reviewer.firstName, assignment.reviewer.lastName),
+      email: assignment.reviewer.email,
     },
     organization: 'The Wharton School', // TODO: Add organization to the assignment entity
     dateOfLetterGeneration: new Date(),
