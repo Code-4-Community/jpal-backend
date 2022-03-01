@@ -12,23 +12,6 @@ export type Letter = {
   };
 };
 
-// TODO: Use this
-export enum QuestionType {
-  // Paragraph 1
-  OVERALL_PERFORMANCE,
-  // Paragraph 2
-  ON_TIME_TO_WORK,
-  COMPLETED_TASKS_TIMELY,
-  // Paragraph 3
-  EFFECTIVE_COMMUNICATOR,
-  GOOD_AT_FOLLOWING_INSTRUCTIONS,
-  // Paragraph 4
-  STRENGTHS,
-  // Paragraph 5
-  WOULD_HIRE_FULL_TIME,
-  WOULD_ACT_AS_REFERRAL,
-}
-
 /**
  * All the relevant metadata for an assignment in a nicer format.
  */
@@ -58,15 +41,35 @@ type Paragraph = {
   sentences: Sentence[];
 };
 
-type Sentence = SentenceFactory | SentenceConversionRules;
+type Sentence = SentenceFactory | SingleResponseSentence | MultiResponseSentence;
 
 type SentenceFactory = (metadata: AssignmentMetaData) => string;
 
-type SentenceConversionRules = {
+type SingleResponseSentence = {
   toSentence: (selectedOption: string, metadata: AssignmentMetaData) => string;
   selectResponse: (responses: Response[]) => Response | undefined;
   shouldIncludeSentence: (response: Response) => boolean;
 };
+
+function isSingleResponseSentence(expr): expr is SingleResponseSentence {
+  return (expr as SingleResponseSentence).toSentence !== undefined;
+}
+
+type MultiResponseSentence = {
+  composeFragments: (fragments: string[], metadata: AssignmentMetaData) => string;
+  fragments: Fragment[];
+};
+
+type Fragment = {
+  toFragment: (selectedOption: string, metadata: AssignmentMetaData) => string;
+  selectResponse: (responses: Response[]) => Response | undefined;
+  shouldIncludeFragment: (response: Response) => boolean;
+};
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function isMultiResponseSentence(expr): expr is MultiResponseSentence {
+  return (expr as MultiResponseSentence).composeFragments !== undefined;
+}
 
 export default function generateLetter(
   assignment: Assignment,
@@ -112,13 +115,31 @@ function generateSentence(
 ): string | undefined {
   if (typeof sentence === 'function') {
     return sentence(metadata);
-  } else {
+  } else if (isSingleResponseSentence(sentence)) {
     const response = sentence.selectResponse(responses);
     // TODO: log if no response is found
     if (response === undefined) {
       return undefined;
-    } else {
+    } else if (response) {
       return sentence.toSentence(response.option.text.toLowerCase(), metadata);
+    }
+  } else {
+    const fragments = sentence.fragments
+      .map((fragment) => {
+        const response = fragment.selectResponse(responses);
+        if (response && fragment.shouldIncludeFragment(response)) {
+          return fragment.toFragment(response.option.text.toLowerCase(), metadata);
+        } else {
+          return undefined;
+        }
+      })
+      .filter((fragment) => fragment !== undefined);
+
+    if (fragments.length === 0) {
+      // TODO: log if no response is found
+      return undefined;
+    } else {
+      return sentence.composeFragments(fragments, metadata);
     }
   }
 }

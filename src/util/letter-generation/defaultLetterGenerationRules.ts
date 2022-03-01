@@ -60,19 +60,42 @@ const DEFAULT_LETTER_GENERATION_RULES: LetterGenerationRules = {
     {
       sentences: [
         {
-          toSentence: (listOfQualities, { youth }) =>
+          composeFragments: (fragments, { youth }) =>
             `In addition to ${youth.firstName}'s other strengths, ${
               youth.firstName
-            } ${joinEndingWithAnd(listOfQualities.split(','))}.`,
-          selectResponse: (responses) => findByRegex(responses, /^Which of these describe/),
-          shouldIncludeSentence: ifListContainsAtLeastOneOf([
-            'takes initiative',
-            'is trustworthy',
-            'is respectful',
-            'works well in teams',
-            'is good at responding to constructive criticism',
-            'is responsible',
-          ]),
+            } ${joinEndingWithAnd(fragments)}.`,
+          fragments: [
+            {
+              toFragment: () => 'takes initiative',
+              selectResponse: (responses) => findByRegex(responses, /takes initiative/),
+              shouldIncludeFragment: ifOneOfTheseWords(['Yes']),
+            },
+            {
+              toFragment: () => 'is trustworthy',
+              selectResponse: (responses) => findByRegex(responses, /is trustworthy/),
+              shouldIncludeFragment: ifOneOfTheseWords(['Yes']),
+            },
+            {
+              toFragment: () => 'is respectful',
+              selectResponse: (responses) => findByRegex(responses, /is respectful/),
+              shouldIncludeFragment: ifOneOfTheseWords(['Yes']),
+            },
+            {
+              toFragment: () => 'works well in teams',
+              selectResponse: (responses) => findByRegex(responses, /works well in teams/),
+              shouldIncludeFragment: ifOneOfTheseWords(['Yes']),
+            },
+            {
+              toFragment: () => 'is good at responding to constructive criticism',
+              selectResponse: (responses) => findByRegex(responses, /constructive criticism/),
+              shouldIncludeFragment: ifOneOfTheseWords(['Yes']),
+            },
+            {
+              toFragment: () => 'is responsible',
+              selectResponse: (responses) => findByRegex(responses, /is responsible/),
+              shouldIncludeFragment: ifOneOfTheseWords(['Yes']),
+            },
+          ],
         },
       ],
     },
@@ -129,19 +152,6 @@ function findByRegex(responses: Response[], regex: RegExp): Response | undefined
 function ifOneOfTheseWords(validOptions: string[]): (Response) => boolean {
   return (response: Response) =>
     validOptions.map((str) => str.toLowerCase()).includes(response.option.text.toLowerCase());
-}
-
-/**
- * Produces a predicate that returns true if the response (as a comma delimited list of words) contains at least one of the given options.
- * @example isListContainingAtLeastOneOf(['a', 'b', 'c']) produces a predicate that matches the response : "a,b,c" or "b", etc.
- */
-function ifListContainsAtLeastOneOf(validOptions: string[]): (Response) => boolean {
-  const validOptionsLowercase = validOptions.map((str) => str.toLowerCase());
-  return (response: Response) =>
-    response.option.text
-      .toLowerCase()
-      .split(',')
-      .some((str) => validOptionsLowercase.includes(str.toLowerCase()));
 }
 
 export default DEFAULT_LETTER_GENERATION_RULES;
