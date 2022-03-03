@@ -89,7 +89,16 @@ export class SurveyService {
         'surveyTemplate.questions.options',
       ],
     });
+
+    if (survey === undefined) {
+      throw new BadRequestException(`Survey with uuid ${surveyUuid} does not exist`);
+    }
+
     const reviewer = await this.reviewerRepository.findOne({ where: { uuid: reviewerUuid } });
+
+    if (reviewer === undefined) {
+      throw new BadRequestException(`Reviewer with uuid ${reviewerUuid} does not exist`);
+    }
 
     const assignmentsForReviewer = survey.assignments.filter(
       (assignment) =>
