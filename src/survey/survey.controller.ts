@@ -1,13 +1,13 @@
-import { Body, Controller, Get, Param, ParseUUIDPipe, Post, Patch } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseUUIDPipe, Patch, Post } from '@nestjs/common';
 import { Auth } from '../auth/decorators/auth.decorator';
-import { CreateSurveyDto } from './dto/create-survey.dto';
-import { Survey } from './types/survey.entity';
-import { SurveyService } from './survey.service';
-import { Role } from '../user/types/role';
 import { ReqUser } from '../auth/decorators/user.decorator';
-import { CreateBatchAssignmentsDto } from './dto/create-batch-assignments.dto';
+import { Role } from '../user/types/role';
 import { User } from '../user/types/user.entity';
+import { CreateBatchAssignmentsDto } from './dto/create-batch-assignments.dto';
+import { CreateSurveyDto } from './dto/create-survey.dto';
 import { SurveyData } from './dto/survey-assignment.dto';
+import { SurveyService } from './survey.service';
+import { Survey } from './types/survey.entity';
 
 @Controller('survey')
 export class SurveyController {
@@ -38,11 +38,11 @@ export class SurveyController {
   }
 
   @Get(':surveyUuid/:reviewerUuid')
-  getReviewerSurvey(
+  async getReviewerSurvey(
     @Param('surveyUuid', ParseUUIDPipe) surveyUuid: string,
     @Param('reviewerUuid', ParseUUIDPipe) reviewerUuid: string,
   ): Promise<SurveyData> {
-    return this.surveyService.getReviewerSurvey(surveyUuid, reviewerUuid);
+    return await this.surveyService.getReviewerSurvey(surveyUuid, reviewerUuid);
   }
 
   @Get(':uuid')
