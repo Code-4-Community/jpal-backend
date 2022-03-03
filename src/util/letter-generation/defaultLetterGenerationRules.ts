@@ -67,22 +67,22 @@ const DEFAULT_LETTER_GENERATION_RULES: LetterGenerationRules = {
           fragments: [
             {
               toFragment: () => 'takes initiative',
-              selectResponse: (responses) => findByRegex(responses, /takes initiative/),
+              selectResponse: (responses) => findByRegex(responses, /take initiative/),
               shouldIncludeFragment: ifOneOfTheseWords(['Yes']),
             },
             {
               toFragment: () => 'is trustworthy',
-              selectResponse: (responses) => findByRegex(responses, /is trustworthy/),
+              selectResponse: (responses) => findByRegex(responses, /trustworthy/),
               shouldIncludeFragment: ifOneOfTheseWords(['Yes']),
             },
             {
               toFragment: () => 'is respectful',
-              selectResponse: (responses) => findByRegex(responses, /is respectful/),
+              selectResponse: (responses) => findByRegex(responses, /respectful/),
               shouldIncludeFragment: ifOneOfTheseWords(['Yes']),
             },
             {
               toFragment: () => 'works well in teams',
-              selectResponse: (responses) => findByRegex(responses, /works well in teams/),
+              selectResponse: (responses) => findByRegex(responses, /work well in teams/),
               shouldIncludeFragment: ifOneOfTheseWords(['Yes']),
             },
             {
@@ -92,7 +92,7 @@ const DEFAULT_LETTER_GENERATION_RULES: LetterGenerationRules = {
             },
             {
               toFragment: () => 'is responsible',
-              selectResponse: (responses) => findByRegex(responses, /is responsible/),
+              selectResponse: (responses) => findByRegex(responses, /responsible/),
               shouldIncludeFragment: ifOneOfTheseWords(['Yes']),
             },
           ],

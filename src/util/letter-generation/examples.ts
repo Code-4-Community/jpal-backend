@@ -1,4 +1,4 @@
-const FREQUENCY_OPTIONS = [
+const createFrequencyOptions = () => [
   {
     text: 'Never',
   },
@@ -16,7 +16,16 @@ const FREQUENCY_OPTIONS = [
   },
 ];
 
-export const questions = [
+const createYesNoOptions = () => [
+  {
+    text: 'Yes',
+  },
+  {
+    text: 'No',
+  },
+];
+
+export const DEFAULT_SURVEY_QUESTIONS = [
   {
     text: 'Overall, how would you rate {subject} as an employee?',
     options: [
@@ -45,11 +54,11 @@ export const questions = [
   },
   {
     text: 'How often did {subject} arrive on time for work?',
-    options: FREQUENCY_OPTIONS,
+    options: createFrequencyOptions(),
   },
   {
     text: 'How often did {subject} complete work-related tasks in a timely manner?',
-    options: FREQUENCY_OPTIONS,
+    options: createFrequencyOptions(),
   },
   {
     text: 'How was {subject} at communicating?',
@@ -92,48 +101,35 @@ export const questions = [
     ],
   },
   {
-    text: 'Which of these describe {subject}? Please select all that apply.',
-    options: [
-      {
-        text: 'takes initiative',
-      },
-      {
-        text: 'is trustworthy',
-      },
-      {
-        text: 'is respectful',
-      },
-      {
-        text: 'works well in teams',
-      },
-      {
-        text: 'is good at responding to constructive criticism',
-      },
-      {
-        text: 'is responsible',
-      },
-    ],
+    text: 'Did {subject} take initiative?',
+    options: createYesNoOptions(),
+  },
+  {
+    text: 'Was {subject} trustworthy?',
+    options: createYesNoOptions(),
+  },
+  {
+    text: 'Was {subject} respectful?',
+    options: createYesNoOptions(),
+  },
+  {
+    text: 'Did {subject} work well in teams?',
+    options: createYesNoOptions(),
+  },
+  {
+    text: 'Was {subject} good at responding to constructive criticism?',
+    options: createYesNoOptions(),
+  },
+  {
+    text: 'Was {subject} responsible?',
+    options: createYesNoOptions(),
   },
   {
     text: 'Given enough resources, would you hire {subject} as a regular employee?',
-    options: [
-      {
-        text: 'Yes',
-      },
-      {
-        text: 'No',
-      },
-    ],
+    options: createYesNoOptions(),
   },
   {
     text: "Would you be willing to act as a reference for {subject}? We will include your email address as contact information if you respond 'Yes'.",
-    options: [
-      {
-        text: 'Yes',
-      },
-      {
-        text: 'No',
-      },
-    ],
+    options: createYesNoOptions(),
   },
 ];
