@@ -1,7 +1,8 @@
-import { Response } from '../../../src/response/types/response.entity';
+import { SurveyResponseDto } from 'src/assignment/dto/survey-response.dto';
 import { Assignment } from '../../assignment/types/assignment.entity';
 
 export type Letter = {
+  shouldBeSent: boolean;
   date: Date;
   greeting: string;
   paragraphs: string[];
@@ -15,7 +16,7 @@ export type Letter = {
 /**
  * All the relevant metadata for an assignment in a nicer format.
  */
-type AssignmentMetaData = {
+export type AssignmentMetaData = {
   youth: {
     firstName: string;
     lastName: string;
@@ -47,8 +48,8 @@ type SentenceFactory = (metadata: AssignmentMetaData) => string;
 
 type SingleResponseSentence = {
   toSentence: (selectedOption: string, metadata: AssignmentMetaData) => string;
-  selectResponse: (responses: Response[]) => Response | undefined;
-  shouldIncludeSentence: (response: Response) => boolean;
+  selectResponse: (responses: SurveyResponseDto[]) => SurveyResponseDto | undefined;
+  shouldIncludeSentence: (response: SurveyResponseDto) => boolean;
 };
 
 function isSingleResponseSentence(expr): expr is SingleResponseSentence {
@@ -62,8 +63,8 @@ type MultiResponseSentence = {
 
 type Fragment = {
   toFragment: (selectedOption: string, metadata: AssignmentMetaData) => string;
-  selectResponse: (responses: Response[]) => Response | undefined;
-  shouldIncludeFragment: (response: Response) => boolean;
+  selectResponse: (responses: SurveyResponseDto[]) => SurveyResponseDto | undefined;
+  shouldIncludeFragment: (response: SurveyResponseDto) => boolean;
 };
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -72,18 +73,18 @@ function isMultiResponseSentence(expr): expr is MultiResponseSentence {
 }
 
 export default function generateLetter(
-  assignment: Assignment,
+  responses: SurveyResponseDto[],
+  metadata: AssignmentMetaData,
   rules: LetterGenerationRules,
-  currentDate: Date = new Date(),
 ): Letter {
-  const metadata = extractMetaData(assignment, currentDate);
-
+  const generatedParagraphs = rules.paragraphs
+    .map((paragraphRules) => generateParagraph(paragraphRules, responses, metadata))
+    .filter((paragraph) => paragraph !== undefined);
   return {
-    date: currentDate,
+    shouldBeSent: generatedParagraphs.length >= 3,
+    date: metadata.dateOfLetterGeneration,
     greeting: rules.greeting,
-    paragraphs: rules.paragraphs
-      .map((paragraphRules) => generateParagraph(paragraphRules, assignment.responses, metadata))
-      .filter((paragraph) => paragraph !== undefined),
+    paragraphs: generatedParagraphs,
     closing: rules.closing,
     signature: {
       fullName: getFullName(metadata.reviewer.firstName, metadata.reviewer.lastName),
@@ -94,7 +95,7 @@ export default function generateLetter(
 
 function generateParagraph(
   paragraphRules: Paragraph,
-  responses: Response[],
+  responses: SurveyResponseDto[],
   metadata: AssignmentMetaData,
 ): string | undefined {
   const sentences: string[] = paragraphRules.sentences
@@ -110,7 +111,7 @@ function generateParagraph(
  */
 function generateSentence(
   sentence: Sentence,
-  responses: Response[],
+  responses: SurveyResponseDto[],
   metadata: AssignmentMetaData,
 ): string | undefined {
   if (typeof sentence === 'function') {
@@ -120,15 +121,15 @@ function generateSentence(
     // TODO: log if no response is found
     if (response === undefined) {
       return undefined;
-    } else if (response) {
-      return sentence.toSentence(response.option.text.toLowerCase(), metadata);
+    } else if (response && sentence.shouldIncludeSentence(response)) {
+      return sentence.toSentence(response.selectedOption.toLowerCase(), metadata);
     }
   } else {
     const fragments = sentence.fragments
       .map((fragment) => {
         const response = fragment.selectResponse(responses);
         if (response && fragment.shouldIncludeFragment(response)) {
-          return fragment.toFragment(response.option.text.toLowerCase(), metadata);
+          return fragment.toFragment(response.selectedOption.toLowerCase(), metadata);
         } else {
           return undefined;
         }
@@ -144,7 +145,7 @@ function generateSentence(
   }
 }
 
-function extractMetaData(assignment: Assignment, currentDate: Date): AssignmentMetaData {
+export function extractMetaData(assignment: Assignment, currentDate: Date): AssignmentMetaData {
   return {
     youth: {
       firstName: assignment.youth.firstName,

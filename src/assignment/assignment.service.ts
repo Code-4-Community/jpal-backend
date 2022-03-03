@@ -1,5 +1,10 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import DEFAULT_LETTER_GENERATION_RULES from 'src/util/letter-generation/defaultLetterGenerationRules';
+import generateLetter, {
+  AssignmentMetaData,
+  Letter,
+} from 'src/util/letter-generation/generateLetter';
 import { Repository } from 'typeorm';
 import { Option } from '../option/types/option.entity';
 import { Question } from '../question/types/question.entity';
@@ -23,7 +28,7 @@ export class AssignmentService {
 
   async getByUuid(uuid: string): Promise<Assignment> {
     return await this.assignmentRepository.findOne({
-      relations: ['responses', 'responses.question', 'responses.option'],
+      relations: ['responses', 'responses.question', 'responses.option', 'youth', 'reviewer'],
       where: { uuid },
     });
   }
@@ -69,5 +74,12 @@ export class AssignmentService {
     assignment.status = AssignmentStatus.COMPLETED;
     await this.assignmentRepository.save(assignment);
     return await this.getByUuid(uuid);
+  }
+
+  async generatePreviewLetter(
+    responses: SurveyResponseDto[],
+    metadata: AssignmentMetaData,
+  ): Promise<Letter> {
+    return generateLetter(responses, metadata, DEFAULT_LETTER_GENERATION_RULES);
   }
 }

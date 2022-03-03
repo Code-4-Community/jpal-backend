@@ -1,4 +1,4 @@
-import { Response } from '../../response/types/response.entity';
+import { SurveyResponseDto } from 'src/assignment/dto/survey-response.dto';
 import { LetterGenerationRules } from './generateLetter';
 
 const DEFAULT_LETTER_GENERATION_RULES: LetterGenerationRules = {
@@ -10,7 +10,7 @@ const DEFAULT_LETTER_GENERATION_RULES: LetterGenerationRules = {
           `${youth.fullName} worked for me at the Wharton School during this past Summer.`,
         {
           toSentence: (qualifier, { youth }) =>
-            `Overall, ${youth.fullName} was ${aOrAn(qualifier)} employee.`,
+            `Overall, ${youth.firstName} was ${aOrAn(qualifier)} employee.`,
           selectResponse: (responses) => findByRegex(responses, /^Overall,/),
           shouldIncludeSentence: ifOneOfTheseWords([
             'Good',
@@ -25,13 +25,13 @@ const DEFAULT_LETTER_GENERATION_RULES: LetterGenerationRules = {
       sentences: [
         {
           toSentence: (qualifier, { youth }) =>
-            `${youth.fullName} was ${qualifier} on time to work.`,
+            `${youth.firstName} was ${qualifier} on time to work.`,
           selectResponse: (responses) => findByRegex(responses, /on time to work/),
           shouldIncludeSentence: ifOneOfTheseWords(['Almost Always', 'Always']),
         },
         {
           toSentence: (qualifier, { youth }) =>
-            `${youth.fullName} ${qualifier} completed work related tasks in a timely manner.`,
+            `${youth.firstName} ${qualifier} completed work related tasks in a timely manner.`,
           selectResponse: (responses) => findByRegex(responses, /timely manner/),
           shouldIncludeSentence: ifOneOfTheseWords(['Almost Always', 'Always']),
         },
@@ -141,8 +141,8 @@ function joinEndingWithAnd(list: string[]): string {
 /**
  * This is a hack, we should encode some enum into the question entity so we can clearly identify them.
  */
-function findByRegex(responses: Response[], regex: RegExp): Response | undefined {
-  return responses.find((response) => regex.test(response.question.text));
+function findByRegex(responses: SurveyResponseDto[], regex: RegExp): SurveyResponseDto | undefined {
+  return responses.find((response) => regex.test(response.question));
 }
 
 /**
@@ -150,8 +150,8 @@ function findByRegex(responses: Response[], regex: RegExp): Response | undefined
  * Not case sensitive.
  */
 function ifOneOfTheseWords(validOptions: string[]): (Response) => boolean {
-  return (response: Response) =>
-    validOptions.map((str) => str.toLowerCase()).includes(response.option.text.toLowerCase());
+  return (response: SurveyResponseDto) =>
+    validOptions.map((str) => str.toLowerCase()).includes(response.selectedOption.toLowerCase());
 }
 
 export default DEFAULT_LETTER_GENERATION_RULES;
