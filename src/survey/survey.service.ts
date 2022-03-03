@@ -29,9 +29,12 @@ export class SurveyService {
   ) {}
 
   async create(surveyTemplateId: number, name: string, creator: User) {
-    const surveyTemplate = await this.surveyTemplateRepository.findOneOrFail({
+    const surveyTemplate = await this.surveyTemplateRepository.findOne({
       id: surveyTemplateId,
     });
+    if (!surveyTemplate) {
+      throw new BadRequestException('Requested survey template does not exist');
+    }
     return this.surveyRepository.create({
       surveyTemplate,
       name,
@@ -41,13 +44,21 @@ export class SurveyService {
   }
 
   async getByUUID(uuid: string): Promise<Survey> {
-    return this.surveyRepository.findOneOrFail({ uuid });
+    const survey = this.surveyRepository.findOne({ where: { uuid } });
+    if (!survey) {
+      throw new BadRequestException('Requested survey does not exist');
+    }
+    return survey;
   }
 
-  async findAllSurveys(user: User): Promise<Survey[]> {
+  async findAllSurveysByUser(user: User): Promise<Survey[]> {
     return this.surveyRepository.find({
       where: { creator: user },
     });
+  }
+
+  async getAllSurveys(): Promise<Survey[]> {
+    return this.surveyRepository.find();
   }
 
   /**
@@ -95,6 +106,9 @@ export class SurveyService {
     }
 
     const reviewer = await this.reviewerRepository.findOne({ where: { uuid: reviewerUuid } });
+    if (!reviewer) {
+      throw new BadRequestException('Requested reviewer does not exist');
+    }
 
     if (reviewer === undefined) {
       throw new BadRequestException(`Reviewer with uuid ${reviewerUuid} does not exist`);
