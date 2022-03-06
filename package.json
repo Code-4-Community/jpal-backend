@@ -52,6 +52,7 @@
     "@types/mailgun-js": "^0.22.12",
     "aws-sdk": "^2.943.0",
     "bcrypt": "^5.0.1",
+    "bottleneck": "^2.19.5",
     "class-transformer": "^0.4.0",
     "class-validator": "^0.13.1",
     "cognito-jwt-token-validator": "^1.0.0",
