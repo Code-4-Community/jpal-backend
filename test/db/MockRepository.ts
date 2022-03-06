@@ -1,5 +1,5 @@
 /**
- * A mock TypeORM repository for use in e2e tests. Maintains state like an actual database.
+ * A stateful mock TypeORM repository for use in tests
  */
 export class MockRepository<T extends { id: number }, K extends Omit<T, 'id'> = Omit<T, 'id'>> {
   private data: T[];

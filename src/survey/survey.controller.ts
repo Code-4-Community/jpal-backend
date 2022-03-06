@@ -1,12 +1,13 @@
-import { Body, Controller, Get, Param, ParseUUIDPipe, Post } from '@nestjs/common';
-
+import { Body, Controller, Get, Param, ParseUUIDPipe, Post, Patch } from '@nestjs/common';
 import { Auth } from '../auth/decorators/auth.decorator';
 import { CreateSurveyDto } from './dto/create-survey.dto';
 import { Survey } from './types/survey.entity';
 import { SurveyService } from './survey.service';
 import { Role } from '../user/types/role';
 import { ReqUser } from '../auth/decorators/user.decorator';
+import { CreateBatchAssignmentsDto } from './dto/create-batch-assignments.dto';
 import { User } from '../user/types/user.entity';
+import { SurveyData } from './dto/survey-assignment.dto';
 
 @Controller('survey')
 export class SurveyController {
@@ -28,6 +29,22 @@ export class SurveyController {
     );
   }
 
+  @Patch()
+  @Auth(Role.RESEARCHER, Role.ADMIN)
+  async createBatchAssignments(
+    @Body() createBatchAssignmentsDto: CreateBatchAssignmentsDto,
+  ): Promise<void> {
+    await this.surveyService.createBatchAssignments(createBatchAssignmentsDto);
+  }
+
+  @Get(':surveyUuid/:reviewerUuid')
+  getReviewerSurvey(
+    @Param('surveyUuid', ParseUUIDPipe) surveyUuid: string,
+    @Param('reviewerUuid', ParseUUIDPipe) reviewerUuid: string,
+  ): Promise<SurveyData> {
+    return this.surveyService.getReviewerSurvey(surveyUuid, reviewerUuid);
+  }
+
   @Get(':uuid')
   @Auth(Role.RESEARCHER, Role.ADMIN)
   getByUUID(@Param('uuid', ParseUUIDPipe) uuid: string): Promise<Survey> {
@@ -37,6 +54,10 @@ export class SurveyController {
   @Get()
   @Auth(Role.ADMIN, Role.RESEARCHER)
   findAllSurveys(@ReqUser() user: User): Promise<Survey[]> {
-    return this.surveyService.findAllSurveys(user);
+    if (user.role == Role.ADMIN) {
+      return this.surveyService.findAllSurveysByUser(user);
+    } else if (user.role == Role.RESEARCHER) {
+      return this.surveyService.getAllSurveys();
+    }
   }
 }

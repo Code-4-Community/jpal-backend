@@ -11,12 +11,20 @@ import { UserService } from './user.service';
 export const mockUser: User = {
   id: 1,
   email: 'test@test.com',
-  firstName: 'test',
+  firstName: 'William',
   lastName: 'user',
   role: Role.ADMIN,
 };
 
-const listMockUsers: User[] = [mockUser];
+export const mockResearcher: User = {
+  id: 2,
+  email: 'test@test.com',
+  firstName: 'Paige',
+  lastName: 'Turner',
+  role: Role.RESEARCHER,
+};
+
+const listMockUsers: User[] = [mockUser, mockResearcher];
 
 const mockUserRepository: Partial<Repository<User>> = {
   create(user?: DeepPartial<User> | DeepPartial<User>[]): any {

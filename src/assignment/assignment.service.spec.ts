@@ -3,7 +3,7 @@ import { Repository } from 'typeorm';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Assignment } from './types/assignment.entity';
 import { AssignmentService } from './assignment.service';
-import { mockSurvey, mockSurveyTemplate } from '../survey/survey.service.spec';
+import { mockSurvey, mockSurveyTemplate } from '../survey/survey.controller.spec';
 import { reviewerExamples } from '../reviewer/reviewer.examples';
 import { youthExamples } from '../youth/youth.examples';
 import { AssignmentStatus } from './types/assignmentStatus';
@@ -19,6 +19,7 @@ import { Response } from '../response/types/response.entity';
 const reviewer_UUID = '123e4567-e89b-12d3-a456-426614174000';
 export const assignment_UUID = '123e4567-e89b-12d3-a456-426614174330';
 const assignment_UUID2 = '123e4567-e89b-12d3-a456-426614174330';
+const assignment_UUID3 = '79233fb0-9036-11ec-b909-0242ac120002';
 
 const mockReviewer: Reviewer = {
   ...reviewerExamples[0],
@@ -32,6 +33,26 @@ const mockYouth: Youth = {
 
 export const incompleteMockAssignment: Assignment = {
   uuid: assignment_UUID,
+  reviewer: mockReviewer,
+  youth: mockYouth,
+  id: 1,
+  survey: mockSurvey,
+  status: AssignmentStatus.INCOMPLETE,
+  responses: [],
+};
+
+export const inProgressMockAssignment: Assignment = {
+  uuid: assignment_UUID,
+  reviewer: mockReviewer,
+  youth: mockYouth,
+  id: 1,
+  survey: mockSurvey,
+  status: AssignmentStatus.IN_PROGRESS,
+  responses: [],
+};
+
+export const incompleteMockAssignment2: Assignment = {
+  uuid: assignment_UUID3,
   reviewer: mockReviewer,
   youth: mockYouth,
   id: 1,
@@ -132,7 +153,21 @@ describe('AssignmentService', () => {
   });
 
   it('should complete an assignment', async () => {
+    jest.spyOn(mockAssignmentRepository, 'findOne').mockResolvedValueOnce(incompleteMockAssignment);
     const assignment = await service.complete(mockAssignment.uuid, mockResponses);
     expect(assignment).toEqual(mockAssignment);
+  });
+
+  it('should not start an assignment that is complete', () => {
+    jest.spyOn(mockAssignmentRepository, 'findOne').mockResolvedValueOnce(mockAssignment);
+    expect(service.start(mockAssignment.uuid)).rejects.toThrow();
+  });
+
+  it('should start an assignment', async () => {
+    jest
+      .spyOn(mockAssignmentRepository, 'findOne')
+      .mockResolvedValueOnce(incompleteMockAssignment2);
+    const assignment = await service.start(assignment_UUID3);
+    expect(assignment.status).toEqual(AssignmentStatus.IN_PROGRESS);
   });
 });
