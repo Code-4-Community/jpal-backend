@@ -14,6 +14,7 @@ import { Question } from '../question/types/question.entity';
 import { SurveyData } from './dto/survey-assignment.dto';
 import { Youth as SurveyDataYouth } from './dto/survey-assignment.dto';
 import { Question as SurveyDataQuestion } from './dto/survey-assignment.dto';
+import { EmailService } from 'src/util/email/email.service';
 
 @Injectable()
 export class SurveyService {
@@ -26,6 +27,7 @@ export class SurveyService {
     @InjectRepository(Youth) private youthRepository: Repository<Youth>,
     @InjectRepository(Reviewer)
     private reviewerRepository: Repository<Reviewer>,
+    private emailService: EmailService
   ) {}
 
   async create(surveyTemplateId: number, name: string, creator: User) {
@@ -86,6 +88,46 @@ export class SurveyService {
         };
       }),
     );
+  }
+
+  /**
+   * Sends an email to each of the reviewers with assignments for the given survey
+   * @param createBatchAssignmentsDto
+   */
+  async sendEmailToReviewersInBatchAssignment(createBatchAssignmentsDto: CreateBatchAssignmentsDto): Promise<void> {
+    for (const pair of createBatchAssignmentsDto.pairs) {
+      // queue the email to be sent to the reviewer with the link to /survey/:survey_id/:reviewer_id
+      const reviewerInfo = pair.reviewer;
+      const reviewer: Reviewer = await this.reviewerRepository.findOneOrFail({firstName: reviewerInfo.firstName, lastName: reviewerInfo.lastName})
+      const emailBodyHTML: string = this.generateEmailBodyHTML(createBatchAssignmentsDto.surveyUUID, reviewer.uuid)
+
+      // TODO: replace with actual subject
+      await this.emailService.queueEmail(reviewer.email, 'Complete your survey assignments!', emailBodyHTML)
+    }
+  }
+
+  /**
+   * Returns the HTML comprising the body of the email with a link to /survey/{surveyUUID}/{reviewerUUID}
+   * @param surveyUUID 
+   * @param reviewerUUID 
+   * @returns the email body HTML with a link to /survey/{surveyUUID}/{reviewerUUID}
+   */
+  generateEmailBodyHTML(surveyUUID: string, reviewerUUID: string): string {
+    // TODO: what is the actual link that we should be using?
+    const link: string = `http://localhost:5000/survey/${surveyUUID}/${reviewerUUID}`;
+    return `
+      <html>
+        <body>
+          <header><h1>Header goes here!</h1></header>
+          <main>
+            <p> First paragraph of text. </p> 
+            <p> Second paragraph of text. </p>
+            <p> Third paragraph of text. Please use <a href=${link}>this survey link</a> to generate recommendation letters. </p>
+            <p> Thank you, <br> JPAL </p>
+          </main>
+        </body>
+      </html>
+    `;
   }
 
   async getReviewerSurvey(surveyUuid: string, reviewerUuid: string): Promise<SurveyData> {
