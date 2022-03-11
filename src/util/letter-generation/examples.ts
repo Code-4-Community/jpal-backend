@@ -1,3 +1,5 @@
+import { Letter } from './generateLetter';
+
 const createFrequencyOptions = () => [
   {
     text: 'Never',
@@ -171,3 +173,18 @@ export const exampleResponses = [
     selectedOption: 'Yes',
   },
 ];
+
+export const exampleLetter: Letter = {
+  shouldBeSent: true,
+  date: new Date(2022, 1, 1),
+  greeting: 'To Whom It May Concern',
+  paragraphs: [
+    'Joe Shmoe worked for me at the Wharton School during this past Summer. Overall, Joe was an exceptional employee.',
+    'Joe always completed work related tasks in a timely manner.',
+    'Joe was an incredibly effective communicator. Joe was excellent at following instructions.',
+    "In addition to Joe's other strengths, Joe takes initiative, is trustworthy, is respectful, works well in teams, is good at responding to constructive criticism and is responsible.",
+    'Given the resources, I would hire Joe as a regular employee. I invite you to contact me if you would like more information. I can be reached at c4cneu.jpal+ben.lerner@gmail.com.',
+  ],
+  closing: 'Sincerely',
+  signature: { fullName: 'Ben Lerner', organization: 'The Wharton School' },
+};
