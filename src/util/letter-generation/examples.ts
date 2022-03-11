@@ -133,3 +133,41 @@ export const DEFAULT_SURVEY_QUESTIONS = [
     options: createYesNoOptions(),
   },
 ];
+
+export const exampleResponses = [
+  {
+    question: 'Overall, how would you rate {subject} as an employee?',
+    selectedOption: 'Exceptional',
+  },
+  {
+    question: 'How often did {subject} arrive on time for work?',
+    selectedOption: 'Always',
+  },
+  {
+    question: 'How often did {subject} complete work-related tasks in a timely manner?',
+    selectedOption: 'Always',
+  },
+  {
+    question: 'How was {subject} at communicating?',
+    selectedOption: 'Incredibly effective',
+  },
+  { question: 'How was {subject} at following instructions?', selectedOption: 'Excellent' },
+  { question: 'Did {subject} take initiative?', selectedOption: 'Yes' },
+  { question: 'Was {subject} trustworthy?', selectedOption: 'Yes' },
+  { question: 'Was {subject} respectful?', selectedOption: 'Yes' },
+  { question: 'Did {subject} work well in teams?', selectedOption: 'Yes' },
+  {
+    question: 'Was {subject} good at responding to constructive criticism?',
+    selectedOption: 'Yes',
+  },
+  { question: 'Was {subject} responsible?', selectedOption: 'Yes' },
+  {
+    question: 'Given enough resources, would you hire {subject} as a regular employee?',
+    selectedOption: 'Yes',
+  },
+  {
+    question:
+      "Would you be willing to act as a reference for Ada? Your email address will be provided if you respond 'Yes'.",
+    selectedOption: 'Yes',
+  },
+];
