@@ -113,8 +113,8 @@ export class SurveyService {
    * @returns the email body HTML with a link to /survey/{surveyUUID}/{reviewerUUID}
    */
   generateEmailBodyHTML(surveyUUID: string, reviewerUUID: string): string {
-    // TODO: what is the actual link that we should be using?
-    const link: string = `http://localhost:5000/survey/${surveyUUID}/${reviewerUUID}`;
+    const domain: string = process.env.PROD_URL || 'http://localhost:5000' 
+    const link: string = `${domain}/survey/${surveyUUID}/${reviewerUUID}`;
     return `
       <html>
         <body>
