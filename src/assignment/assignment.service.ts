@@ -1,14 +1,14 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import DEFAULT_LETTER_GENERATION_RULES from 'src/util/letter-generation/defaultLetterGenerationRules';
-import generateLetter, {
-  AssignmentMetaData,
-  Letter,
-} from 'src/util/letter-generation/generateLetter';
 import { Repository } from 'typeorm';
 import { Option } from '../option/types/option.entity';
 import { Question } from '../question/types/question.entity';
 import { Response } from '../response/types/response.entity';
+import DEFAULT_LETTER_GENERATION_RULES from '../util/letter-generation/defaultLetterGenerationRules';
+import generateLetter, {
+  AssignmentMetaData,
+  Letter,
+} from '../util/letter-generation/generateLetter';
 import { SurveyResponseDto } from './dto/survey-response.dto';
 import { Assignment } from './types/assignment.entity';
 import { AssignmentStatus } from './types/assignmentStatus';
