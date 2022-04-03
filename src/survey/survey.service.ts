@@ -106,9 +106,6 @@ export class SurveyService {
     }
 
     const reviewer = await this.reviewerRepository.findOne({ where: { uuid: reviewerUuid } });
-    if (!reviewer) {
-      throw new BadRequestException('Requested reviewer does not exist');
-    }
 
     if (reviewer === undefined) {
       throw new BadRequestException(`Reviewer with uuid ${reviewerUuid} does not exist`);

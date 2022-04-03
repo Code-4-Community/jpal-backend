@@ -119,6 +119,10 @@ const DEFAULT_LETTER_GENERATION_RULES: LetterGenerationRules = {
   closing: 'Sincerely',
 };
 
+/**
+ * This logic isn't quite right. "An honorable", "a union", e.g. It's probably not a big deal
+ * for now but just something to be aware of
+ */
 function aOrAn(word: string, capitalize = false): string {
   const AN = capitalize ? 'An' : 'an';
   const A = capitalize ? 'A' : 'a';
