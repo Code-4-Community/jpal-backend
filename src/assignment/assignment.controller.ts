@@ -7,7 +7,7 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
-import { extractMetaData, Letter } from 'src/util/letter-generation/generateLetter';
+import { extractMetaData, Letter } from '../util/letter-generation/generateLetter';
 import { AssignmentService } from './assignment.service';
 import { CompleteAssignmentDto } from './dto/complete-assignment.dto';
 import { Assignment } from './types/assignment.entity';
