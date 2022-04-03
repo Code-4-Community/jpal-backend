@@ -1,12 +1,16 @@
-import { Assignment } from '../assignment/types/assignment.entity';
 import { Connection } from 'typeorm';
 import { Factory, Seeder } from 'typeorm-seeding';
+import { Assignment } from '../assignment/types/assignment.entity';
 
 export default class CreateAssignments implements Seeder {
   public async run(factory: Factory, connection: Connection): Promise<any> {
     const reviewers = await connection.getRepository('reviewer').find();
     const youth = await connection.getRepository('youth').find();
     const surveys = await connection.getRepository('survey').find();
+
+    console.log('\ncreating assignments:');
+    console.log(`survey/${(surveys[0] as any).uuid}/${(reviewers[0] as any).uuid}`);
+    console.log(`survey/${(surveys[0] as any).uuid}/${(reviewers[1] as any).uuid}`);
 
     await connection
       .createQueryBuilder()

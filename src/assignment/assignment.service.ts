@@ -4,6 +4,11 @@ import { Repository } from 'typeorm';
 import { Option } from '../option/types/option.entity';
 import { Question } from '../question/types/question.entity';
 import { Response } from '../response/types/response.entity';
+import DEFAULT_LETTER_GENERATION_RULES from '../util/letter-generation/defaultLetterGenerationRules';
+import generateLetter, {
+  AssignmentMetaData,
+  Letter,
+} from '../util/letter-generation/generateLetter';
 import { SurveyResponseDto } from './dto/survey-response.dto';
 import { Assignment } from './types/assignment.entity';
 import { AssignmentStatus } from './types/assignmentStatus';
@@ -23,7 +28,7 @@ export class AssignmentService {
 
   async getByUuid(uuid: string): Promise<Assignment> {
     return await this.assignmentRepository.findOne({
-      relations: ['responses', 'responses.question', 'responses.option'],
+      relations: ['responses', 'responses.question', 'responses.option', 'youth', 'reviewer'],
       where: { uuid },
     });
   }
@@ -77,5 +82,12 @@ export class AssignmentService {
     }
     assignment.status = AssignmentStatus.IN_PROGRESS;
     return await this.assignmentRepository.save(assignment);
+  }
+
+  async generatePreviewLetter(
+    responses: SurveyResponseDto[],
+    metadata: AssignmentMetaData,
+  ): Promise<Letter> {
+    return generateLetter(responses, metadata, DEFAULT_LETTER_GENERATION_RULES);
   }
 }

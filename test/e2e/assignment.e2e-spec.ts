@@ -121,11 +121,14 @@ describe('Assignment e2e', () => {
           },
         },
       ],
+      // hacky sure, but we dont care about these anyway
+      reviewer: null,
+      youth: null,
     });
     expect(response.statusCode).toBe(201);
   });
 
-  // To identify difficult bug, do not generally test bad paths like this.
+  // To identify difficult bugs, do not generally test bad paths like this.
   it('should show bad request error when option is invalid', async () => {
     const response = await request(app.getHttpServer())
       .post(`/assignment/${assignmentUUID}`)

@@ -1,4 +1,4 @@
-export class SurveyResponseDto {
+export interface SurveyResponseDto {
   question: string;
   selectedOption: string;
 }
