@@ -15,7 +15,6 @@ import { Assignment } from '../../src/assignment/types/assignment.entity';
 import { Youth } from '../../src/youth/types/youth.entity';
 import { Reviewer } from '../../src/reviewer/types/reviewer.entity';
 import { CreateBatchAssignmentsDto } from '../../src/survey/dto/create-batch-assignments.dto';
-import { mockAssignment } from '../../src/assignment/assignment.service.spec';
 import { YouthRoles } from '../../src/youth/types/youthRoles';
 import { AssignmentStatus } from '../../src/assignment/types/assignmentStatus';
 

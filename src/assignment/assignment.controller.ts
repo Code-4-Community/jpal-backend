@@ -1,4 +1,12 @@
-import { BadRequestException, Body, Controller, Param, ParseUUIDPipe, Post } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Param,
+  ParseUUIDPipe,
+  Patch,
+  Post,
+} from '@nestjs/common';
 import { extractMetaData, Letter } from 'src/util/letter-generation/generateLetter';
 import { AssignmentService } from './assignment.service';
 import { CompleteAssignmentDto } from './dto/complete-assignment.dto';
@@ -18,10 +26,27 @@ export class AssignmentController {
     @Param('uuid', ParseUUIDPipe) uuid: string,
     @Body() completeAssignmentDto: CompleteAssignmentDto,
   ): Promise<Assignment> {
+    await this.assertAssignmentWithUuidExists(uuid);
+    return await this.assignmentService.complete(uuid, completeAssignmentDto.responses);
+  }
+
+  /**
+   * Marks an assignment as started, the resulting assignment will change status to IN_PROGRESS.
+   */
+  @Patch(':uuid')
+  async start(@Param('uuid', ParseUUIDPipe) uuid: string): Promise<Assignment> {
+    await this.assertAssignmentWithUuidExists(uuid);
+    return await this.assignmentService.start(uuid);
+  }
+
+  /**
+   * @param uuid UUID of the assignment
+   * @throws BadRequestException if the assignment does not exist
+   */
+  private async assertAssignmentWithUuidExists(uuid: string): Promise<void> {
     if (!(await this.assignmentService.getByUuid(uuid))) {
       throw new BadRequestException('This assignment does not exist.');
     }
-    return this.assignmentService.complete(uuid, completeAssignmentDto.responses);
   }
 
   @Post('/preview-letter/:uuid')
