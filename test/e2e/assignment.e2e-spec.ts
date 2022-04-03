@@ -121,6 +121,9 @@ describe('Assignment e2e', () => {
           },
         },
       ],
+      // hacky sure, but we dont care about these anyway
+      reviewer: null,
+      youth: null,
     });
     expect(response.statusCode).toBe(201);
   });
