@@ -11,6 +11,8 @@ import { Youth } from '../youth/types/youth.entity';
 import { Reviewer } from '../reviewer/types/reviewer.entity';
 import { CreateBatchAssignmentsDto } from './dto/create-batch-assignments.dto';
 import { listMockSurveys, mockSurvey, mockSurveyTemplate, UUID } from './survey.controller.spec';
+import { UtilModule } from '../util/util.module';
+import { EmailService } from '../util/email/email.service';
 
 export const mockSurveyRepository: Partial<Repository<Survey>> = {
   create(survey?: DeepPartial<Survey> | DeepPartial<Survey>[]): any {
@@ -42,6 +44,10 @@ export const mockSurveyTemplateRepository: Partial<Repository<SurveyTemplate>> =
   },
 };
 
+const mockEmailService: Partial<EmailService> = {
+  queueEmail: jest.fn(), 
+};
+
 describe('SurveyService', () => {
   let service: SurveyService;
   let mockAssignmentRepository: MockRepository<Assignment>;
@@ -53,8 +59,13 @@ describe('SurveyService', () => {
     mockYouthRepository = new MockRepository<Youth>();
     mockReviewerRepository = new MockRepository<Reviewer>();
     const module: TestingModule = await Test.createTestingModule({
+      imports: [UtilModule],
       providers: [
         SurveyService,
+        {
+          provide: EmailService,
+          useValue: mockEmailService,
+        },
         {
           provide: getRepositoryToken(Survey),
           useValue: mockSurveyRepository,
@@ -137,5 +148,42 @@ describe('SurveyService', () => {
         responses: [],
       },
     ]);
+  });
+
+  it('should email reviewers survey link after creating batch assignments', async () => {
+    const dto: CreateBatchAssignmentsDto = {
+      surveyUUID: 'test',
+      pairs: [
+        {
+          reviewer: {
+            email: 'alpha@sgmail.com',
+            firstName: 'Alpha',
+            lastName: 'Beta',
+          },
+          youth: {
+            email: 'gamma@gmail.com',
+            firstName: 'Gamma',
+            lastName: 'Delta',
+          },
+        },
+        {
+          reviewer: {
+            email: 'epsilon@sgmail.com',
+            firstName: 'Epsilon',
+            lastName: 'Omega',
+          },
+          youth: {
+            email: 'kappa@gmail.com',
+            firstName: 'Kappa',
+            lastName: 'Iota',
+          },
+        },
+      ],
+    };
+
+    await service.sendEmailToReviewersInBatchAssignment(dto);
+
+    // expect emailservice.queueEmail to have been called twice, once with first pair, once with second pair
+    // expect(mockEmailService.queueEmail).toHaveBeenCalledTimes(2);
   });
 });

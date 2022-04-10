@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Logger, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Survey } from './types/survey.entity';
@@ -14,10 +14,12 @@ import { Question } from '../question/types/question.entity';
 import { SurveyData } from './dto/survey-assignment.dto';
 import { Youth as SurveyDataYouth } from './dto/survey-assignment.dto';
 import { Question as SurveyDataQuestion } from './dto/survey-assignment.dto';
-import { EmailService } from 'src/util/email/email.service';
+import { EmailService } from '../util/email/email.service';
 
 @Injectable()
 export class SurveyService {
+  private logger = new Logger(SurveyService.name);
+
   constructor(
     @InjectRepository(Survey) private surveyRepository: Repository<Survey>,
     @InjectRepository(SurveyTemplate)
@@ -95,15 +97,21 @@ export class SurveyService {
    * @param createBatchAssignmentsDto
    */
   async sendEmailToReviewersInBatchAssignment(createBatchAssignmentsDto: CreateBatchAssignmentsDto): Promise<void> {
-    for (const pair of createBatchAssignmentsDto.pairs) {
-      // queue the email to be sent to the reviewer with the link to /survey/:survey_id/:reviewer_id
-      const reviewerInfo = pair.reviewer;
-      const reviewer: Reviewer = await this.reviewerRepository.findOneOrFail({firstName: reviewerInfo.firstName, lastName: reviewerInfo.lastName})
-      const emailBodyHTML: string = this.generateEmailBodyHTML(createBatchAssignmentsDto.surveyUUID, reviewer.uuid)
+    await Promise.all(createBatchAssignmentsDto.pairs.map(async (pair) => {
+      try {
+        // queue the email to be sent to the reviewer with the link to /survey/:survey_id/:reviewer_id
+        const reviewerInfo = pair.reviewer;
+        const reviewer: Reviewer = await this.reviewerRepository.findOneOrFail({firstName: reviewerInfo.firstName, lastName: reviewerInfo.lastName})
+        // TODO: replace with actual subject
+        const subject: string = 'Complete your survey assignments!' 
+        const emailBodyHTML: string = this.generateEmailBodyHTML(createBatchAssignmentsDto.surveyUUID, reviewer.uuid)
 
-      // TODO: replace with actual subject
-      await this.emailService.queueEmail(reviewer.email, 'Complete your survey assignments!', emailBodyHTML)
-    }
+        await this.emailService.queueEmail(reviewer.email, subject, emailBodyHTML)
+      }
+      catch (e) {
+        this.logger.error(e)
+      }
+    }));
   }
 
   /**
@@ -113,8 +121,8 @@ export class SurveyService {
    * @returns the email body HTML with a link to /survey/{surveyUUID}/{reviewerUUID}
    */
   generateEmailBodyHTML(surveyUUID: string, reviewerUUID: string): string {
-    const domain: string = process.env.PROD_URL || 'http://localhost:5000' 
-    const link: string = `${domain}/survey/${surveyUUID}/${reviewerUUID}`;
+    const domain = process.env.PROD_URL || 'http://localhost:5000' 
+    const link = `${domain}/survey/${surveyUUID}/${reviewerUUID}`;
     return `
       <html>
         <body>
