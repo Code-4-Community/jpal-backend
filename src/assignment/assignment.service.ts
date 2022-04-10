@@ -32,7 +32,7 @@ export class AssignmentService {
     let assignment = await this.getByUuid(uuid);
 
     if (assignment.responses === null) {
-      assignment.status == AssignmentStatus.COMPLETED;
+      assignment.status = AssignmentStatus.COMPLETED;
       return this.assignmentRepository.save(assignment);
     }
 
