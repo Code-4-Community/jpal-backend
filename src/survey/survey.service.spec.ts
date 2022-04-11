@@ -181,9 +181,10 @@ describe('SurveyService', () => {
       ],
     };
 
+    await service.createBatchAssignments(dto);
     await service.sendEmailToReviewersInBatchAssignment(dto);
 
-    // expect emailservice.queueEmail to have been called twice, once with first pair, once with second pair
-    // expect(mockEmailService.queueEmail).toHaveBeenCalledTimes(2);
+    expect(mockEmailService.queueEmail).toHaveBeenCalledTimes(2);
+    // expect(mockEmailService.queueEmail).toHaveBeenCalledWith('alpha@sgmail.com', service.emailSubject('Alpha', 'Beta'));
   });
 });

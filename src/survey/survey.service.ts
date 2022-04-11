@@ -68,6 +68,7 @@ export class SurveyService {
   /**
    * Creates a batch of Assignments given a surveyId and a list of pairs of Reviewers and Youth.
    * Creates the Reviewers and Youth if they don't exist.
+   * Sends emails containing a link to the survey to each of the reviewers for each of the youth
    * @param dto
    */
   async createBatchAssignments(dto: CreateBatchAssignmentsDto) {
@@ -93,25 +94,35 @@ export class SurveyService {
   }
 
   /**
-   * Sends an email to each of the reviewers with assignments for the given survey
-   * @param createBatchAssignmentsDto
+   * Sends an email to each of the reviewers for each of the youth they are assigned to
+   * @param dto
    */
-  async sendEmailToReviewersInBatchAssignment(createBatchAssignmentsDto: CreateBatchAssignmentsDto): Promise<void> {
-    await Promise.all(createBatchAssignmentsDto.pairs.map(async (pair) => {
-      try {
+  async sendEmailToReviewersInBatchAssignment(dto: CreateBatchAssignmentsDto): Promise<void> {
+    await Promise.all(dto.pairs.map(async (pair) => {
+     try {
         // queue the email to be sent to the reviewer with the link to /survey/:survey_id/:reviewer_id
         const reviewerInfo = pair.reviewer;
         const reviewer: Reviewer = await this.reviewerRepository.findOneOrFail({firstName: reviewerInfo.firstName, lastName: reviewerInfo.lastName})
-        // TODO: replace with actual subject
-        const subject: string = 'Complete your survey assignments!' 
-        const emailBodyHTML: string = this.generateEmailBodyHTML(createBatchAssignmentsDto.surveyUUID, reviewer.uuid)
+        const subject: string = this.emailSubject(reviewer.firstName, reviewer.lastName);
+        const emailBodyHTML: string = this.generateEmailBodyHTML(dto.surveyUUID, reviewer.uuid)
 
         await this.emailService.queueEmail(reviewer.email, subject, emailBodyHTML)
-      }
-      catch (e) {
-        this.logger.error(e)
-      }
+     }
+     catch (e) {
+       this.logger.error(e)
+     }
     }));
+  }
+
+  /**
+   * Returns the subject line of the email sent to reviewers 
+   * @param firstName 
+   * @param lastName 
+   * @returns the subject line 
+   */
+  emailSubject(firstName: string, lastName: string): string {
+    // TODO: replace with actual subject
+    return `Survey assignments for ${firstName} ${lastName}`;
   }
 
   /**
