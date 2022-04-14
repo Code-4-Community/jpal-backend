@@ -13,6 +13,7 @@ export const mockUser: User = {
   email: 'test@test.com',
   firstName: 'William',
   lastName: 'user',
+  creation_date: new Date("2-6'2022"),
   role: Role.ADMIN,
 };
 
@@ -21,6 +22,7 @@ export const mockResearcher: User = {
   email: 'test@test.com',
   firstName: 'Paige',
   lastName: 'Turner',
+  creation_date: new Date("2-6'2022"),
   role: Role.RESEARCHER,
 };
 
@@ -30,6 +32,7 @@ const mockUserRepository: Partial<Repository<User>> = {
   create(user?: DeepPartial<User> | DeepPartial<User>[]): any {
     return {
       id: 1,
+      creation_date: new Date("2-6'2022"),
       ...user,
     };
   },
@@ -86,6 +89,7 @@ describe('UserService', () => {
       email: mockUser.email,
       firstName: mockUser.firstName,
       lastName: mockUser.lastName,
+      creation_date: new Date("2-6'2022"),
       role: mockUser.role,
     });
     expect(mockAwsCreateUserService.adminCreateUser).toHaveBeenCalledWith(mockUser.email);

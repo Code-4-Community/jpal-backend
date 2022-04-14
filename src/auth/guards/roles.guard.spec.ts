@@ -9,6 +9,7 @@ const mockUser = (role: Role): User => ({
   email: 'test@test.com',
   firstName: 'first',
   lastName: 'last',
+  creation_date: new Date("2-6'2022"),
   role,
 });
 

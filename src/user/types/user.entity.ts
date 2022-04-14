@@ -1,5 +1,5 @@
 import { IsEmail } from 'class-validator';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import { Role } from './role';
 
 @Entity()
@@ -25,4 +25,7 @@ export class User {
     default: Role.ADMIN,
   })
   role: Role;
+
+  @CreateDateColumn()
+  creation_date: Date;
 }
