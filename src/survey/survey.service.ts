@@ -103,10 +103,15 @@ export class SurveyService {
         try {
           // queue the email to be sent to the reviewer with the link to /survey/:survey_id/:reviewer_id
           const reviewerInfo = pair.reviewer;
-          const reviewer: Reviewer = await this.reviewerRepository.findOneOrFail({
+          const reviewer: Reviewer = await this.reviewerRepository.findOne({
             firstName: reviewerInfo.firstName,
             lastName: reviewerInfo.lastName,
           });
+          if (!reviewer) {
+            throw new BadRequestException(
+              `Requested reviewer (${reviewerInfo.firstName} ${reviewerInfo.lastName}) does not exist`,
+            );
+          }
           const subject: string = this.emailSubject(reviewer.firstName, reviewer.lastName);
           const emailBodyHTML: string = this.generateEmailBodyHTML(dto.surveyUUID, reviewer.uuid);
 
