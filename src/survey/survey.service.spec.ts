@@ -45,7 +45,7 @@ export const mockSurveyTemplateRepository: Partial<Repository<SurveyTemplate>> =
 };
 
 const mockEmailService: Partial<EmailService> = {
-  queueEmail: jest.fn(), 
+  queueEmail: jest.fn(async (i, j, k) => Promise.resolve())
 };
 
 describe('SurveyService', () => {
@@ -151,14 +151,33 @@ describe('SurveyService', () => {
   });
 
   it('should email reviewers survey link after creating batch assignments', async () => {
+    const reviewer1 = {
+      id: 1,
+      uuid: 'test1',
+      email: 'alpha@sgmail.com',
+      firstName: 'Alpha',
+      lastName: 'Beta',
+    }
+    const reviewer2 = {
+      id: 2, 
+      uuid: 'test2',
+      email: 'epsilon@sgmail.com',
+      firstName: 'Epsilon',
+      lastName: 'Omega',
+    }
+
+    mockReviewerRepository.save(reviewer1);
+    mockReviewerRepository.save(reviewer2);
+
+    const surveyUUID = 'test';
     const dto: CreateBatchAssignmentsDto = {
-      surveyUUID: 'test',
+      surveyUUID: surveyUUID,
       pairs: [
         {
           reviewer: {
-            email: 'alpha@sgmail.com',
-            firstName: 'Alpha',
-            lastName: 'Beta',
+            email: reviewer1.email,
+            firstName: reviewer1.firstName,
+            lastName: reviewer1.lastName,
           },
           youth: {
             email: 'gamma@gmail.com',
@@ -168,9 +187,9 @@ describe('SurveyService', () => {
         },
         {
           reviewer: {
-            email: 'epsilon@sgmail.com',
-            firstName: 'Epsilon',
-            lastName: 'Omega',
+            email: reviewer2.email,
+            firstName: reviewer2.firstName,
+            lastName: reviewer2.lastName,
           },
           youth: {
             email: 'kappa@gmail.com',
@@ -185,6 +204,7 @@ describe('SurveyService', () => {
     await service.sendEmailToReviewersInBatchAssignment(dto);
 
     expect(mockEmailService.queueEmail).toHaveBeenCalledTimes(2);
-    // expect(mockEmailService.queueEmail).toHaveBeenCalledWith('alpha@sgmail.com', service.emailSubject('Alpha', 'Beta'));
+    expect(mockEmailService.queueEmail).toHaveBeenNthCalledWith(1, reviewer1.email, service.emailSubject(reviewer1.firstName, reviewer1.lastName), service.generateEmailBodyHTML(surveyUUID, reviewer1.uuid))
+    expect(mockEmailService.queueEmail).toHaveBeenNthCalledWith(2, reviewer2.email, service.emailSubject(reviewer2.firstName, reviewer2.lastName), service.generateEmailBodyHTML(surveyUUID, reviewer2.uuid))
   });
 });
