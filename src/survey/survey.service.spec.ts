@@ -45,7 +45,7 @@ export const mockSurveyTemplateRepository: Partial<Repository<SurveyTemplate>> =
 };
 
 const mockEmailService: Partial<EmailService> = {
-  queueEmail: jest.fn(async (i, j, k) => Promise.resolve())
+  queueEmail: jest.fn(),
 };
 
 describe('SurveyService', () => {
@@ -157,14 +157,14 @@ describe('SurveyService', () => {
       email: 'alpha@sgmail.com',
       firstName: 'Alpha',
       lastName: 'Beta',
-    }
+    };
     const reviewer2 = {
-      id: 2, 
+      id: 2,
       uuid: 'test2',
       email: 'epsilon@sgmail.com',
       firstName: 'Epsilon',
       lastName: 'Omega',
-    }
+    };
 
     mockReviewerRepository.save(reviewer1);
     mockReviewerRepository.save(reviewer2);
@@ -204,7 +204,17 @@ describe('SurveyService', () => {
     await service.sendEmailToReviewersInBatchAssignment(dto);
 
     expect(mockEmailService.queueEmail).toHaveBeenCalledTimes(2);
-    expect(mockEmailService.queueEmail).toHaveBeenNthCalledWith(1, reviewer1.email, service.emailSubject(reviewer1.firstName, reviewer1.lastName), service.generateEmailBodyHTML(surveyUUID, reviewer1.uuid))
-    expect(mockEmailService.queueEmail).toHaveBeenNthCalledWith(2, reviewer2.email, service.emailSubject(reviewer2.firstName, reviewer2.lastName), service.generateEmailBodyHTML(surveyUUID, reviewer2.uuid))
+    expect(mockEmailService.queueEmail).toHaveBeenNthCalledWith(
+      1,
+      reviewer1.email,
+      service.emailSubject(reviewer1.firstName, reviewer1.lastName),
+      service.generateEmailBodyHTML(surveyUUID, reviewer1.uuid),
+    );
+    expect(mockEmailService.queueEmail).toHaveBeenNthCalledWith(
+      2,
+      reviewer2.email,
+      service.emailSubject(reviewer2.firstName, reviewer2.lastName),
+      service.generateEmailBodyHTML(surveyUUID, reviewer2.uuid),
+    );
   });
 });

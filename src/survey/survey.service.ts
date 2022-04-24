@@ -29,7 +29,7 @@ export class SurveyService {
     @InjectRepository(Youth) private youthRepository: Repository<Youth>,
     @InjectRepository(Reviewer)
     private reviewerRepository: Repository<Reviewer>,
-    private emailService: EmailService
+    private emailService: EmailService,
   ) {}
 
   async create(surveyTemplateId: number, name: string, creator: User) {
@@ -98,27 +98,31 @@ export class SurveyService {
    * @param dto
    */
   async sendEmailToReviewersInBatchAssignment(dto: CreateBatchAssignmentsDto): Promise<void> {
-    await Promise.all(dto.pairs.map(async (pair) => {
-     try {
-        // queue the email to be sent to the reviewer with the link to /survey/:survey_id/:reviewer_id
-        const reviewerInfo = pair.reviewer;
-        const reviewer: Reviewer = await this.reviewerRepository.findOneOrFail({firstName: reviewerInfo.firstName, lastName: reviewerInfo.lastName})
-        const subject: string = this.emailSubject(reviewer.firstName, reviewer.lastName);
-        const emailBodyHTML: string = this.generateEmailBodyHTML(dto.surveyUUID, reviewer.uuid)
+    await Promise.all(
+      dto.pairs.map(async (pair) => {
+        try {
+          // queue the email to be sent to the reviewer with the link to /survey/:survey_id/:reviewer_id
+          const reviewerInfo = pair.reviewer;
+          const reviewer: Reviewer = await this.reviewerRepository.findOneOrFail({
+            firstName: reviewerInfo.firstName,
+            lastName: reviewerInfo.lastName,
+          });
+          const subject: string = this.emailSubject(reviewer.firstName, reviewer.lastName);
+          const emailBodyHTML: string = this.generateEmailBodyHTML(dto.surveyUUID, reviewer.uuid);
 
-        await this.emailService.queueEmail(reviewer.email, subject, emailBodyHTML)
-     }
-     catch (e) {
-       this.logger.error(e)
-     }
-    }));
+          await this.emailService.queueEmail(reviewer.email, subject, emailBodyHTML);
+        } catch (e) {
+          this.logger.error(e);
+        }
+      }),
+    );
   }
 
   /**
-   * Returns the subject line of the email sent to reviewers 
-   * @param firstName 
-   * @param lastName 
-   * @returns the subject line 
+   * Returns the subject line of the email sent to reviewers
+   * @param firstName
+   * @param lastName
+   * @returns the subject line
    */
   emailSubject(firstName: string, lastName: string): string {
     // TODO: replace with actual subject
@@ -127,12 +131,12 @@ export class SurveyService {
 
   /**
    * Returns the HTML comprising the body of the email with a link to /survey/{surveyUUID}/{reviewerUUID}
-   * @param surveyUUID 
-   * @param reviewerUUID 
+   * @param surveyUUID
+   * @param reviewerUUID
    * @returns the email body HTML with a link to /survey/{surveyUUID}/{reviewerUUID}
    */
   generateEmailBodyHTML(surveyUUID: string, reviewerUUID: string): string {
-    const domain = process.env.PROD_URL || 'http://localhost:5000' 
+    const domain = process.env.PROD_URL || 'http://localhost:5000';
     const link = `${domain}/survey/${surveyUUID}/${reviewerUUID}`;
     return `
       <html>
