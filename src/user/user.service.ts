@@ -1,8 +1,4 @@
-import {
-  ConflictException,
-  Injectable,
-  InternalServerErrorException,
-} from '@nestjs/common';
+import { ConflictException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { AwsCreateUserService } from '../util/aws-create-user/aws-create-user.service';
@@ -16,13 +12,15 @@ export class UserService {
     private awsCreateUser: AwsCreateUserService,
   ) {}
 
-  async create(email: string, role: Role): Promise<User> {
+  async create(email: string, firstName: string, lastName: string, role: Role): Promise<User> {
     const emailNotUnique = await this.userRepository.findOne({ email });
     if (!!emailNotUnique) throw new ConflictException('Email already exists');
     try {
       await this.awsCreateUser.adminCreateUser(email);
       const user = this.userRepository.create({
         email,
+        firstName,
+        lastName,
         role,
       });
       return this.userRepository.save(user);

@@ -2,26 +2,58 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { SurveyController } from './survey.controller';
 import { SurveyService } from './survey.service';
 import { Survey } from './types/survey.entity';
-import { mockSurvey, mockSurveyTemplate } from './survey.service.spec';
-import { mockUser } from '../user/user.service.spec';
+import { mockResearcher, mockUser } from '../user/user.service.spec';
 import { User } from 'src/user/types/user.entity';
+import { SurveyTemplate } from 'src/surveyTemplate/types/surveyTemplate.entity';
 
-const listMockSurveys: Survey[] = [];
+export const UUID = '123e4567-e89b-12d3-a456-426614174000';
 
-const mockSurveyService: Partial<SurveyService> = {
-  async create(
-    surveyTemplateId: number,
-    name: string,
-    creator: User,
-  ): Promise<Survey> {
+export const mockSurveyTemplate: SurveyTemplate = {
+  id: 1,
+  creator: mockUser,
+  questions: [],
+};
+
+export const mockSurvey: Survey = {
+  id: 1,
+  uuid: UUID,
+  surveyTemplate: mockSurveyTemplate,
+  name: 'Survey 1',
+  creator: mockUser,
+  assignments: [],
+  date: new Date('02-06-2022'),
+};
+
+export const mockSurvey2: Survey = {
+  id: 2,
+  uuid: UUID,
+  surveyTemplate: mockSurveyTemplate,
+  name: 'Survey 2',
+  creator: mockResearcher,
+  assignments: [],
+  date: new Date('02-06-2022'),
+};
+
+export const listMockSurveys: Survey[] = [mockSurvey, mockSurvey2];
+
+export const mockSurveyService: Partial<SurveyService> = {
+  async create(surveyTemplateId: number, name: string, creator: User): Promise<Survey> {
     return {
       id: 1,
+      uuid: UUID,
       surveyTemplate: mockSurveyTemplate,
       name,
       creator,
+      assignments: [],
+      date: new Date('02-06-2022'),
     };
   },
-  findAllSurveys: jest.fn(() => Promise.resolve(listMockSurveys)),
+  async getByUUID(): Promise<Survey> {
+    return mockSurvey;
+  },
+
+  findAllSurveysByUser: jest.fn(() => Promise.resolve([mockSurvey])),
+  getAllSurveys: jest.fn(() => Promise.resolve(listMockSurveys)),
 };
 
 describe('SurveyController', () => {
@@ -48,15 +80,24 @@ describe('SurveyController', () => {
   it('should create a user', async () => {
     const survey = await controller.create(
       {
-        name: 'Test Survey',
+        name: 'Survey 1',
         surveyTemplateId: 1,
       },
       mockUser,
     );
     expect(survey).toEqual(mockSurvey);
   });
+
+  it('should return a survey by its uuid', async () => {
+    const survey = await controller.getByUUID(UUID);
+    expect(survey).toEqual(mockSurvey);
+  });
   it('should find all the surveys created by the user', async () => {
-    expect(await controller.findAllSurveys(mockUser)).toEqual(listMockSurveys);
-    expect(mockSurveyService.findAllSurveys).toHaveBeenCalled();
+    expect(await controller.findAllSurveys(mockUser)).toEqual([mockSurvey]);
+    expect(mockSurveyService.findAllSurveysByUser).toHaveBeenCalled();
+  });
+  it('should get all surveys for researcher', async () => {
+    expect(await controller.findAllSurveys(mockResearcher)).toEqual(listMockSurveys);
+    expect(mockSurveyService.getAllSurveys).toHaveBeenCalled();
   });
 });

@@ -1,12 +1,15 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import { IsEmail } from 'class-validator';
+import { YouthRoles } from './youthRoles';
 
 @Entity()
 export class Youth {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({
+    unique: true,
+  })
   @IsEmail()
   email: string;
 
@@ -15,4 +18,11 @@ export class Youth {
 
   @Column()
   lastName: string;
+
+  @Column({
+    type: 'enum',
+    enum: YouthRoles,
+    default: YouthRoles.TREATMENT,
+  })
+  role: YouthRoles;
 }

@@ -11,10 +11,20 @@ import { UserService } from './user.service';
 export const mockUser: User = {
   id: 1,
   email: 'test@test.com',
+  firstName: 'William',
+  lastName: 'user',
   role: Role.ADMIN,
 };
 
-const listMockUsers: User[] = [mockUser];
+export const mockResearcher: User = {
+  id: 2,
+  email: 'test@test.com',
+  firstName: 'Paige',
+  lastName: 'Turner',
+  role: Role.RESEARCHER,
+};
+
+const listMockUsers: User[] = [mockUser, mockResearcher];
 
 const mockUserRepository: Partial<Repository<User>> = {
   create(user?: DeepPartial<User> | DeepPartial<User>[]): any {
@@ -60,20 +70,25 @@ describe('UserService', () => {
 
   it('should fail to create a user whose email is already claimed', async () => {
     await expect(
-      service.create('already@exists.com', mockUser.role),
+      service.create('already@exists.com', mockUser.firstName, mockUser.lastName, mockUser.role),
     ).rejects.toThrow(new ConflictException('Email already exists'));
   });
 
   it('should create a fresh unclaimed user', async () => {
-    const goodResponse = await service.create(mockUser.email, mockUser.role);
+    const goodResponse = await service.create(
+      mockUser.email,
+      mockUser.firstName,
+      mockUser.lastName,
+      mockUser.role,
+    );
     expect(goodResponse).toEqual({
       id: 1,
       email: mockUser.email,
+      firstName: mockUser.firstName,
+      lastName: mockUser.lastName,
       role: mockUser.role,
     });
-    expect(mockAwsCreateUserService.adminCreateUser).toHaveBeenCalledWith(
-      mockUser.email,
-    );
+    expect(mockAwsCreateUserService.adminCreateUser).toHaveBeenCalledWith(mockUser.email);
   });
 
   it('should fetch all admins', async () => {

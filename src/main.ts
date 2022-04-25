@@ -10,7 +10,6 @@ async function bootstrap() {
   app.enableCors();
   app.useGlobalPipes(
     new ValidationPipe({
-      whitelist: true,
       transform: true,
     }),
   );
@@ -21,13 +20,10 @@ async function bootstrap() {
   });
 
   Sentry.init({
-    dsn:
-      process.env.NODE_ENV === 'production'
-        ? process.env.SENTRY_DSN
-        : undefined,
+    dsn: process.env.NODE_ENV === 'production' ? process.env.SENTRY_DSN : undefined,
     tracesSampleRate: 1.0,
   });
 
-  await app.listen(5000);
+  await app.listen(process.env.PORT || 5000);
 }
 bootstrap();

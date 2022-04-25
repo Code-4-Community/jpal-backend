@@ -17,6 +17,8 @@ export class UserController {
   create(@Body() createUserRequestDto: CreateUserRequestDto): Promise<User> {
     return this.userService.create(
       createUserRequestDto.email,
+      createUserRequestDto.firstName,
+      createUserRequestDto.lastName,
       createUserRequestDto.role,
     );
   }

@@ -2,24 +2,30 @@ import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
 import { Repository } from 'typeorm';
-import { AppModule } from '../src/app.module';
-import { Role } from '../src/user/types/role';
-import { User } from '../src/user/types/user.entity';
-import { overrideExternalDependencies } from './mockProviders';
-import { clearDb } from './e2e.utils';
+import { AppModule } from '../../src/app.module';
+import { Role } from '../../src/user/types/role';
+import { User } from '../../src/user/types/user.entity';
+import { overrideExternalDependencies } from '../mockProviders';
+import { clearDb } from '../e2e.utils';
 
 const initialResearcherUser: Omit<User, 'id'> = {
   email: 'test@test.com',
+  firstName: 'test',
+  lastName: 'researcher',
   role: Role.RESEARCHER,
 };
 
 const adminUser1: Omit<User, 'id'> = {
   email: 'cooladmin@test.com',
+  firstName: 'test',
+  lastName: 'admin1',
   role: Role.ADMIN,
 };
 
 const adminUser2: Omit<User, 'id'> = {
   email: 'lameadmin@test.com',
+  firstName: 'test',
+  lastName: 'admin2',
   role: Role.ADMIN,
 };
 
@@ -50,17 +56,21 @@ describe('Users e2e', () => {
     expect.assertions(2);
     const response = await request(app.getHttpServer())
       .post('/user')
-      .send({ email: 'test.createuser@test.com', role: Role.RESEARCHER })
-      .set(
-        'Authorization',
-        `Bearer ${JSON.stringify({ email: 'test@test.com' })}`,
-      );
+      .send({
+        email: 'test.createuser@test.com',
+        firstName: 'test2',
+        lastName: 'researcher',
+        role: Role.RESEARCHER,
+      })
+      .set('Authorization', `Bearer ${JSON.stringify({ email: 'test@test.com' })}`);
 
     expect(response.statusCode).toBe(201);
     expect(response.body).toEqual(
       expect.objectContaining({
         id: expect.any(Number),
         email: 'test.createuser@test.com',
+        firstName: 'test2',
+        lastName: 'researcher',
         role: Role.RESEARCHER,
       }),
     );
@@ -70,17 +80,21 @@ describe('Users e2e', () => {
     expect.assertions(2);
     const response = await request(app.getHttpServer())
       .post('/user')
-      .send({ email: 'test.createuser@test.com', role: Role.ADMIN })
-      .set(
-        'Authorization',
-        `Bearer ${JSON.stringify({ email: 'test@test.com' })}`,
-      );
+      .send({
+        email: 'test.createuser@test.com',
+        firstName: 'test2',
+        lastName: 'admin',
+        role: Role.ADMIN,
+      })
+      .set('Authorization', `Bearer ${JSON.stringify({ email: 'test@test.com' })}`);
 
     expect(response.statusCode).toBe(201);
     expect(response.body).toEqual(
       expect.objectContaining({
         id: expect.any(Number),
         email: 'test.createuser@test.com',
+        firstName: 'test2',
+        lastName: 'admin',
         role: Role.ADMIN,
       }),
     );
@@ -90,16 +104,9 @@ describe('Users e2e', () => {
     expect.assertions(3);
     const response = await request(app.getHttpServer())
       .get('/user')
-      .set(
-        'Authorization',
-        `Bearer ${JSON.stringify({ email: 'test@test.com' })}`,
-      );
+      .set('Authorization', `Bearer ${JSON.stringify({ email: 'test@test.com' })}`);
 
-    expect(await usersRepository.find()).toEqual([
-      initialResearcherUser,
-      adminUser1,
-      adminUser2,
-    ]);
+    expect(await usersRepository.find()).toEqual([initialResearcherUser, adminUser1, adminUser2]);
 
     expect(response.statusCode).toBe(200);
     expect(response.body).toEqual([

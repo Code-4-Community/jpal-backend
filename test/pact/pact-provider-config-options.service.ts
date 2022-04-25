@@ -7,12 +7,8 @@ import { User } from '../../src/user/types/user.entity';
 import { Repository } from 'typeorm';
 import { clearDb } from '../e2e.utils';
 @Injectable()
-export class PactProviderConfigOptionsService
-  implements PactProviderOptionsFactory
-{
-  public constructor(
-    @InjectRepository(User) private userRepository: Repository<User>,
-  ) {}
+export class PactProviderConfigOptionsService implements PactProviderOptionsFactory {
+  public constructor(@InjectRepository(User) private userRepository: Repository<User>) {}
 
   public createPactProviderOptions(): PactProviderOptions {
     // For builds triggered by a 'contract content changed' webhook,
@@ -23,9 +19,7 @@ export class PactProviderConfigOptionsService
       pactUrls: [process.env.PACT_URL],
     };
 
-    const GIT_BRANCH = process.env.GITHUB_REF
-      ? process.env.GITHUB_REF.substring(11)
-      : undefined;
+    const GIT_BRANCH = process.env.GITHUB_REF ? process.env.GITHUB_REF.substring(11) : undefined;
 
     const fetchPactsDynamicallyOpts = {
       provider: 'jpal-backend',
@@ -51,6 +45,8 @@ export class PactProviderConfigOptionsService
           await this.userRepository.save({
             email: 'test@test.com',
             role: Role.ADMIN,
+            firstName: 'admin',
+            lastName: 'user',
           });
           return 'Animals removed to the db';
         },
@@ -59,6 +55,8 @@ export class PactProviderConfigOptionsService
           await this.userRepository.save({
             email: 'c4cneu.jpal+researcher@gmail.com',
             role: Role.RESEARCHER,
+            firstName: 'researcher',
+            lastName: 'user',
           });
           token = JSON.stringify({ email: 'c4cneu.jpal+researcher@gmail.com' });
           return 'Request sent as a user authorized as a researcher';
@@ -68,6 +66,8 @@ export class PactProviderConfigOptionsService
           await this.userRepository.save({
             email: 'c4cneu.jpal+admin@gmail.com',
             role: Role.ADMIN,
+            firstName: 'admin',
+            lastName: 'user',
           });
           token = JSON.stringify({ email: 'c4cneu.jpal+admin@gmail.com' });
           return 'Request sent as a user authorized as an admin';

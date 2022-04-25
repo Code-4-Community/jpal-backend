@@ -10,6 +10,8 @@ import { AuthService } from './auth.service';
 const mockUser: User = {
   id: 1,
   email: 'test@test.com',
+  firstName: 'first',
+  lastName: 'last',
   role: Role.RESEARCHER,
 };
 
@@ -48,13 +50,9 @@ describe('AuthService', () => {
   });
 
   test('verifyJwt', async () => {
-    mockCognitoService.validate.mockRejectedValueOnce(
-      new UnauthorizedException(),
-    );
+    mockCognitoService.validate.mockRejectedValueOnce(new UnauthorizedException());
 
-    await expect(service.verifyJwt('5')).rejects.toThrow(
-      new UnauthorizedException(),
-    );
+    await expect(service.verifyJwt('5')).rejects.toThrow(new UnauthorizedException());
     expect(mockCognitoService.validate).toHaveBeenCalledTimes(1);
 
     mockCognitoService.validate.mockResolvedValueOnce(mockUser);
