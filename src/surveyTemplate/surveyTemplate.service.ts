@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { SurveyTemplate } from './types/surveyTemplate.entity';
 import { Repository } from 'typeorm';
@@ -17,11 +17,10 @@ export class SurveyTemplateService {
     const result = await this.surveyTemplateRepository.findOne({
       where: { id: id },
     });
-    
+
     if (!result) {
       throw new BadRequestException(`Survey template id ${id} not found`);
-    }
-    else {
+    } else {
       return result;
     }
   }

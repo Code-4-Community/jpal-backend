@@ -1,11 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { SurveyTemplateService } from './surveyTemplate.service';
-import { DeepPartial, Repository } from "typeorm";
-import { SurveyTemplate } from "./types/surveyTemplate.entity";
-import { getRepositoryToken } from "@nestjs/typeorm";
+import { Repository } from 'typeorm';
+import { SurveyTemplate } from './types/surveyTemplate.entity';
+import { getRepositoryToken } from '@nestjs/typeorm';
 import { mockUser } from '../user/user.service.spec';
 
-const mockSurveyTemplate: SurveyTemplate = { id: 1, creator: mockUser, questions: []}
+const mockSurveyTemplate: SurveyTemplate = { id: 1, creator: mockUser, questions: [] };
 
 const mockSurveyTemplateRepository: Partial<Repository<SurveyTemplate>> = {
   async findOne(query: any): Promise<SurveyTemplate | undefined> {
@@ -33,7 +33,7 @@ describe('SurveyTemplateService', () => {
 
   it('should error if the requested id is not in the table', async () => {
     expect(async () => {
-      await service.getById(-1)
+      await service.getById(-1);
     }).rejects.toThrow();
   });
 
@@ -42,7 +42,7 @@ describe('SurveyTemplateService', () => {
     expect(surveyTemplate).toEqual({
       id: 1,
       creator: mockUser,
-      questions: []
+      questions: [],
     });
   });
 });

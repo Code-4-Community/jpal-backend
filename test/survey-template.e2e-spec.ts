@@ -6,7 +6,7 @@ import { AppModule } from '../src/app.module';
 import { User } from '../src/user/types/user.entity';
 import { overrideExternalDependencies } from './mockProviders';
 import { clearDb } from './e2e.utils';
-import { SurveyTemplate } from "../src/surveyTemplate/types/surveyTemplate.entity";
+import { SurveyTemplate } from '../src/surveyTemplate/types/surveyTemplate.entity';
 import { mockUser } from '../src/user/user.service.spec';
 
 describe('Survey Template e2e', () => {
@@ -35,9 +35,10 @@ describe('Survey Template e2e', () => {
     await clearDb();
     const user = await usersRepository.save(mockUser);
 
-    const savedSurveyTemplate = await surveyTemplateRepository.save(
-      { creator: user, questions: [] }
-    );
+    const savedSurveyTemplate = await surveyTemplateRepository.save({
+      creator: user,
+      questions: [],
+    });
 
     savedSurveyTemplateId = savedSurveyTemplate.id;
   });
@@ -46,10 +47,7 @@ describe('Survey Template e2e', () => {
     expect.assertions(1);
     const response = await request(app.getHttpServer())
       .get('/survey-template/123')
-      .set(
-        'Authorization',
-        `Bearer ${JSON.stringify({ email: 'test@test.com' })}`,
-      );
+      .set('Authorization', `Bearer ${JSON.stringify({ email: 'test@test.com' })}`);
 
     expect(response.statusCode).toBe(400);
   });
@@ -58,17 +56,14 @@ describe('Survey Template e2e', () => {
     expect.assertions(2);
     const response = await request(app.getHttpServer())
       .get(`/survey-template/${savedSurveyTemplateId}`)
-      .set(
-        'Authorization',
-        `Bearer ${JSON.stringify({ email: 'test@test.com' })}`,
-      );
+      .set('Authorization', `Bearer ${JSON.stringify({ email: 'test@test.com' })}`);
 
     expect(response.statusCode).toBe(200);
     expect(response.body).toEqual(
       expect.objectContaining({
         id: expect.any(Number),
         creator: mockUser,
-        questions: []
+        questions: [],
       }),
     );
   });

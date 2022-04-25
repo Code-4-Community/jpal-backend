@@ -1,8 +1,8 @@
-import { BadRequestException, Controller, Get, Param, ParseIntPipe } from "@nestjs/common";
-import { SurveyTemplateService } from "./surveyTemplate.service";
-import { SurveyTemplate } from "./types/surveyTemplate.entity";
-import { Auth } from "../auth/decorators/auth.decorator";
-import { Role } from "../user/types/role";
+import { Controller, Get, Param, ParseIntPipe } from '@nestjs/common';
+import { SurveyTemplateService } from './surveyTemplate.service';
+import { SurveyTemplate } from './types/surveyTemplate.entity';
+import { Auth } from '../auth/decorators/auth.decorator';
+import { Role } from '../user/types/role';
 
 @Controller('survey-template')
 export class SurveyTemplateController {
