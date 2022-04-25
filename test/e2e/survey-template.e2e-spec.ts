@@ -2,13 +2,13 @@ import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
 import { Repository } from 'typeorm';
-import { AppModule } from '../src/app.module';
-import { User } from '../src/user/types/user.entity';
-import { overrideExternalDependencies } from './mockProviders';
-import { clearDb } from './e2e.utils';
-import { SurveyTemplate } from '../src/surveyTemplate/types/surveyTemplate.entity';
-import { mockUser } from '../src/user/user.service.spec';
-import { mockSurveyTemplate } from '../src/survey/survey.controller.spec';
+import { AppModule } from '../../src/app.module';
+import { User } from '../../src/user/types/user.entity';
+import { overrideExternalDependencies } from '../mockProviders';
+import { clearDb } from '../e2e.utils';
+import { SurveyTemplate } from '../../src/surveyTemplate/types/surveyTemplate.entity';
+import { mockUser } from '../../src/user/user.service.spec';
+import { mockSurveyTemplate } from '../../src/survey/survey.controller.spec';
 
 describe('Survey Template e2e', () => {
   let app: INestApplication;
