@@ -1,17 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { SurveyTemplateService } from './surveyTemplate.service';
 import { DeepPartial, Repository } from "typeorm";
-import { User } from "../user/types/user.entity";
 import { SurveyTemplate } from "./types/surveyTemplate.entity";
-import { Role } from "../user/types/role";
-import { BadRequestException } from "@nestjs/common";
 import { getRepositoryToken } from "@nestjs/typeorm";
+import { mockUser } from '../user/user.service.spec';
 
-const mockUser: User = {
-  id: 1,
-  email: 'test@test.com',
-  role: Role.ADMIN,
-};
 const mockSurveyTemplate: SurveyTemplate = { id: 1, creator: mockUser, questions: []}
 
 const mockSurveyTemplateRepository: Partial<Repository<SurveyTemplate>> = {
@@ -39,9 +32,9 @@ describe('SurveyTemplateService', () => {
   });
 
   it('should error if the requested id is not in the table', async () => {
-    expect(
-      await service.getById(-1),
-    ).toEqual(undefined);
+    expect(async () => {
+      await service.getById(-1)
+    }).rejects.toThrow();
   });
 
   it('should return expected survey template if id in table', async () => {

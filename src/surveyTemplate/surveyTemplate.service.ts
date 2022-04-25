@@ -14,8 +14,15 @@ export class SurveyTemplateService {
    * Gets the survey template corresponding to id.
    */
   async getById(id: number): Promise<SurveyTemplate> {
-    return await this.surveyTemplateRepository.findOne({
+    const result = await this.surveyTemplateRepository.findOne({
       where: { id: id },
     });
+    
+    if (!result) {
+      throw new BadRequestException(`Survey template id ${id} not found`);
+    }
+    else {
+      return result;
+    }
   }
 }

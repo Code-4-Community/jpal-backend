@@ -4,12 +4,8 @@ import { SurveyTemplateService } from "./surveyTemplate.service";
 import { User } from "../user/types/user.entity";
 import { Role } from "../user/types/role";
 import { SurveyTemplate } from "./types/surveyTemplate.entity";
+import { mockUser } from '../user/user.service.spec';
 
-const mockUser: User = {
-  id: 1,
-  email: 'test@test.com',
-  role: Role.ADMIN,
-};
 const mockSurveyTemplate: SurveyTemplate = { id: 1, creator: mockUser, questions: []}
 
 const serviceMock: Partial<SurveyTemplateService> = {

@@ -14,12 +14,6 @@ export class SurveyTemplateController {
   @Get(':id')
   @Auth(Role.ADMIN, Role.RESEARCHER)
   async getById(@Param('id', ParseIntPipe) id: number): Promise<SurveyTemplate> {
-      const result: SurveyTemplate = await this.surveyTemplateService.getById(id);
-      if (!result) {
-        throw new BadRequestException(`Survey template id ${id} not found`);
-      }
-      else {
-        return result;
-      }
+    return await this.surveyTemplateService.getById(id);
   }
 }
