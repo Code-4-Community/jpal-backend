@@ -36,6 +36,11 @@ export class AssignmentService {
   async complete(uuid: string, responses: SurveyResponseDto[]): Promise<Assignment> {
     let assignment = await this.getByUuid(uuid);
 
+    if (assignment.responses === null) {
+      assignment.status = AssignmentStatus.COMPLETED;
+      return this.assignmentRepository.save(assignment);
+    }
+
     if (assignment.status === AssignmentStatus.COMPLETED) {
       throw new BadRequestException('Responses for this assignment have already been recorded.');
     }
