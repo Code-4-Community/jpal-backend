@@ -8,8 +8,8 @@ import { Assignment } from '../assignment/types/assignment.entity';
 import { Youth } from '../youth/types/youth.entity';
 import { Reviewer } from '../reviewer/types/reviewer.entity';
 import { EmailService } from '../util/email/email.service';
-import { AmazonSESWrapper } from 'src/util/email/amazon-ses.wrapper';
-import { amazonSESClientFactory } from 'src/util/email/amazon-ses-client.factory';
+import { AmazonSESWrapper } from '../util/email/amazon-ses.wrapper';
+import { amazonSESClientFactory } from '../util/email/amazon-ses-client.factory';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Survey, SurveyTemplate, Assignment, Youth, Reviewer])],
