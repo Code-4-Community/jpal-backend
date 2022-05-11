@@ -12,6 +12,7 @@ import { SentryInterceptor } from './sentry.interceptor';
 import { UserController } from './user/user.controller';
 import { UserModule } from './user/user.module';
 import { UtilModule } from './util/util.module';
+import { SurveyTemplateModule } from './surveyTemplate/surveyTemplate.module';
 import { SurveyModule } from './survey/survey.module';
 import { AssignmentModule } from './assignment/assignment.module';
 @Module({
@@ -24,6 +25,7 @@ import { AssignmentModule } from './assignment/assignment.module';
     AuthModule,
     UtilModule,
     HealthModule,
+    SurveyTemplateModule,
     SurveyModule,
     AssignmentModule,
   ],
