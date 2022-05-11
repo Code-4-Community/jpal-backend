@@ -35,6 +35,7 @@ export class SurveyController {
     @Body() createBatchAssignmentsDto: CreateBatchAssignmentsDto,
   ): Promise<void> {
     await this.surveyService.createBatchAssignments(createBatchAssignmentsDto);
+    await this.surveyService.sendEmailToReviewersInBatchAssignment(createBatchAssignmentsDto);
   }
 
   @Get(':surveyUuid/:reviewerUuid')

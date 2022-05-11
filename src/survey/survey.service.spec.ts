@@ -11,6 +11,8 @@ import { Youth } from '../youth/types/youth.entity';
 import { Reviewer } from '../reviewer/types/reviewer.entity';
 import { CreateBatchAssignmentsDto } from './dto/create-batch-assignments.dto';
 import { listMockSurveys, mockSurvey, mockSurveyTemplate, UUID } from './survey.controller.spec';
+import { UtilModule } from '../util/util.module';
+import { EmailService } from '../util/email/email.service';
 
 export const mockSurveyRepository: Partial<Repository<Survey>> = {
   create(survey?: DeepPartial<Survey> | DeepPartial<Survey>[]): any {
@@ -42,6 +44,10 @@ export const mockSurveyTemplateRepository: Partial<Repository<SurveyTemplate>> =
   },
 };
 
+const mockEmailService: Partial<EmailService> = {
+  queueEmail: jest.fn(),
+};
+
 describe('SurveyService', () => {
   let service: SurveyService;
   let mockAssignmentRepository: MockRepository<Assignment>;
@@ -53,8 +59,13 @@ describe('SurveyService', () => {
     mockYouthRepository = new MockRepository<Youth>();
     mockReviewerRepository = new MockRepository<Reviewer>();
     const module: TestingModule = await Test.createTestingModule({
+      imports: [UtilModule],
       providers: [
         SurveyService,
+        {
+          provide: EmailService,
+          useValue: mockEmailService,
+        },
         {
           provide: getRepositoryToken(Survey),
           useValue: mockSurveyRepository,
@@ -137,5 +148,73 @@ describe('SurveyService', () => {
         responses: [],
       },
     ]);
+  });
+
+  it('should email reviewers survey link after creating batch assignments', async () => {
+    const reviewer1 = {
+      id: 1,
+      uuid: 'test1',
+      email: 'alpha@sgmail.com',
+      firstName: 'Alpha',
+      lastName: 'Beta',
+    };
+    const reviewer2 = {
+      id: 2,
+      uuid: 'test2',
+      email: 'epsilon@sgmail.com',
+      firstName: 'Epsilon',
+      lastName: 'Omega',
+    };
+
+    mockReviewerRepository.save(reviewer1);
+    mockReviewerRepository.save(reviewer2);
+
+    const surveyUUID = 'test';
+    const dto: CreateBatchAssignmentsDto = {
+      surveyUUID: surveyUUID,
+      pairs: [
+        {
+          reviewer: {
+            email: reviewer1.email,
+            firstName: reviewer1.firstName,
+            lastName: reviewer1.lastName,
+          },
+          youth: {
+            email: 'gamma@gmail.com',
+            firstName: 'Gamma',
+            lastName: 'Delta',
+          },
+        },
+        {
+          reviewer: {
+            email: reviewer2.email,
+            firstName: reviewer2.firstName,
+            lastName: reviewer2.lastName,
+          },
+          youth: {
+            email: 'kappa@gmail.com',
+            firstName: 'Kappa',
+            lastName: 'Iota',
+          },
+        },
+      ],
+    };
+
+    await service.createBatchAssignments(dto);
+    await service.sendEmailToReviewersInBatchAssignment(dto);
+
+    expect(mockEmailService.queueEmail).toHaveBeenCalledTimes(2);
+    expect(mockEmailService.queueEmail).toHaveBeenNthCalledWith(
+      1,
+      reviewer1.email,
+      service.emailSubject(reviewer1.firstName, reviewer1.lastName),
+      service.generateEmailBodyHTML(surveyUUID, reviewer1.uuid),
+    );
+    expect(mockEmailService.queueEmail).toHaveBeenNthCalledWith(
+      2,
+      reviewer2.email,
+      service.emailSubject(reviewer2.firstName, reviewer2.lastName),
+      service.generateEmailBodyHTML(surveyUUID, reviewer2.uuid),
+    );
   });
 });
