@@ -1,5 +1,7 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { EmailService } from '../util/email/email.service';
+import { Youth } from '../youth/types/youth.entity';
 import { Repository } from 'typeorm';
 import { Option } from '../option/types/option.entity';
 import { Question } from '../question/types/question.entity';
@@ -12,9 +14,13 @@ import generateLetter, {
 import { SurveyResponseDto } from './dto/survey-response.dto';
 import { Assignment } from './types/assignment.entity';
 import { AssignmentStatus } from './types/assignmentStatus';
+import { Cron } from '@nestjs/schedule';
+import { YouthRoles } from '../youth/types/youthRoles';
 
 @Injectable()
 export class AssignmentService {
+  private logger = new Logger(AssignmentService.name);
+
   constructor(
     @InjectRepository(Assignment)
     private assignmentRepository: Repository<Assignment>,
@@ -24,6 +30,9 @@ export class AssignmentService {
     private responseRepository: Repository<Response>,
     @InjectRepository(Option)
     private optionRepository: Repository<Option>,
+    @InjectRepository(Youth)
+    private youthRepository: Repository<Youth>,
+    private emailService: EmailService,
   ) {}
 
   async getByUuid(uuid: string): Promise<Assignment> {
@@ -94,5 +103,37 @@ export class AssignmentService {
     metadata: AssignmentMetaData,
   ): Promise<Letter> {
     return generateLetter(responses, metadata, DEFAULT_LETTER_GENERATION_RULES);
+  }
+
+  async sendToYouth(assignment: Assignment): Promise<void> {
+    try {
+      // This will need to have the actual letter content
+      await this.emailService.queueEmail(
+        assignment.youth.email,
+        `New letter of recommendation from ${assignment.reviewer.firstName} ${assignment.reviewer.lastName}`,
+        'Letter',
+      );
+
+      assignment.sent = true;
+      await this.assignmentRepository.save(assignment);
+    } catch (e) {
+      this.logger.error(e);
+    }
+  }
+
+  // Send letters to treatment youth every day at 5pm
+  @Cron('0 17 * * *')
+  async sendUnsentSurveysToYouth(): Promise<void> {
+    console.log('sending assignments');
+    const unsentAssignments = await this.assignmentRepository.find({
+      relations: ['youth', 'reviewer'],
+      where: { sent: false },
+    });
+    await Promise.all(
+      unsentAssignments.map(
+        async (assignment) =>
+          assignment.youth.role === YouthRoles.TREATMENT && this.sendToYouth(assignment),
+      ),
+    );
   }
 }

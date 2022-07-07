@@ -30,6 +30,9 @@ export class Assignment {
   })
   status: AssignmentStatus;
 
+  @Column({ default: false })
+  sent: boolean;
+
   @OneToMany(() => Response, (response) => response.assignment, {
     cascade: true,
   })

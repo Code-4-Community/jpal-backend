@@ -15,6 +15,11 @@ import { Question } from '../question/types/question.entity';
 import { mock } from 'jest-mock-extended';
 import { Option } from '../option/types/option.entity';
 import { Response } from '../response/types/response.entity';
+import { EmailService } from '../util/email/email.service';
+
+const mockEmailService: Partial<EmailService> = {
+  queueEmail: jest.fn(),
+};
 
 const reviewer_UUID = '123e4567-e89b-12d3-a456-426614174000';
 export const assignment_UUID = '123e4567-e89b-12d3-a456-426614174330';
@@ -39,6 +44,7 @@ export const incompleteMockAssignment: Assignment = {
   survey: mockSurvey,
   status: AssignmentStatus.INCOMPLETE,
   responses: [],
+  sent: false,
 };
 
 export const inProgressMockAssignment: Assignment = {
@@ -49,6 +55,7 @@ export const inProgressMockAssignment: Assignment = {
   survey: mockSurvey,
   status: AssignmentStatus.IN_PROGRESS,
   responses: [],
+  sent: false,
 };
 
 export const incompleteMockAssignment2: Assignment = {
@@ -59,6 +66,7 @@ export const incompleteMockAssignment2: Assignment = {
   survey: mockSurvey,
   status: AssignmentStatus.INCOMPLETE,
   responses: [],
+  sent: false,
 };
 
 export const mockAssignment: Assignment = {
@@ -69,6 +77,7 @@ export const mockAssignment: Assignment = {
   survey: mockSurvey,
   status: AssignmentStatus.COMPLETED,
   responses: [],
+  sent: false,
 };
 
 export const mockAssignment2: Assignment = {
@@ -79,6 +88,7 @@ export const mockAssignment2: Assignment = {
   survey: mockSurvey,
   status: AssignmentStatus.COMPLETED,
   responses: [],
+  sent: false,
 };
 
 export const mockResponses: SurveyResponseDto[] = [
@@ -104,6 +114,7 @@ const mockAssignmentRepository: Partial<Repository<Assignment>> = {
 const mockQuestionRepository = mock<Repository<Question>>();
 const mockOptionRepository = mock<Repository<Option>>();
 const mockResponseRepository = mock<Repository<Response>>();
+const mockYouthRepository = mock<Repository<Youth>>();
 
 mockOptionRepository.findOne.mockResolvedValue(exampleOptions[0]);
 mockQuestionRepository.findOne.mockResolvedValue({
@@ -135,6 +146,14 @@ describe('AssignmentService', () => {
         {
           provide: getRepositoryToken(Response),
           useValue: mockResponseRepository,
+        },
+        {
+          provide: getRepositoryToken(Youth),
+          useValue: mockYouthRepository,
+        },
+        {
+          provide: EmailService,
+          useValue: mockEmailService,
         },
       ],
     }).compile();
