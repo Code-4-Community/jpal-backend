@@ -35,7 +35,7 @@ export class AssignmentService {
     @InjectRepository(Youth)
     private youthRepository: Repository<Youth>,
     private emailService: EmailService,
-  ) { }
+  ) {}
 
   async getByUuid(uuid: string): Promise<Assignment> {
     return await this.assignmentRepository.findOne({
