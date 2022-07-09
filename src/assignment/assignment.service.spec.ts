@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { Repository } from 'typeorm';
+import { FindConditions, FindManyOptions, Repository } from 'typeorm';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Assignment } from './types/assignment.entity';
 import { AssignmentService } from './assignment.service';
@@ -16,6 +16,7 @@ import { mock } from 'jest-mock-extended';
 import { Option } from '../option/types/option.entity';
 import { Response } from '../response/types/response.entity';
 import { EmailService } from '../util/email/email.service';
+import { YouthRoles } from '../youth/types/youthRoles';
 
 const mockEmailService: Partial<EmailService> = {
   queueEmail: jest.fn(),
@@ -33,6 +34,12 @@ const mockReviewer: Reviewer = {
 };
 const mockYouth: Youth = {
   ...youthExamples[0],
+  role: YouthRoles.TREATMENT,
+  id: 1,
+};
+const mockYouthControl: Youth = {
+  ...youthExamples[0],
+  role: YouthRoles.CONTROL,
   id: 1,
 };
 
@@ -88,6 +95,17 @@ export const mockAssignment2: Assignment = {
   survey: mockSurvey,
   status: AssignmentStatus.COMPLETED,
   responses: [],
+  sent: true,
+};
+
+export const mockAssignment3: Assignment = {
+  uuid: assignment_UUID2,
+  reviewer: mockReviewer,
+  youth: mockYouthControl,
+  id: 1,
+  survey: mockSurvey,
+  status: AssignmentStatus.COMPLETED,
+  responses: [],
   sent: false,
 };
 
@@ -103,11 +121,25 @@ export const mockResponses: SurveyResponseDto[] = [
 ];
 
 const mockAssignmentRepository: Partial<Repository<Assignment>> = {
-  save<T>(assignment): T {
+  save<T>(assignment: T): T {
     return assignment;
   },
   async findOne() {
     return incompleteMockAssignment;
+  },
+  find(options?: FindManyOptions<Assignment> | FindConditions<Assignment>): Promise<Assignment[]> {
+    // this checks to see if a find call is trying to filter the results by completed and unsent
+    if (options && 'where' in options) {
+      return Promise.resolve([mockAssignment]);
+    }
+    return Promise.resolve([
+      mockAssignment,
+      mockAssignment2,
+      mockAssignment3,
+      incompleteMockAssignment2,
+      incompleteMockAssignment,
+      inProgressMockAssignment,
+    ]);
   },
 };
 
@@ -123,6 +155,7 @@ mockQuestionRepository.findOne.mockResolvedValue({
   surveyTemplate: mockSurveyTemplate,
   options: exampleOptions,
 });
+mockResponseRepository.find.mockResolvedValue([]);
 
 describe('AssignmentService', () => {
   let service: AssignmentService;
@@ -188,5 +221,22 @@ describe('AssignmentService', () => {
       .mockResolvedValueOnce(incompleteMockAssignment2);
     const assignment = await service.start(assignment_UUID3);
     expect(assignment.status).toEqual(AssignmentStatus.IN_PROGRESS);
+  });
+
+  it('should send complete, unsent surveys to treatment youth', async () => {
+    const assignmentSave = jest.spyOn(mockAssignmentRepository, 'save');
+    await service.sendUnsentSurveysToYouth();
+
+    expect(mockEmailService.queueEmail).toHaveBeenCalledTimes(1);
+    expect(mockEmailService.queueEmail).toHaveBeenNthCalledWith(
+      1,
+      mockAssignment.youth.email,
+      service.youthEmailSubject(reviewerExamples[0].firstName, reviewerExamples[0].lastName),
+      service.youthEmailBodyHTML(),
+      [expect.objectContaining({ filename: 'letter.pdf', content: expect.anything() })],
+    );
+
+    expect(assignmentSave).toHaveBeenCalledTimes(1);
+    expect(assignmentSave).toReturnWith({ ...mockAssignment, sent: true });
   });
 });

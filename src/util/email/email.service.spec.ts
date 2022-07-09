@@ -27,7 +27,7 @@ describe('EmailService', () => {
   });
 
   it('should send an email by calling SES', async () => {
-    mockAmazonSESWrapper.sendEmails.mockResolvedValue('success!');
+    mockAmazonSESWrapper.sendEmails.mockResolvedValue({ MessageId: 'test', $response: null });
     await service.queueEmail('recipient@email.com', 'Subject', '<h1>body</h1>');
     expect(mockAmazonSESWrapper.sendEmails).toHaveBeenCalled();
   });
@@ -35,7 +35,7 @@ describe('EmailService', () => {
   // Real time test, expected to finish in 2000ms, may be flaky
   it('should handle rate limiting large batches of emails', async () => {
     const startTime = new Date().getTime();
-    mockAmazonSESWrapper.sendEmails.mockResolvedValue('success!');
+    mockAmazonSESWrapper.sendEmails.mockResolvedValue({ MessageId: 'test', $response: null });
     const EMAILS = 28;
     const tasks = [];
     for (let i = 0; i < EMAILS; i++) {

@@ -9,6 +9,7 @@ import { Response } from '../response/types/response.entity';
 import DEFAULT_LETTER_GENERATION_RULES from '../util/letter-generation/defaultLetterGenerationRules';
 import generateLetter, {
   AssignmentMetaData,
+  extractMetaData,
   Letter,
 } from '../util/letter-generation/generateLetter';
 import { SurveyResponseDto } from './dto/survey-response.dto';
@@ -16,6 +17,7 @@ import { Assignment } from './types/assignment.entity';
 import { AssignmentStatus } from './types/assignmentStatus';
 import { Cron } from '@nestjs/schedule';
 import { YouthRoles } from '../youth/types/youthRoles';
+import { letterToPdf } from '../util/letter-generation/letter-to-pdf';
 
 @Injectable()
 export class AssignmentService {
@@ -33,7 +35,7 @@ export class AssignmentService {
     @InjectRepository(Youth)
     private youthRepository: Repository<Youth>,
     private emailService: EmailService,
-  ) {}
+  ) { }
 
   async getByUuid(uuid: string): Promise<Assignment> {
     return await this.assignmentRepository.findOne({
@@ -105,13 +107,47 @@ export class AssignmentService {
     return generateLetter(responses, metadata, DEFAULT_LETTER_GENERATION_RULES);
   }
 
+  async generateLetterFromCompletedAssignment(
+    assignment: Assignment,
+    metadata: AssignmentMetaData,
+  ): Promise<Letter> {
+    if (assignment.status !== AssignmentStatus.COMPLETED) {
+      throw new BadRequestException('This assignment has not been completed');
+    }
+    const responses = await this.responseRepository.find({
+      where: { assignment },
+      relations: ['question', 'option'],
+    });
+
+    const responseDTO: SurveyResponseDto[] = responses.map((response) => ({
+      question: response.question.text,
+      selectedOption: response.option.text,
+    }));
+
+    return generateLetter(responseDTO, metadata, DEFAULT_LETTER_GENERATION_RULES);
+  }
+
+  youthEmailSubject(reviewerFirstName: string, reviewerLastName: string) {
+    return `New letter of recommendation from ${reviewerFirstName} ${reviewerLastName}`;
+  }
+
+  youthEmailBodyHTML() {
+    return `<p>Please find the attached letter of recommendation.</p>`;
+  }
+
   async sendToYouth(assignment: Assignment): Promise<void> {
     try {
-      // This will need to have the actual letter content
+      const letter = await this.generateLetterFromCompletedAssignment(
+        assignment,
+        extractMetaData(assignment, new Date()),
+      );
+      const pdf = await letterToPdf(letter).asBuffer();
+
       await this.emailService.queueEmail(
         assignment.youth.email,
-        `New letter of recommendation from ${assignment.reviewer.firstName} ${assignment.reviewer.lastName}`,
-        'Letter',
+        this.youthEmailSubject(assignment.reviewer.firstName, assignment.reviewer.lastName),
+        this.youthEmailBodyHTML(),
+        [{ filename: 'letter.pdf', content: pdf }],
       );
 
       assignment.sent = true;
@@ -124,11 +160,11 @@ export class AssignmentService {
   // Send letters to treatment youth every day at 5pm
   @Cron('0 17 * * *')
   async sendUnsentSurveysToYouth(): Promise<void> {
-    console.log('sending assignments');
     const unsentAssignments = await this.assignmentRepository.find({
       relations: ['youth', 'reviewer'],
-      where: { sent: false },
+      where: { sent: false, status: AssignmentStatus.COMPLETED },
     });
+
     await Promise.all(
       unsentAssignments.map(
         async (assignment) =>
