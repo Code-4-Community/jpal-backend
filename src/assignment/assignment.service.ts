@@ -1,5 +1,7 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { EmailService } from '../util/email/email.service';
+import { Youth } from '../youth/types/youth.entity';
 import { Repository } from 'typeorm';
 import { Option } from '../option/types/option.entity';
 import { Question } from '../question/types/question.entity';
@@ -7,14 +9,20 @@ import { Response } from '../response/types/response.entity';
 import DEFAULT_LETTER_GENERATION_RULES from '../util/letter-generation/defaultLetterGenerationRules';
 import generateLetter, {
   AssignmentMetaData,
+  extractMetaData,
   Letter,
 } from '../util/letter-generation/generateLetter';
 import { SurveyResponseDto } from './dto/survey-response.dto';
 import { Assignment } from './types/assignment.entity';
 import { AssignmentStatus } from './types/assignmentStatus';
+import { Cron } from '@nestjs/schedule';
+import { YouthRoles } from '../youth/types/youthRoles';
+import { letterToPdf } from '../util/letter-generation/letter-to-pdf';
 
 @Injectable()
 export class AssignmentService {
+  private logger = new Logger(AssignmentService.name);
+
   constructor(
     @InjectRepository(Assignment)
     private assignmentRepository: Repository<Assignment>,
@@ -24,6 +32,9 @@ export class AssignmentService {
     private responseRepository: Repository<Response>,
     @InjectRepository(Option)
     private optionRepository: Repository<Option>,
+    @InjectRepository(Youth)
+    private youthRepository: Repository<Youth>,
+    private emailService: EmailService,
   ) {}
 
   async getByUuid(uuid: string): Promise<Assignment> {
@@ -94,5 +105,71 @@ export class AssignmentService {
     metadata: AssignmentMetaData,
   ): Promise<Letter> {
     return generateLetter(responses, metadata, DEFAULT_LETTER_GENERATION_RULES);
+  }
+
+  async generateLetterFromCompletedAssignment(
+    assignment: Assignment,
+    metadata: AssignmentMetaData,
+  ): Promise<Letter> {
+    if (assignment.status !== AssignmentStatus.COMPLETED) {
+      throw new BadRequestException('This assignment has not been completed');
+    }
+    const responses = await this.responseRepository.find({
+      where: { assignment: assignment.id },
+      relations: ['question', 'option'],
+    });
+
+    const responseDTO: SurveyResponseDto[] = responses.map((response) => ({
+      question: response.question.text,
+      selectedOption: response.option.text,
+    }));
+
+    return generateLetter(responseDTO, metadata, DEFAULT_LETTER_GENERATION_RULES);
+  }
+
+  youthEmailSubject(reviewerFirstName: string, reviewerLastName: string) {
+    return `New letter of recommendation from ${reviewerFirstName} ${reviewerLastName}`;
+  }
+
+  youthEmailBodyHTML() {
+    return `<p>Please find the attached letter of recommendation.</p>`;
+  }
+
+  async sendToYouth(assignment: Assignment): Promise<void> {
+    try {
+      const letter = await this.generateLetterFromCompletedAssignment(
+        assignment,
+        extractMetaData(assignment, new Date()),
+      );
+      const pdf = await letterToPdf(letter).asBuffer();
+
+      await this.emailService.queueEmail(
+        assignment.youth.email,
+        this.youthEmailSubject(assignment.reviewer.firstName, assignment.reviewer.lastName),
+        this.youthEmailBodyHTML(),
+        [{ filename: 'letter.pdf', content: pdf }],
+      );
+
+      assignment.sent = true;
+      await this.assignmentRepository.save(assignment);
+    } catch (e) {
+      this.logger.error(e);
+    }
+  }
+
+  // Send letters to treatment youth every day at 5pm
+  @Cron('0 17 * * *')
+  async sendUnsentSurveysToYouth(): Promise<void> {
+    const unsentAssignments = await this.assignmentRepository.find({
+      relations: ['youth', 'reviewer'],
+      where: { sent: false, status: AssignmentStatus.COMPLETED },
+    });
+
+    await Promise.all(
+      unsentAssignments.map(
+        async (assignment) =>
+          assignment.youth.role === YouthRoles.TREATMENT && this.sendToYouth(assignment),
+      ),
+    );
   }
 }

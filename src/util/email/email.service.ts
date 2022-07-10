@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import Bottleneck from 'bottleneck';
-import { AmazonSESWrapper } from './amazon-ses.wrapper';
+import { AmazonSESWrapper, EmailAttachment } from './amazon-ses.wrapper';
 
 @Injectable()
 export class EmailService {
@@ -22,14 +22,16 @@ export class EmailService {
    * @param recipientEmail the email address of the recipient
    * @param subject the subject of the email
    * @param bodyHTML the HTML body of the email
+   * @param attachments any base64 encoded attachments to inlude in the email
    */
   public async queueEmail(
     recipientEmail: string,
     subject: string,
     bodyHTML: string,
+    attachments?: EmailAttachment[],
   ): Promise<void> {
     await this.limiter
-      .schedule(() => this.sendEmail(recipientEmail, subject, bodyHTML))
+      .schedule(() => this.sendEmail(recipientEmail, subject, bodyHTML, attachments))
       .catch((err) => this.logger.error(err));
   }
 
@@ -39,6 +41,7 @@ export class EmailService {
    * @param recipientEmail the email address of the recipients
    * @param subject the subject of the email
    * @param bodyHtml the HTML body of the email
+   * @param attachments any base64 encoded attachments to inlude in the email
    * @resolves if the email was sent successfully
    * @rejects if the email was not sent successfully
    */
@@ -46,7 +49,8 @@ export class EmailService {
     recipientEmail: string,
     subject: string,
     bodyHTML: string,
+    attachments?: EmailAttachment[],
   ): Promise<unknown> {
-    return this.amazonSESWrapper.sendEmails([recipientEmail], subject, bodyHTML);
+    return this.amazonSESWrapper.sendEmails([recipientEmail], subject, bodyHTML, attachments);
   }
 }

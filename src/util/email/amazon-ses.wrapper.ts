@@ -1,8 +1,15 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { SES as AmazonSESClient } from 'aws-sdk';
 import { AMAZON_SES_CLIENT } from './amazon-ses-client.factory';
+import MailComposer = require('nodemailer/lib/mail-composer');
 import * as dotenv from 'dotenv';
+import Mail from 'nodemailer/lib/mailer';
 dotenv.config();
+
+export interface EmailAttachment {
+  filename: string;
+  content: Buffer;
+}
 
 @Injectable()
 export class AmazonSESWrapper {
@@ -21,30 +28,39 @@ export class AmazonSESWrapper {
    * @param recipientEmails the email addresses of the recipients
    * @param subject the subject of the email
    * @param bodyHtml the HTML body of the email
+   * @param attachments any base64 encoded attachments to inlude in the email
    * @resolves if the email was sent successfully
    * @rejects if the email was not sent successfully
    */
-  async sendEmails(recipientEmails: string[], subject: string, bodyHtml: string): Promise<unknown> {
-    const params = {
-      Source: process.env.AWS_SES_SENDER_EMAIL,
-      Destination: {
-        ToAddresses: recipientEmails,
-      },
-      ReplyToAddresses: [],
-      Message: {
-        Body: {
-          Html: {
-            Charset: 'UTF-8',
-            Data: bodyHtml,
-          },
-        },
-        Subject: {
-          Charset: 'UTF-8',
-          Data: subject,
-        },
-      },
+  async sendEmails(
+    recipientEmails: string[],
+    subject: string,
+    bodyHtml: string,
+    attachments?: EmailAttachment[],
+  ) {
+    const mailOptions: Mail.Options = {
+      from: process.env.AWS_SES_SENDER_EMAIL,
+      to: recipientEmails,
+      subject: subject,
+      html: bodyHtml,
     };
 
-    return await this.client.sendEmail(params).promise();
+    if (attachments) {
+      mailOptions.attachments = attachments.map((a) => ({
+        filename: a.filename,
+        content: a.content,
+        encoding: 'base64',
+      }));
+    }
+
+    const messageData = await new MailComposer(mailOptions).compile().build();
+
+    const params: AmazonSESClient.SendRawEmailRequest = {
+      Destinations: recipientEmails,
+      Source: process.env.AWS_SES_SENDER_EMAIL,
+      RawMessage: { Data: messageData },
+    };
+
+    return await this.client.sendRawEmail(params).promise();
   }
 }
