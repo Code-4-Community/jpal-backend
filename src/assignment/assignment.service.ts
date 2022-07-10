@@ -115,7 +115,7 @@ export class AssignmentService {
       throw new BadRequestException('This assignment has not been completed');
     }
     const responses = await this.responseRepository.find({
-      where: { assignment },
+      where: { assignment: assignment.id },
       relations: ['question', 'option'],
     });
 
