@@ -14,6 +14,8 @@ import { UserModule } from './user/user.module';
 import { UtilModule } from './util/util.module';
 import { SurveyModule } from './survey/survey.module';
 import { AssignmentModule } from './assignment/assignment.module';
+import { ScheduleModule } from '@nestjs/schedule';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -26,6 +28,7 @@ import { AssignmentModule } from './assignment/assignment.module';
     HealthModule,
     SurveyModule,
     AssignmentModule,
+    ScheduleModule.forRoot(),
   ],
   controllers: [AppController, UserController],
   providers: [

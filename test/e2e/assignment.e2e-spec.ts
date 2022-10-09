@@ -121,6 +121,7 @@ describe('Assignment e2e', () => {
           },
         },
       ],
+      sent: false,
       // hacky sure, but we dont care about these anyway
       reviewer: null,
       youth: null,
