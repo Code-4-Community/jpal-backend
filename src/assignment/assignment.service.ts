@@ -174,7 +174,7 @@ export class AssignmentService {
   }
 
   reviewerEmailSubject(youthFirstName: string, youthLastName: string) {
-    return `<p>Reminder: Incomplete survey for ${youthFirstName} ${youthLastName}.</p>`;
+    return `Reminder: Incomplete survey for ${youthFirstName} ${youthLastName}.`;
   }
 
   reviewerEmailHTML(youthFirstName: string, youthLastName: string) {
@@ -188,18 +188,22 @@ export class AssignmentService {
         this.reviewerEmailSubject(assignment.youth.firstName, assignment.youth.lastName),
         this.reviewerEmailHTML(assignment.youth.firstName, assignment.youth.lastName),
       );
+      assignment.reminderSent = true;
+      await this.assignmentRepository.save(assignment);
     } catch (e) {
       this.logger.error(e);
     }
   }
 
+  // Send reminders for incomplete surveys that are over a week old
   @Cron('0 17 * * *')
   async sendRemindersToReviewers(): Promise<void> {
     const unfinishedAssignments = await this.assignmentRepository.find({
       relations: ['reviewer', 'survey', 'youth'],
-      where: {
-        or: [{ status: AssignmentStatus.IN_PROGRESS }, { status: AssignmentStatus.INCOMPLETE }],
-      },
+      where: [
+        { status: AssignmentStatus.IN_PROGRESS, reminderSent: false },
+        { status: AssignmentStatus.INCOMPLETE, reminderSent: false },
+      ],
     });
     await Promise.all(
       unfinishedAssignments.map(async (assignment) => {
@@ -207,7 +211,7 @@ export class AssignmentService {
         lastWeek.setDate(lastWeek.getDate() - 7);
         lastWeek.setHours(0, 0, 0, 0);
 
-        if (assignment.survey.date <= lastWeek) {
+        if (assignment.started <= lastWeek) {
           this.sendToReviewer(assignment);
         }
       }),
