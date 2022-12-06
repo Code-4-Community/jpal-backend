@@ -21,4 +21,14 @@ export class Reviewer {
 
   @Column()
   lastName: string;
+
+  @Column({
+    default: null,
+  })
+  secondaryEmail?: string;
+
+  @Column({
+    default: null,
+  })
+  phone?: string;
 }
