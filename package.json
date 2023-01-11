@@ -55,7 +55,7 @@
     "bcrypt": "^5.0.1",
     "bottleneck": "^2.19.5",
     "class-transformer": "^0.4.0",
-    "class-validator": "^0.13.1",
+    "class-validator": "^0.14.0",
     "cognito-jwt-token-validator": "^1.0.0",
     "cross-fetch": "^3.1.4",
     "dotenv": "^8.6.0",
