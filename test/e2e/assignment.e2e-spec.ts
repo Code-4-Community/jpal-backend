@@ -85,6 +85,7 @@ describe('Assignment e2e', () => {
       youth: youthExamples[0],
       reviewer: reviewerExamples[0],
       responses: [],
+      started: new Date('2020-01-01'),
     });
   });
 
@@ -122,6 +123,8 @@ describe('Assignment e2e', () => {
         },
       ],
       sent: false,
+      reminderSent: false,
+      started: new Date('2020-01-01').toISOString(),
       // hacky sure, but we dont care about these anyway
       reviewer: null,
       youth: null,

@@ -1,4 +1,12 @@
-import { Column, Entity, Generated, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  Generated,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { Reviewer } from '../../reviewer/types/reviewer.entity';
 import { Youth } from '../../youth/types/youth.entity';
 import { Response } from '../../response/types/response.entity';
@@ -37,4 +45,10 @@ export class Assignment {
     cascade: true,
   })
   responses: Response[];
+
+  @Column({ default: false })
+  reminderSent: boolean;
+
+  @CreateDateColumn()
+  started: Date;
 }
