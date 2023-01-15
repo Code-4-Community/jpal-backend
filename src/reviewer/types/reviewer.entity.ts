@@ -12,7 +12,9 @@ export class Reviewer {
   @Generated('uuid')
   uuid: string;
 
-  @Column()
+  @Column({
+    unique: true,
+  })
   @IsEmail()
   email: string;
 
