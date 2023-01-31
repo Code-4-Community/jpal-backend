@@ -45,10 +45,10 @@ Runs a specific seed file.
 
 Runs all migrations in migrations folder that have not been recorded yet.
 
-### `npm run miration:create -- [name]`
+### `npm run migration:create -- -n [name]`
 
 Automatically generates a migration based off changes to TypeORM entities.
-Example usage: `npm run miration:create -- -n "createdUserProfiles"`
+Example usage: `npm run migration:create -- -n "createdUserProfiles"`
 
 ### `npm run schema:drop`
 

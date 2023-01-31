@@ -9,6 +9,7 @@ const mockUser: User = {
   firstName: 'first',
   lastName: 'last',
   role: Role.ADMIN,
+  creation_date: new Date('01-21-2023'),
 };
 
 const mockAuthService: Partial<AuthService> = {

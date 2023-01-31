@@ -14,6 +14,7 @@ export const mockUser: User = {
   firstName: 'William',
   lastName: 'user',
   role: Role.ADMIN,
+  creation_date: new Date('01-21-2023'),
 };
 
 export const mockResearcher: User = {
@@ -22,6 +23,7 @@ export const mockResearcher: User = {
   firstName: 'Paige',
   lastName: 'Turner',
   role: Role.RESEARCHER,
+  creation_date: new Date('01-21-2023'),
 };
 
 const listMockUsers: User[] = [mockUser, mockResearcher];

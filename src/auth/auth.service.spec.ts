@@ -13,6 +13,7 @@ const mockUser: User = {
   firstName: 'first',
   lastName: 'last',
   role: Role.RESEARCHER,
+  creation_date: new Date('01-21-2023'),
 };
 
 const mockCognitoService = {
