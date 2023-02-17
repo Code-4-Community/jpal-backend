@@ -73,7 +73,21 @@ export class SurveyService {
    */
   async createBatchAssignments(dto: CreateBatchAssignmentsDto) {
     const survey = await this.getByUUID(dto.surveyUUID);
-    const [youth, reviewers] = await Promise.all([
+    // youth repository randomize this before saving how to do that?? 
+    // randomize this and then assign control or test 
+    // hpow do you assign that???? 
+  
+    const assignedYouth = () => {
+      const 
+      dto.pairs.reverse().forEach((item, index) => {
+        const j = Math.floor(Math.random() * (index + 1));
+        [array[index], array[j]] = [array[j], array[index]];
+    });
+
+    return array;
+    }
+    const randomizedYouth = this.youthRepository.
+    const [youth, reviewers] = await Promise.all([ // Split here
       this.youthRepository.save(dto.pairs.map((p) => p.youth)),
       this.reviewerRepository.save(dto.pairs.map((p) => p.reviewer)),
     ]);
