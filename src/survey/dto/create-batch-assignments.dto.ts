@@ -1,4 +1,7 @@
+import { YouthRoles } from "src/youth/types/youthRoles";
+
 type PersonInfo = {
+  role: YouthRoles;
   email: string;
   firstName: string;
   lastName: string;

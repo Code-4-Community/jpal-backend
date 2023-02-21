@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { Survey } from './types/survey.entity';
 import { User } from '../user/types/user.entity';
 import { SurveyTemplate } from '../surveyTemplate/types/surveyTemplate.entity';
-import { CreateBatchAssignmentsDto } from './dto/create-batch-assignments.dto';
+import { CreateBatchAssignmentsDto, PersonInfo } from './dto/create-batch-assignments.dto';
 import { Assignment } from '../assignment/types/assignment.entity';
 import { Youth } from '../youth/types/youth.entity';
 import { Reviewer } from '../reviewer/types/reviewer.entity';
@@ -73,8 +73,8 @@ export class SurveyService {
    */
   async createBatchAssignments(dto: CreateBatchAssignmentsDto) {
     const survey = await this.getByUUID(dto.surveyUUID);
-    const pairArray = [... dto.pairs];
-    const shuffleArray = (pairArray) => {
+    const pairArray = dto.pairs;
+    const shuffleArray = () : void => {
       for (let i = pairArray.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         const temp = pairArray[i];
@@ -84,8 +84,11 @@ export class SurveyService {
     }
 
     const [youth, reviewers] = await Promise.all([ // Split here
-      this.youthRepository.save(shuffleArray.map((p) => p.youth)),
-      this.reviewerRepository.save(shuffleArray.map((p) => p.reviewer)),
+      this.youthRepository.save(pairArray.map((p, index) =>  {
+        index % 2 == 0 ? p.youth.role = YouthRoles.CONTROL : p.youth.role = YouthRoles.TREATMENT
+        return p.youth;
+      })),
+      this.reviewerRepository.save(pairArray.map((p) => p.reviewer)),
     ]);
     /*
      * Assumes that if there is a collision (by email) of one of the youths or reviewers, the corresponding value
