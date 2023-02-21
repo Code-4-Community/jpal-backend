@@ -73,23 +73,19 @@ export class SurveyService {
    */
   async createBatchAssignments(dto: CreateBatchAssignmentsDto) {
     const survey = await this.getByUUID(dto.surveyUUID);
-    // youth repository randomize this before saving how to do that?? 
-    // randomize this and then assign control or test 
-    // hpow do you assign that???? 
-  
-    const assignedYouth = () => {
-      const 
-      dto.pairs.reverse().forEach((item, index) => {
-        const j = Math.floor(Math.random() * (index + 1));
-        [array[index], array[j]] = [array[j], array[index]];
-    });
-
-    return array;
+    const pairArray = [... dto.pairs];
+    const shuffleArray = (pairArray) => {
+      for (let i = pairArray.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        const temp = pairArray[i];
+        pairArray[i] = pairArray[j];
+        pairArray[j] = temp;
+      }
     }
-    const randomizedYouth = this.youthRepository.
+
     const [youth, reviewers] = await Promise.all([ // Split here
-      this.youthRepository.save(dto.pairs.map((p) => p.youth)),
-      this.reviewerRepository.save(dto.pairs.map((p) => p.reviewer)),
+      this.youthRepository.save(shuffleArray.map((p) => p.youth)),
+      this.reviewerRepository.save(shuffleArray.map((p) => p.reviewer)),
     ]);
     /*
      * Assumes that if there is a collision (by email) of one of the youths or reviewers, the corresponding value
