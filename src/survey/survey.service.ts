@@ -73,7 +73,7 @@ export class SurveyService {
    */
   async createBatchAssignments(dto: CreateBatchAssignmentsDto) {
     const survey = await this.getByUUID(dto.surveyUUID);
-    const pairArray = dto.pairs;
+    const pairArray = [...dto.pairs];
     const shuffleArray = () : void => {
       for (let i = pairArray.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
