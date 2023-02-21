@@ -82,7 +82,7 @@ export class SurveyService {
         pairArray[j] = temp;
       }
     }
-
+    shuffleArray();
     const [youth, reviewers] = await Promise.all([ // Split here
       this.youthRepository.save(pairArray.map((p, index) =>  {
         index % 2 == 0 ? p.youth.role = YouthRoles.CONTROL : p.youth.role = YouthRoles.TREATMENT
