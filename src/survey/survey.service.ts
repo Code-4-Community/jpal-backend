@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { Survey } from './types/survey.entity';
 import { User } from '../user/types/user.entity';
 import { SurveyTemplate } from '../surveyTemplate/types/surveyTemplate.entity';
-import { CreateBatchAssignmentsDto, PersonInfo } from './dto/create-batch-assignments.dto';
+import { CreateBatchAssignmentsDto } from './dto/create-batch-assignments.dto';
 import { Assignment } from '../assignment/types/assignment.entity';
 import { Youth } from '../youth/types/youth.entity';
 import { Reviewer } from '../reviewer/types/reviewer.entity';
