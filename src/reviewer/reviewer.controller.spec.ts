@@ -12,7 +12,7 @@ const mockReviewer: Reviewer = {
 };
 
 const mockReviewerService: Partial<ReviewerService> = {
-  async getByUuid(uuid: string): Promise<Reviewer> {
+  async getByUuid(): Promise<Reviewer> {
     return mockReviewer;
   },
 

@@ -7,7 +7,7 @@ import { mockUser } from '../user/user.service.spec';
 const mockSurveyTemplate: SurveyTemplate = { id: 1, creator: mockUser, questions: [] };
 
 const serviceMock: Partial<SurveyTemplateService> = {
-  getById: jest.fn((id: number) => Promise.resolve(mockSurveyTemplate)),
+  getById: jest.fn(() => Promise.resolve(mockSurveyTemplate)),
 };
 
 describe('SurveyTemplateController', () => {
