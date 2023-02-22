@@ -52,6 +52,8 @@ export const incompleteMockAssignment: Assignment = {
   status: AssignmentStatus.INCOMPLETE,
   responses: [],
   sent: false,
+  reminderSent: false,
+  started: new Date('2022-02-10'),
 };
 
 export const inProgressMockAssignment: Assignment = {
@@ -63,6 +65,8 @@ export const inProgressMockAssignment: Assignment = {
   status: AssignmentStatus.IN_PROGRESS,
   responses: [],
   sent: false,
+  reminderSent: false,
+  started: new Date('2022-02-10'),
 };
 
 export const incompleteMockAssignment2: Assignment = {
@@ -74,6 +78,8 @@ export const incompleteMockAssignment2: Assignment = {
   status: AssignmentStatus.INCOMPLETE,
   responses: [],
   sent: false,
+  reminderSent: false,
+  started: new Date('2022-02-10'),
 };
 
 export const mockAssignment: Assignment = {
@@ -85,6 +91,8 @@ export const mockAssignment: Assignment = {
   status: AssignmentStatus.COMPLETED,
   responses: [],
   sent: false,
+  reminderSent: false,
+  started: new Date('2022-02-10'),
 };
 
 export const mockAssignment2: Assignment = {
@@ -96,6 +104,8 @@ export const mockAssignment2: Assignment = {
   status: AssignmentStatus.COMPLETED,
   responses: [],
   sent: true,
+  reminderSent: false,
+  started: new Date('2022-02-10'),
 };
 
 export const mockAssignment3: Assignment = {
@@ -107,6 +117,8 @@ export const mockAssignment3: Assignment = {
   status: AssignmentStatus.COMPLETED,
   responses: [],
   sent: false,
+  reminderSent: false,
+  started: new Date('2022-02-10'),
 };
 
 export const mockResponses: SurveyResponseDto[] = [
@@ -130,6 +142,9 @@ const mockAssignmentRepository: Partial<Repository<Assignment>> = {
   find(options?: FindManyOptions<Assignment> | FindConditions<Assignment>): Promise<Assignment[]> {
     // this checks to see if a find call is trying to filter the results by completed and unsent
     if (options && 'where' in options) {
+      if (Array.isArray(options.where)) {
+        return Promise.resolve([incompleteMockAssignment2, inProgressMockAssignment]);
+      }
       return Promise.resolve([mockAssignment]);
     }
     return Promise.resolve([
@@ -238,5 +253,22 @@ describe('AssignmentService', () => {
 
     expect(assignmentSave).toHaveBeenCalledTimes(1);
     expect(assignmentSave).toReturnWith({ ...mockAssignment, sent: true });
+  });
+
+  it('should send a reminder for incomplete or in progress surveys older than 1 week to reviewers', async () => {
+    const assignmentSave = jest.spyOn(mockAssignmentRepository, 'save');
+    await service.sendRemindersToReviewers();
+
+    expect(mockEmailService.queueEmail).toHaveBeenCalledTimes(2);
+    expect(mockEmailService.queueEmail).toHaveBeenNthCalledWith(
+      1,
+      mockAssignment.reviewer.email,
+      service.reviewerEmailSubject(youthExamples[0].firstName, youthExamples[0].lastName),
+      service.reviewerEmailHTML(youthExamples[0].firstName, youthExamples[0].lastName),
+    );
+
+    expect(assignmentSave).toHaveBeenCalledTimes(2);
+    expect(incompleteMockAssignment2.reminderSent).toEqual(true);
+    expect(inProgressMockAssignment.reminderSent).toEqual(true);
   });
 });
