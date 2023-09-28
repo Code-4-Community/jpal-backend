@@ -13,6 +13,7 @@ const initialResearcherUser: Omit<User, 'id'> = {
   firstName: 'test',
   lastName: 'researcher',
   role: Role.RESEARCHER,
+  createdDate: new Date('2023-09-28'),
 };
 
 const adminUser1: Omit<User, 'id'> = {
@@ -20,6 +21,7 @@ const adminUser1: Omit<User, 'id'> = {
   firstName: 'test',
   lastName: 'admin1',
   role: Role.ADMIN,
+  createdDate: new Date('2023-09-28'),
 };
 
 const adminUser2: Omit<User, 'id'> = {
@@ -27,6 +29,7 @@ const adminUser2: Omit<User, 'id'> = {
   firstName: 'test',
   lastName: 'admin2',
   role: Role.ADMIN,
+  createdDate: new Date('2023-09-28'),
 };
 
 describe('Users e2e', () => {
