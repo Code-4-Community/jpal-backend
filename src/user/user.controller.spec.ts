@@ -10,6 +10,7 @@ const mockUser: User = {
   firstName: 'test',
   lastName: 'user',
   role: Role.ADMIN,
+  createdDate: new Date('2023-09-24'),
 };
 
 const listMockUsers: User[] = [mockUser];

@@ -7,6 +7,7 @@ export const ADMIN_1: User = {
   lastName: 'last',
   email: 'test@test.com',
   role: Role.ADMIN,
+  createdDate: new Date('2023-09-24'),
 };
 
 export const ADMIN_2: User = {
@@ -15,6 +16,7 @@ export const ADMIN_2: User = {
   lastName: 'last',
   email: 'already@exists.com',
   role: Role.ADMIN,
+  createdDate: new Date('2023-09-24'),
 };
 
 export const RESEARCHER_1: User = {
@@ -23,4 +25,5 @@ export const RESEARCHER_1: User = {
   lastName: 'last',
   email: 'researcher@test.com',
   role: Role.RESEARCHER,
+  createdDate: new Date('2023-09-24'),
 };
