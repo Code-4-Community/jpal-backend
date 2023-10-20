@@ -10,6 +10,7 @@ const mockUser = (role: Role): User => ({
   firstName: 'first',
   lastName: 'last',
   role,
+  createdDate: new Date('2023-09-28'),
 });
 
 const mockContext = (user?: User): Partial<ExecutionContext> => ({

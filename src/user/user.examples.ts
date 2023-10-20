@@ -6,11 +6,13 @@ export const userExamples = [
     role: Role.ADMIN,
     firstName: 'admin',
     lastName: 'user',
+    createdDate: new Date('2023-09-24'),
   },
   {
     email: 'c4cneu.jpal+researcher@gmail.com',
     role: Role.RESEARCHER,
     firstName: 'researcher',
     lastName: 'user',
+    createdDate: new Date('2023-09-24'),
   },
 ];

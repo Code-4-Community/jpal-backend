@@ -13,6 +13,7 @@ const initialResearcherUser: Omit<User, 'id'> = {
   firstName: 'test',
   lastName: 'researcher',
   role: Role.RESEARCHER,
+  createdDate: new Date('2023-09-28'),
 };
 
 const adminUser1: Omit<User, 'id'> = {
@@ -20,6 +21,7 @@ const adminUser1: Omit<User, 'id'> = {
   firstName: 'test',
   lastName: 'admin1',
   role: Role.ADMIN,
+  createdDate: new Date('2023-09-28'),
 };
 
 const adminUser2: Omit<User, 'id'> = {
@@ -27,6 +29,7 @@ const adminUser2: Omit<User, 'id'> = {
   firstName: 'test',
   lastName: 'admin2',
   role: Role.ADMIN,
+  createdDate: new Date('2023-09-28'),
 };
 
 describe('Users e2e', () => {
@@ -110,8 +113,20 @@ describe('Users e2e', () => {
 
     expect(response.statusCode).toBe(200);
     expect(response.body).toEqual([
-      expect.objectContaining(adminUser1),
-      expect.objectContaining(adminUser2),
+      expect.objectContaining({
+        email: 'cooladmin@test.com',
+        firstName: 'test',
+        lastName: 'admin1',
+        role: Role.ADMIN,
+        createdDate: new Date('2023-09-28').toISOString(),
+      }),
+      expect.objectContaining({
+        email: 'lameadmin@test.com',
+        firstName: 'test',
+        lastName: 'admin2',
+        role: Role.ADMIN,
+        createdDate: new Date('2023-09-28').toISOString(),
+      }),
     ]);
   });
 

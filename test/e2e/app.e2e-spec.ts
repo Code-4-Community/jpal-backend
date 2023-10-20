@@ -11,6 +11,7 @@ const initialUser: Omit<User, 'id'> = {
   firstName: 'first',
   lastName: 'last',
   role: Role.ADMIN,
+  createdDate: new Date('2023-09-28'),
 };
 
 describe('Example e2e', () => {
