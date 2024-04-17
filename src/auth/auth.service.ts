@@ -12,15 +12,15 @@ export class AuthService {
   ) {}
 
   async verifyJwt(jwt: string): Promise<User> {
-    try {
-      const userPayload = await this.cognitoService.validate(jwt);
-      if (!userPayload || !userPayload.email) throw new NotFoundException();
-      const user = await this.userRepository.findOneOrFail({
-        email: userPayload.email,
-      });
-      return user;
-    } catch (e) {
-      throw new UnauthorizedException();
-    }
+    const userPayload = await this.cognitoService.validate(jwt);
+    console.log('user payload', userPayload);
+    console.log(!userPayload || !userPayload.email);
+    if (!userPayload || !userPayload.email) throw new NotFoundException();
+    const users = await this.userRepository.find();
+    console.log(users);
+    const user = await this.userRepository.findOneOrFail({
+      email: userPayload.email,
+    });
+    return user;
   }
 }

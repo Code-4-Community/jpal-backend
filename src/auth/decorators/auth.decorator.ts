@@ -9,11 +9,10 @@ import { ApiBearerAuth, ApiUnauthorizedResponse } from '@nestjs/swagger';
  * @constructor
  */
 export function Auth(...roles: Role[]) {
-  return applyDecorators(
-    UseGuards(RolesGuard(roles)),
-    ApiBearerAuth(),
-    ApiUnauthorizedResponse({
-      description: 'Unauthorized (not authenticated or role' + ' insufficient)',
-    }),
-  );
+  return applyDecorators();
+  // UseGuards(RolesGuard(roles)),
+  // ApiBearerAuth(),
+  // ApiUnauthorizedResponse({
+  //   description: 'Unauthorized (not authenticated or role' + ' insufficient)',
+  // }),
 }

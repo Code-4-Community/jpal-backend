@@ -15,8 +15,8 @@ export class AuthController {
    * Must be authenticated. Returns the User making the request.
    */
   @Get('me')
-  @Auth(Role.ADMIN, Role.RESEARCHER)
-  me(@ReqUser() user: User): User {
-    return user;
+  // @Auth(Role.ADMIN, Role.RESEARCHER)
+  me(): string {
+    return 'me';
   }
 }
