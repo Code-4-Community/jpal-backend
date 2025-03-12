@@ -1,4 +1,10 @@
-import { BadRequestException, Logger, Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Logger,
+  Injectable,
+  UnauthorizedException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Survey } from './types/survey.entity';
@@ -15,7 +21,7 @@ import { SurveyData } from './dto/survey-assignment.dto';
 import { Youth as SurveyDataYouth } from './dto/survey-assignment.dto';
 import { Question as SurveyDataQuestion } from './dto/survey-assignment.dto';
 import { EmailService } from '../util/email/email.service';
-import { Role } from '../user/types/role'
+import { Role } from '../user/types/role';
 
 @Injectable()
 export class SurveyService {
@@ -251,7 +257,7 @@ export class SurveyService {
     });
 
     if (survey === undefined) {
-      throw new BadRequestException(`Requested survey does not exist`);
+      throw new NotFoundException(`Requested survey does not exist`);
     }
 
     if (user.role === Role.ADMIN && survey.creator.id !== user.id) {

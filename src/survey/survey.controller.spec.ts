@@ -54,6 +54,7 @@ export const mockSurveyService: Partial<SurveyService> = {
 
   findAllSurveysByUser: jest.fn(() => Promise.resolve([mockSurvey])),
   getAllSurveys: jest.fn(() => Promise.resolve(listMockSurveys)),
+  getSurveyAssignments: jest.fn(() => Promise.resolve(mockSurvey)),
 };
 
 describe('SurveyController', () => {
@@ -102,6 +103,9 @@ describe('SurveyController', () => {
   });
 
   describe('getSurveyAssignments', () => {
-    
+    it('should get the requested survey', async () => {
+      expect(await controller.getSurveyAssignments(UUID, mockUser)).toEqual(mockSurvey);
+      expect(mockSurveyService.getSurveyAssignments).toHaveBeenCalledWith(UUID, mockUser);
+    });
   });
 });
