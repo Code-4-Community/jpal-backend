@@ -100,4 +100,8 @@ describe('SurveyController', () => {
     expect(await controller.findAllSurveys(mockResearcher)).toEqual(listMockSurveys);
     expect(mockSurveyService.getAllSurveys).toHaveBeenCalled();
   });
+
+  describe('getSurveyAssignments', () => {
+    
+  });
 });
