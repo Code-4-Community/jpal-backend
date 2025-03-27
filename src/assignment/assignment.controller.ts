@@ -2,19 +2,41 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Get,
   Param,
   ParseUUIDPipe,
   Patch,
   Post,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { extractMetaData, Letter } from '../util/letter-generation/generateLetter';
 import { AssignmentService } from './assignment.service';
 import { CompleteAssignmentDto } from './dto/complete-assignment.dto';
 import { Assignment } from './types/assignment.entity';
+import { Auth } from '../auth/decorators/auth.decorator';
+import { Role } from '../user/types/role';
+import { ReqUser } from '../auth/decorators/user.decorator';
 
 @Controller('assignment')
 export class AssignmentController {
   constructor(private assignmentService: AssignmentService) {}
+
+  
+  @Get(':uuid/responses')
+  @Auth(Role.RESEARCHER, Role.ADMIN)
+  async viewResponse(@Param('uuid', ParseUUIDPipe) uuid: string, @ReqUser() reqUser): Promise<Assignment> {
+    // console.log(reqUser);
+    const assignment = await this.assignmentService.getByUuid(uuid, ['responses', 'responses.question', 'responses.option', 'youth', 'reviewer', 'survey', 'survey.creator']);
+    
+    if (!assignment) {
+      throw new BadRequestException('This assignment does not exist.');
+    }
+    if (assignment.survey.creator.id !== reqUser.id) {
+      throw new UnauthorizedException('Admins can only view responses for surveys they created');
+    }
+
+    return assignment;
+  }
 
   /**
    * Complete an assignment and save responses. Not private because will be accessed by reviewers.
