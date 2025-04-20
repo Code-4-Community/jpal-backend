@@ -11,12 +11,25 @@ import {
   mockResponses,
 } from './assignment.service.spec';
 import { AssignmentStatus } from './types/assignmentStatus';
+import { Assignment } from './types/assignment.entity';
+import { BadRequestException, UnauthorizedException } from '@nestjs/common';
+import { Role } from '../user//types/role';
 
 const mockAssignmentService = mock<AssignmentService>();
 
 const mockCompleteAssignmentDto = {
   responses: mockResponses,
 };
+
+const mockAssignmentResponses = {
+  uuid: '123-456',
+  survey: {
+    creator: {
+      id: 1,
+    },
+  },
+  responses: [],
+} as Assignment;
 
 describe('AssignmentController', () => {
   let controller: AssignmentController;
@@ -70,4 +83,40 @@ describe('AssignmentController', () => {
     const assignment = await controller.start(assignment_UUID);
     expect(assignment.status).toEqual(AssignmentStatus.IN_PROGRESS);
   });
+
+  describe('GET :uuid/responses', () => {
+    it('should return assignment responses for the given assignment', async () => {
+      expect.assertions(1);
+
+      mockAssignmentService.getByUuid.mockResolvedValue(mockAssignmentResponses);
+      const assignment = await controller.viewResponse('123-456', { id: 1 });
+
+      expect(assignment).toEqual(mockAssignmentResponses);
+    });
+
+    it('should return assignment if requester is not the creator but is a researcher', async () => {
+      expect.assertions(1);
+
+      mockAssignmentService.getByUuid.mockResolvedValue(mockAssignmentResponses);
+      const assignment = await controller.viewResponse('123-456', { id: 2, role: Role.RESEARCHER });
+
+      expect(assignment).toEqual(mockAssignmentResponses);
+    })
+
+    it('should throw bad request exception when no assignment is found', async () => {
+      expect.assertions(1);
+
+      mockAssignmentService.getByUuid.mockResolvedValue(undefined);
+      
+      await expect(controller.viewResponse('xxx-xxx', { id: 1 })).rejects.toThrow(BadRequestException);
+    });
+
+    it('should return unauthorized exception if assignment creator is not the requester and requeseter is admin', async () => {
+      expect.assertions(1);
+
+      mockAssignmentService.getByUuid.mockResolvedValue(mockAssignmentResponses);
+
+      await expect(controller.viewResponse('xxx-xxx', { id: 2, role: Role.ADMIN })).rejects.toThrow(UnauthorizedException);
+    });
+  })
 });

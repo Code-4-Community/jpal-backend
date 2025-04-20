@@ -25,13 +25,12 @@ export class AssignmentController {
   @Get(':uuid/responses')
   @Auth(Role.RESEARCHER, Role.ADMIN)
   async viewResponse(@Param('uuid', ParseUUIDPipe) uuid: string, @ReqUser() reqUser): Promise<Assignment> {
-    // console.log(reqUser);
     const assignment = await this.assignmentService.getByUuid(uuid, ['responses', 'responses.question', 'responses.option', 'youth', 'reviewer', 'survey', 'survey.creator']);
     
     if (!assignment) {
       throw new BadRequestException('This assignment does not exist.');
     }
-    if (assignment.survey.creator.id !== reqUser.id) {
+    if (reqUser.role === Role.ADMIN && assignment.survey.creator.id !== reqUser.id) {
       throw new UnauthorizedException('Admins can only view responses for surveys they created');
     }
 
