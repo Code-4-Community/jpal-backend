@@ -22,6 +22,9 @@ export class Assignment {
   @Generated('uuid')
   uuid: string;
 
+  @Column()
+  s3LetterLink: string;
+
   @ManyToOne(() => Survey)
   survey: Survey;
 

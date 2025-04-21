@@ -181,11 +181,13 @@ export class SurveyService {
       throw new BadRequestException(`Reviewer with uuid ${reviewerUuid} does not exist`);
     }
 
+    console.log(survey.assignments)
     const assignmentsForReviewer = survey.assignments.filter(
       (assignment) =>
         assignment.reviewer.id === reviewer.id && assignment.status === AssignmentStatus.INCOMPLETE,
     );
 
+    console.log(assignmentsForReviewer)
     if (assignmentsForReviewer.length === 0) {
       throw new BadRequestException('Reviewer is not invited to complete this survey');
     }
