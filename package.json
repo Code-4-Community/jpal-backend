@@ -37,7 +37,8 @@
     "reset-db": "npm run schema:drop && npm run migration && npm run seed"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.750.0",
+    "@aws-sdk/client-s3": "^3.787.0",
+    "@aws-sdk/client-sns": "^3.787.0",
     "@godaddy/terminus": "^4.9.0",
     "@nestjs/common": "^8.0.0",
     "@nestjs/config": "^1.0.0",
@@ -63,6 +64,7 @@
     "js-yaml": "^3.14.1",
     "jsonwebtoken": "^8.5.1",
     "mailgun-js": "^0.22.0",
+    "node-stream": "^1.7.0",
     "nodemailer": "^6.7.7",
     "pdfjs": "^2.4.7",
     "pg": "^8.6.0",
@@ -89,7 +91,7 @@
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^3.4.0",
     "husky": "^7.0.1",
-    "jest": "^27.0.6",
+    "jest": "^27.5.1",
     "jest-mock-extended": "^2.0.2-beta2",
     "lint-staged": "^11.0.1",
     "nestjs-pact": "^2.1.1",

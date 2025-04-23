@@ -142,10 +142,6 @@ export class AssignmentService {
     return `New letter of recommendation from ${reviewerFirstName} ${reviewerLastName}`;
   }
 
-  youthEmailBodyHTML() {
-    return `<p>Please find the attached letter of recommendation.</p>`;
-  }
-
   async sendToYouth(assignment: Assignment): Promise<void> {
     try {
       const fileName = assignment.youth.id + "-" + assignment.id + "LOR.pdf"
