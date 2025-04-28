@@ -41,7 +41,7 @@ export class SurveyController {
   @Get(':uuid/assignments')
   @Auth(Role.ADMIN, Role.RESEARCHER)
   async getSurveyAssignments(@Param('uuid', ParseUUIDPipe) uuid: string, @ReqUser() user: User) {
-    return this.surveyService.getSurveyAssignments(uuid, user)
+    return this.surveyService.getSurveyAssignments(uuid, user);
   }
 
   @Get(':surveyUuid/:reviewerUuid')
