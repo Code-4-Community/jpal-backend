@@ -36,6 +36,7 @@ export class AssignmentService {
     @InjectRepository(Youth)
     private youthRepository: Repository<Youth>,
     private emailService: EmailService,
+    private awsS3Service: AWSS3Service
   ) {}
 
   async getByUuid(uuid: string): Promise<Assignment> {
@@ -96,9 +97,9 @@ export class AssignmentService {
       extractMetaData(assignment, new Date()),
     );
     const pdf = await letterToPdf(letter).asBuffer();
-    const awsS3Service = new AWSS3Service();
     const fileName = assignment.youth.id + "-" + assignment.id + "LOR.pdf"
-    const link = await awsS3Service.upload(pdf, fileName)
+    const link = await this.awsS3Service.upload(pdf, fileName, "application/octet-stream");
+    assignment.s3LetterLink = link;
     return this.assignmentRepository.save(assignment);
   }
 
@@ -144,8 +145,8 @@ export class AssignmentService {
 
   async sendToYouth(assignment: Assignment): Promise<void> {
     try {
-      const fileName = assignment.youth.id + "-" + assignment.id + "LOR.pdf"
-      const link = "https://jpal-letters.s3.us-east-2.amazonaws.com/" + fileName
+      const link = this.awsS3Service.createLink(assignment.youth.id, assignment.id,
+        "jpal-letters");
 
       await this.emailService.queueEmail(
         assignment.youth.email,

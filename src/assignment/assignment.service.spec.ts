@@ -25,8 +25,10 @@ const mockEmailService: Partial<EmailService> = {
 };
 
 const mockS3Service: Partial<AWSS3Service> = {
-  upload: jest.fn(),
-}
+  upload: jest.fn().mockResolvedValue('https://jpal-letters.s3.us-east-2.amazonaws.com/1-1LOR.pdf'),
+  createLink: jest.fn().mockResolvedValue('https://jpal-letters.s3.us-east-2.amazonaws.com/1-1LOR.pdf'),
+};
+
 
 const reviewer_UUID = '123e4567-e89b-12d3-a456-426614174000';
 export const assignment_UUID = '123e4567-e89b-12d3-a456-426614174330';
@@ -95,7 +97,7 @@ export const mockAssignment: Assignment = {
   uuid: assignment_UUID,
   reviewer: mockReviewer,
   youth: mockYouth,
-  s3LetterLink: "",
+  s3LetterLink: new AWSS3Service().createLink(mockYouth.id, 1, "jpal-letters"),
   id: 1,
   survey: mockSurvey,
   status: AssignmentStatus.COMPLETED,
@@ -258,16 +260,19 @@ describe('AssignmentService', () => {
 
   it('should send complete, unsent surveys to treatment youth', async () => {
     const assignmentSave = jest.spyOn(mockAssignmentRepository, 'save');
-    await service.sendUnsentSurveysToYouth();
 
-    const link = "https://jpal-letters.s3.us-east-2.amazonaws.com/" + mockAssignment.youth.id + "-" + mockAssignment.id + "LOR.pdf"
+    // MOCK awsS3Service.createLink to return a known link
+    const mockedLink = 'https://jpal-letters.s3.us-east-2.amazonaws.com/1-1LOR.pdf';
+    jest.spyOn(mockS3Service, 'createLink').mockReturnValue(mockedLink);
+
+    await service.sendUnsentSurveysToYouth();
 
     expect(mockEmailService.queueEmail).toHaveBeenCalledTimes(1);
     expect(mockEmailService.queueEmail).toHaveBeenNthCalledWith(
       1,
       mockAssignment.youth.email,
       service.youthEmailSubject(reviewerExamples[0].firstName, reviewerExamples[0].lastName),
-      "Please find the letter of recommendation at the following link: " + link
+      "Please find the letter of recommendation at the following link: " + mockedLink
     );
 
     expect(assignmentSave).toHaveBeenCalledTimes(1);
