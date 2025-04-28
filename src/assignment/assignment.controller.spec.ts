@@ -101,14 +101,16 @@ describe('AssignmentController', () => {
       const assignment = await controller.viewResponse('123-456', { id: 2, role: Role.RESEARCHER });
 
       expect(assignment).toEqual(mockAssignmentResponses);
-    })
+    });
 
     it('should throw bad request exception when no assignment is found', async () => {
       expect.assertions(1);
 
       mockAssignmentService.getByUuid.mockResolvedValue(undefined);
-      
-      await expect(controller.viewResponse('xxx-xxx', { id: 1 })).rejects.toThrow(BadRequestException);
+
+      await expect(controller.viewResponse('xxx-xxx', { id: 1 })).rejects.toThrow(
+        BadRequestException,
+      );
     });
 
     it('should return unauthorized exception if assignment creator is not the requester and requeseter is admin', async () => {
@@ -116,7 +118,9 @@ describe('AssignmentController', () => {
 
       mockAssignmentService.getByUuid.mockResolvedValue(mockAssignmentResponses);
 
-      await expect(controller.viewResponse('xxx-xxx', { id: 2, role: Role.ADMIN })).rejects.toThrow(UnauthorizedException);
+      await expect(controller.viewResponse('xxx-xxx', { id: 2, role: Role.ADMIN })).rejects.toThrow(
+        UnauthorizedException,
+      );
     });
-  })
+  });
 });

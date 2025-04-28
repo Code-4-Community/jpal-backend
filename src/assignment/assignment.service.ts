@@ -37,7 +37,16 @@ export class AssignmentService {
     private emailService: EmailService,
   ) {}
 
-  async getByUuid(uuid: string, relations: string[] = ['responses', 'responses.question', 'responses.option', 'youth', 'reviewer']): Promise<Assignment> {
+  async getByUuid(
+    uuid: string,
+    relations: string[] = [
+      'responses',
+      'responses.question',
+      'responses.option',
+      'youth',
+      'reviewer',
+    ],
+  ): Promise<Assignment> {
     return await this.assignmentRepository.findOne({
       relations,
       where: { uuid },
