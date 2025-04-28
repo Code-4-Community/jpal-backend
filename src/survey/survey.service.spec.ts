@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { SurveyService } from './survey.service';
 import { Survey } from './types/survey.entity';
-import { mockUser } from '../user/user.service.spec';
+import { mockResearcher, mockUser } from '../user/user.service.spec';
 import { DeepPartial, FindConditions, FindManyOptions, Repository } from 'typeorm';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { SurveyTemplate } from '../surveyTemplate/types/surveyTemplate.entity';
@@ -10,9 +10,16 @@ import { Assignment } from '../assignment/types/assignment.entity';
 import { Youth } from '../youth/types/youth.entity';
 import { Reviewer } from '../reviewer/types/reviewer.entity';
 import { CreateBatchAssignmentsDto } from './dto/create-batch-assignments.dto';
-import { listMockSurveys, mockSurvey, mockSurveyTemplate, UUID } from './survey.controller.spec';
+import {
+  listMockSurveys,
+  mockSurvey,
+  mockSurvey2,
+  mockSurveyTemplate,
+  UUID,
+} from './survey.controller.spec';
 import { UtilModule } from '../util/util.module';
 import { EmailService } from '../util/email/email.service';
+import { NotFoundException, UnauthorizedException } from '@nestjs/common';
 
 export const mockSurveyRepository: Partial<Repository<Survey>> = {
   create(survey?: DeepPartial<Survey> | DeepPartial<Survey>[]): any {
@@ -90,6 +97,10 @@ describe('SurveyService', () => {
     }).compile();
 
     service = module.get<SurveyService>(SurveyService);
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
   it('should be defined', () => {
@@ -216,5 +227,39 @@ describe('SurveyService', () => {
       service.emailSubject(reviewer2.firstName, reviewer2.lastName),
       service.generateEmailBodyHTML(surveyUUID, reviewer2.uuid),
     );
+  });
+
+  describe('getSurveyAssignments', () => {
+    it('should get the survey as a researcher', async () => {
+      // mockSurvey2 creator === mockResearcher
+      jest
+        .spyOn(mockSurveyRepository, 'findOne')
+        .mockImplementation(() => Promise.resolve(mockSurvey2));
+      expect(await service.getSurveyAssignments(UUID, mockResearcher)).toEqual(mockSurvey2);
+
+      // mockSurvey creator !== mockResearcher (it's mockUser)
+      jest
+        .spyOn(mockSurveyRepository, 'findOne')
+        .mockImplementation(() => Promise.resolve(mockSurvey));
+      expect(await service.getSurveyAssignments(UUID, mockResearcher)).toEqual(mockSurvey);
+    });
+
+    it("should throw a NotFoundException if the requested survey doesn't exist", async () => {
+      jest
+        .spyOn(mockSurveyRepository, 'findOne')
+        .mockImplementation(() => Promise.resolve(undefined));
+      await expect(service.getSurveyAssignments(UUID, mockResearcher)).rejects.toThrow(
+        NotFoundException,
+      );
+    });
+
+    it("should throw if requesting admin isn't the creator", async () => {
+      jest
+        .spyOn(mockSurveyRepository, 'findOne')
+        .mockImplementation(() => Promise.resolve(mockSurvey2));
+      await expect(service.getSurveyAssignments(UUID, mockUser)).rejects.toThrow(
+        UnauthorizedException,
+      );
+    });
   });
 });

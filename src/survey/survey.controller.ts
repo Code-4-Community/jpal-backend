@@ -38,6 +38,12 @@ export class SurveyController {
     await this.surveyService.sendEmailToReviewersInBatchAssignment(createBatchAssignmentsDto);
   }
 
+  @Get(':uuid/assignments')
+  @Auth(Role.ADMIN, Role.RESEARCHER)
+  async getSurveyAssignments(@Param('uuid', ParseUUIDPipe) uuid: string, @ReqUser() user: User) {
+    return this.surveyService.getSurveyAssignments(uuid, user);
+  }
+
   @Get(':surveyUuid/:reviewerUuid')
   async getReviewerSurvey(
     @Param('surveyUuid', ParseUUIDPipe) surveyUuid: string,
