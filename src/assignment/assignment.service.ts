@@ -18,6 +18,7 @@ import { AssignmentStatus } from './types/assignmentStatus';
 import { Cron } from '@nestjs/schedule';
 import { YouthRoles } from '../youth/types/youthRoles';
 import { letterToPdf } from '../util/letter-generation/letter-to-pdf';
+import { AWSS3Service } from '../aws/aws-s3.service';
 
 @Injectable()
 export class AssignmentService {
@@ -35,6 +36,7 @@ export class AssignmentService {
     @InjectRepository(Youth)
     private youthRepository: Repository<Youth>,
     private emailService: EmailService,
+    private awsS3Service: AWSS3Service
   ) {}
 
   async getByUuid(
@@ -94,9 +96,19 @@ export class AssignmentService {
         };
       }),
     );
+
     await this.responseRepository.save(responsesToSave);
     assignment = await this.getByUuid(uuid);
     assignment.status = AssignmentStatus.COMPLETED;
+
+    const letter = await this.generateLetterFromCompletedAssignment(
+      assignment,
+      extractMetaData(assignment, new Date()),
+    );
+    const pdf = await letterToPdf(letter).asBuffer();
+    const fileName = assignment.youth.id + "-" + assignment.id + "LOR.pdf"
+    const link = await this.awsS3Service.upload(pdf, fileName, "application/octet-stream");
+    assignment.s3LetterLink = link;
     return this.assignmentRepository.save(assignment);
   }
 
@@ -140,23 +152,15 @@ export class AssignmentService {
     return `New letter of recommendation from ${reviewerFirstName} ${reviewerLastName}`;
   }
 
-  youthEmailBodyHTML() {
-    return `<p>Please find the attached letter of recommendation.</p>`;
-  }
-
   async sendToYouth(assignment: Assignment): Promise<void> {
     try {
-      const letter = await this.generateLetterFromCompletedAssignment(
-        assignment,
-        extractMetaData(assignment, new Date()),
-      );
-      const pdf = await letterToPdf(letter).asBuffer();
+      const link = this.awsS3Service.createLink(assignment.youth.id, assignment.id,
+        "jpal-letters");
 
       await this.emailService.queueEmail(
         assignment.youth.email,
         this.youthEmailSubject(assignment.reviewer.firstName, assignment.reviewer.lastName),
-        this.youthEmailBodyHTML(),
-        [{ filename: 'letter.pdf', content: pdf }],
+        "Please find the letter of recommendation at the following link: " + link
       );
 
       assignment.sent = true;

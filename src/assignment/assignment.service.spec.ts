@@ -17,10 +17,18 @@ import { Option } from '../option/types/option.entity';
 import { Response } from '../response/types/response.entity';
 import { EmailService } from '../util/email/email.service';
 import { YouthRoles } from '../youth/types/youthRoles';
+import { AWSS3Service } from '../aws/aws-s3.service';
+import * as Buffer from 'buffer';
 
 const mockEmailService: Partial<EmailService> = {
   queueEmail: jest.fn(),
 };
+
+const mockS3Service: Partial<AWSS3Service> = {
+  upload: jest.fn().mockResolvedValue('https://jpal-letters.s3.us-east-2.amazonaws.com/1-1LOR.pdf'),
+  createLink: jest.fn().mockResolvedValue('https://jpal-letters.s3.us-east-2.amazonaws.com/1-1LOR.pdf'),
+};
+
 
 const reviewer_UUID = '123e4567-e89b-12d3-a456-426614174000';
 export const assignment_UUID = '123e4567-e89b-12d3-a456-426614174330';
@@ -47,6 +55,7 @@ export const incompleteMockAssignment: Assignment = {
   uuid: assignment_UUID,
   reviewer: mockReviewer,
   youth: mockYouth,
+  s3LetterLink: "",
   id: 1,
   survey: mockSurvey,
   status: AssignmentStatus.INCOMPLETE,
@@ -60,6 +69,7 @@ export const inProgressMockAssignment: Assignment = {
   uuid: assignment_UUID,
   reviewer: mockReviewer,
   youth: mockYouth,
+  s3LetterLink: "",
   id: 1,
   survey: mockSurvey,
   status: AssignmentStatus.IN_PROGRESS,
@@ -74,6 +84,7 @@ export const incompleteMockAssignment2: Assignment = {
   reviewer: mockReviewer,
   youth: mockYouth,
   id: 1,
+  s3LetterLink: "",
   survey: mockSurvey,
   status: AssignmentStatus.INCOMPLETE,
   responses: [],
@@ -86,6 +97,7 @@ export const mockAssignment: Assignment = {
   uuid: assignment_UUID,
   reviewer: mockReviewer,
   youth: mockYouth,
+  s3LetterLink: new AWSS3Service().createLink(mockYouth.id, 1, "jpal-letters"),
   id: 1,
   survey: mockSurvey,
   status: AssignmentStatus.COMPLETED,
@@ -99,6 +111,7 @@ export const mockAssignment2: Assignment = {
   uuid: assignment_UUID2,
   reviewer: mockReviewer,
   youth: mockYouth,
+  s3LetterLink: "",
   id: 1,
   survey: mockSurvey,
   status: AssignmentStatus.COMPLETED,
@@ -112,6 +125,7 @@ export const mockAssignment3: Assignment = {
   uuid: assignment_UUID2,
   reviewer: mockReviewer,
   youth: mockYouthControl,
+  s3LetterLink: "",
   id: 1,
   survey: mockSurvey,
   status: AssignmentStatus.COMPLETED,
@@ -203,6 +217,10 @@ describe('AssignmentService', () => {
           provide: EmailService,
           useValue: mockEmailService,
         },
+        {
+          provide: AWSS3Service,
+          useValue: mockS3Service
+        }
       ],
     }).compile();
 
@@ -240,9 +258,11 @@ describe('AssignmentService', () => {
   });
 
   it('should complete an assignment', async () => {
-    jest.spyOn(mockAssignmentRepository, 'findOne').mockResolvedValueOnce(incompleteMockAssignment);
+    const assignmentUpload = jest.spyOn(mockAssignmentRepository, 'findOne').mockResolvedValueOnce(incompleteMockAssignment);
+    jest.spyOn(mockS3Service, 'upload')
     const assignment = await service.complete(mockAssignment.uuid, mockResponses);
     expect(assignment).toEqual(mockAssignment);
+    expect(assignmentUpload).toHaveBeenCalledTimes(2)
   });
 
   it('should not start an assignment that is complete', () => {
@@ -260,6 +280,11 @@ describe('AssignmentService', () => {
 
   it('should send complete, unsent surveys to treatment youth', async () => {
     const assignmentSave = jest.spyOn(mockAssignmentRepository, 'save');
+
+    // MOCK awsS3Service.createLink to return a known link
+    const mockedLink = 'https://jpal-letters.s3.us-east-2.amazonaws.com/1-1LOR.pdf';
+    jest.spyOn(mockS3Service, 'createLink').mockReturnValue(mockedLink);
+
     await service.sendUnsentSurveysToYouth();
 
     expect(mockEmailService.queueEmail).toHaveBeenCalledTimes(1);
@@ -267,8 +292,7 @@ describe('AssignmentService', () => {
       1,
       mockAssignment.youth.email,
       service.youthEmailSubject(reviewerExamples[0].firstName, reviewerExamples[0].lastName),
-      service.youthEmailBodyHTML(),
-      [expect.objectContaining({ filename: 'letter.pdf', content: expect.anything() })],
+      "Please find the letter of recommendation at the following link: " + mockedLink
     );
 
     expect(assignmentSave).toHaveBeenCalledTimes(1);

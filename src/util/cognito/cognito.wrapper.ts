@@ -17,3 +17,4 @@ export class CognitoWrapper {
     return await this.validator.validate(jwt);
   }
 }
+
