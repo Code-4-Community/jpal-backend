@@ -213,10 +213,30 @@ describe('AssignmentService', () => {
     expect(service).toBeDefined();
   });
 
-  it('should get an assignment by uuid', async () => {
-    jest.spyOn(mockAssignmentRepository, 'findOne').mockResolvedValueOnce(mockAssignment2);
-    const assignment = await service.getByUuid(assignment_UUID2);
-    expect(assignment).toEqual(mockAssignment2);
+  describe('getByUUID', () => {
+    it('should get an assignment by uuid with the default relations', async () => {
+      jest.spyOn(mockAssignmentRepository, 'findOne').mockResolvedValueOnce(mockAssignment2);
+
+      const assignment = await service.getByUuid(assignment_UUID2);
+
+      expect(assignment).toEqual(mockAssignment2);
+      expect(mockAssignmentRepository.findOne).toHaveBeenCalledWith({
+        relations: ['responses', 'responses.question', 'responses.option', 'youth', 'reviewer'],
+        where: { uuid: assignment_UUID2 },
+      });
+    });
+
+    it('should get an assignment using the given relations', async () => {
+      jest.spyOn(mockAssignmentRepository, 'findOne').mockResolvedValueOnce(mockAssignment2);
+
+      const assignment = await service.getByUuid(assignment_UUID2, ['responses']);
+
+      expect(assignment).toEqual(mockAssignment2);
+      expect(mockAssignmentRepository.findOne).toHaveBeenCalledWith({
+        relations: ['responses'],
+        where: { uuid: assignment_UUID2 },
+      });
+    });
   });
 
   it('should complete an assignment', async () => {
