@@ -22,6 +22,8 @@ import { Youth as SurveyDataYouth } from './dto/survey-assignment.dto';
 import { Question as SurveyDataQuestion } from './dto/survey-assignment.dto';
 import { EmailService } from '../util/email/email.service';
 import { Role } from '../user/types/role';
+import { transformQuestionToSurveyDataQuestion } from '../util/transformQuestionToSurveryDataQuestion';
+
 
 @Injectable()
 export class SurveyService {
@@ -215,7 +217,7 @@ export class SurveyService {
       reviewer: this.transformReviewerToSurveyDataReviewer(reviewerEntity),
       controlYouth: this.extractYouthByRole(YouthRoles.CONTROL, assignmentsForReviewer),
       treatmentYouth: this.extractYouthByRole(YouthRoles.TREATMENT, assignmentsForReviewer),
-      questions: this.transformQuestionToSurveyDataQuestion(questionEntities),
+      questions: transformQuestionToSurveyDataQuestion(questionEntities),
     };
   }
 
@@ -225,15 +227,6 @@ export class SurveyService {
       lastName: reviewerEntity.lastName,
       email: reviewerEntity.email,
     };
-  }
-
-  private transformQuestionToSurveyDataQuestion(
-    questionEntities: Question[],
-  ): SurveyDataQuestion[] {
-    return questionEntities.map((q) => ({
-      question: q.text,
-      options: q.options.map((o) => o.text),
-    }));
   }
 
   private extractYouthByRole(youthRole: YouthRoles, assignments: Assignment[]): SurveyDataYouth[] {

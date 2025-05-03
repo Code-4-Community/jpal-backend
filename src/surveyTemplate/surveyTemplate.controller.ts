@@ -1,5 +1,5 @@
 import { Controller, Get, Param, ParseIntPipe } from '@nestjs/common';
-import { SurveyTemplateService } from './surveyTemplate.service';
+import { SurveyDataQuestion, SurveyTemplateService } from './surveyTemplate.service';
 import { SurveyTemplate } from './types/surveyTemplate.entity';
 import { Auth } from '../auth/decorators/auth.decorator';
 import { Role } from '../user/types/role';
@@ -13,7 +13,7 @@ export class SurveyTemplateController {
    */
   @Get(':id')
   @Auth(Role.ADMIN, Role.RESEARCHER)
-  async getById(@Param('id', ParseIntPipe) id: number): Promise<SurveyTemplate> {
+  async getById(@Param('id', ParseIntPipe) id: number): Promise<SurveyDataQuestion[]> {
     return await this.surveyTemplateService.getById(id);
   }
 }
