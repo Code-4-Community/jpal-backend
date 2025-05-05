@@ -23,11 +23,10 @@ export class AWSS3Service {
     });
   }
 
-  createLink (youthId: number, assignmentId: number, bucketName: string): string {
-    const fileName = `${youthId}-${assignmentId}LOR.pdf`
-    return `https://${bucketName}.s3.us-east-2.amazonaws.com/${fileName}`
+  createLink(youthId: number, assignmentId: number, bucketName: string): string {
+    const fileName = `${youthId}-${assignmentId}LOR.pdf`;
+    return `https://${bucketName}.s3.us-east-2.amazonaws.com/${fileName}`;
   }
-
 
   async upload(fileBuffer: Buffer, fileName: string, mimeType: string): Promise<string> {
     try {
