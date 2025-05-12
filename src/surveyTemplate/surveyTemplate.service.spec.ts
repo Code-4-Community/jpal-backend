@@ -4,8 +4,32 @@ import { Repository } from 'typeorm';
 import { SurveyTemplate } from './types/surveyTemplate.entity';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { mockUser } from '../user/user.service.spec';
+import { Question } from '../question/types/question.entity';
 
-const mockSurveyTemplate: SurveyTemplate = { id: 1, creator: mockUser, questions: [] };
+
+const mockSurveyTemplate: SurveyTemplate = {
+  id: 1,
+  creator: mockUser,
+  questions: [
+    {
+      id: 101,
+      text: 'What is your favorite color?',
+      surveyTemplate: {} as SurveyTemplate, // circular ref, safe to stub for test
+      options: [
+        {
+          id: 201,
+          text: 'Red',
+          question: {} as Question,
+        },
+        {
+          id: 202,
+          text: 'Blue',
+          question: {} as Question,
+        },
+      ],
+    },
+  ],
+};
 
 const mockSurveyTemplateRepository: Partial<Repository<SurveyTemplate>> = {
   async findOne(query: any): Promise<SurveyTemplate | undefined> {
@@ -39,10 +63,11 @@ describe('SurveyTemplateService', () => {
 
   it('should return expected survey template if id in table', async () => {
     const surveyTemplate = await service.getById(1);
-    expect(surveyTemplate).toEqual({
-      id: 1,
-      creator: mockUser,
-      questions: [],
-    });
+    expect(surveyTemplate).toEqual([
+      {
+        question: 'What is your favorite color?',
+        options: ['Red', 'Blue'],
+      },
+    ]);
   });
 });
