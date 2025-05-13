@@ -10,9 +10,10 @@ import { EmailService } from '../util/email/email.service';
 import { AmazonSESWrapper } from '../util/email/amazon-ses.wrapper';
 import { amazonSESClientFactory } from '../util/email/amazon-ses-client.factory';
 import { Youth } from '../youth/types/youth.entity';
+import { AWSS3Module } from 'src/aws/aws-s3.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Assignment, Option, Question, Response, Youth])],
+  imports: [TypeOrmModule.forFeature([Assignment, Option, Question, Response, Youth]), AWSS3Module],
   providers: [AssignmentService, EmailService, AmazonSESWrapper, amazonSESClientFactory],
   controllers: [AssignmentController],
 })
