@@ -26,7 +26,6 @@ export class SurveyTemplateService {
     }
   }
 
-
   /**
    * Update the questions of a survey template
    * @param id             id of the survey to modify
