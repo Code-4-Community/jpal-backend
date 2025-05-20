@@ -21,8 +21,8 @@ export class SurveyController {
    */
   @Post()
   @Auth(Role.RESEARCHER, Role.ADMIN)
-  create(@Body() createSurveyDto: CreateSurveyDto, @ReqUser() reqUser): Promise<Survey> {
-    return this.surveyService.create(
+  async create(@Body() createSurveyDto: CreateSurveyDto, @ReqUser() reqUser): Promise<Survey> {
+    return await this.surveyService.create(
       createSurveyDto.surveyTemplateId,
       createSurveyDto.name,
       reqUser,

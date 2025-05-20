@@ -36,7 +36,7 @@ export class AssignmentService {
     @InjectRepository(Youth)
     private youthRepository: Repository<Youth>,
     private emailService: EmailService,
-    private awsS3Service: AWSS3Service
+    private awsS3Service: AWSS3Service,
   ) {}
 
   async getByUuid(
@@ -106,8 +106,8 @@ export class AssignmentService {
       extractMetaData(assignment, new Date()),
     );
     const pdf = await letterToPdf(letter).asBuffer();
-    const fileName = assignment.youth.id + "-" + assignment.id + "LOR.pdf"
-    const link = await this.awsS3Service.upload(pdf, fileName, "application/octet-stream");
+    const fileName = assignment.youth.id + '-' + assignment.id + 'LOR.pdf';
+    const link = await this.awsS3Service.upload(pdf, fileName, 'application/octet-stream');
     assignment.s3LetterLink = link;
     return this.assignmentRepository.save(assignment);
   }
@@ -154,13 +154,12 @@ export class AssignmentService {
 
   async sendToYouth(assignment: Assignment): Promise<void> {
     try {
-      const link = this.awsS3Service.createLink(assignment.youth.id, assignment.id,
-        "jpal-letters");
+      const link = this.awsS3Service.createLink(assignment.youth.id, assignment.id, 'jpal-letters');
 
       await this.emailService.queueEmail(
         assignment.youth.email,
         this.youthEmailSubject(assignment.reviewer.firstName, assignment.reviewer.lastName),
-        "Please find the letter of recommendation at the following link: " + link
+        'Please find the letter of recommendation at the following link: ' + link,
       );
 
       assignment.sent = true;
