@@ -6,7 +6,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { Survey } from './types/survey.entity';
 import { User } from '../user/types/user.entity';
 import { SurveyTemplate } from '../surveyTemplate/types/surveyTemplate.entity';
@@ -48,7 +48,7 @@ export class SurveyService {
     if (!surveyTemplate) {
       throw new BadRequestException('Requested survey template does not exist');
     }
-    return this.surveyRepository.create({
+    return this.surveyRepository.save({
       surveyTemplate,
       name,
       creator,
@@ -82,20 +82,56 @@ export class SurveyService {
    */
   async createBatchAssignments(dto: CreateBatchAssignmentsDto) {
     const survey = await this.getByUUID(dto.surveyUUID);
-    const [youth, reviewers] = await Promise.all([
-      this.youthRepository.save(dto.pairs.map((p) => p.youth)),
-      this.reviewerRepository.save(dto.pairs.map((p) => p.reviewer)),
+    const reviewers = dto.pairs.map((p) => p.reviewer);
+    const reviewerEmails = reviewers.map((r) => r.email);
+    const youth = dto.pairs.map((p) => p.youth);
+    const youthEmails = youth.map((y) => y.email);
+
+    // If we're given any existing reviewer-youth pairs for this survey, treat it as an invalid request and require the caller to remove them
+    const existingAssignments = await this.assignmentRepository.find({
+      relations: ['reviewer', 'youth'],
+      where: {
+        survey: survey,
+        reviewer: { email: In(reviewerEmails) },
+        youth: { email: In(youthEmails) },
+      },
+    });
+
+    if (existingAssignments.length > 0) {
+      const assignmentInfo = existingAssignments.map((a) => ({
+        reviewer: {
+          firstName: a.reviewer.firstName,
+          lastName: a.reviewer.lastName,
+          email: a.reviewer.email,
+        },
+        youth: { firstName: a.youth.firstName, lastName: a.youth.lastName, email: a.youth.email },
+      }));
+      throw new BadRequestException({
+        message: 'Attempted to create assignments that already exist for this survey',
+        assignmentInfo,
+      });
+    }
+
+    // These reviewers or youths might already be in another survey
+    // If they are, just ignore them when inserting - this will only create records for never-before-seen reviewe
+    await Promise.all([
+      this.youthRepository.createQueryBuilder().insert().values(youth).orIgnore().execute(),
+      this.reviewerRepository.createQueryBuilder().insert().values(reviewers).orIgnore().execute(),
     ]);
-    /*
-     * Assumes that if there is a collision (by email) of one of the youths or reviewers, the corresponding value
-     * in the returned array is the entity that already exists. This is likely to be true but needs testing to confirm.
-     */
+
+    // Need to retrieve the given database entities to tell TypeORM to associate the new assignments with them instead of trying to create new records
+    const [reviewerEntities, youthEntities] = await Promise.all([
+      this.reviewerRepository.find({ where: { email: In(reviewerEmails) } }),
+      this.youthRepository.find({ where: { email: In(youthEmails) } }),
+    ]);
+
+    // If we get here, then none of the given reviewer-youth pairs should exist for this survey
     await this.assignmentRepository.save(
-      dto.pairs.map((pair, i) => {
+      dto.pairs.map((_, i) => {
         return {
           survey,
-          reviewer: reviewers[i],
-          youth: youth[i],
+          reviewer: reviewerEntities[i],
+          youth: youthEntities[i],
           responses: [],
         };
       }),
