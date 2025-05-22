@@ -24,7 +24,6 @@ import { EmailService } from '../util/email/email.service';
 import { Role } from '../user/types/role';
 import { transformQuestionToSurveyDataQuestion } from '../util/transformQuestionToSurveryDataQuestion';
 
-
 @Injectable()
 export class SurveyService {
   private logger = new Logger(SurveyService.name);

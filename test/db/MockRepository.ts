@@ -32,6 +32,21 @@ export class MockRepository<T extends { id: number }, K extends Omit<T, 'id'> = 
     } as unknown as T;
   }
 
+  find(): any {
+    return jest.fn();
+  }
+
+  createQueryBuilder(): any {
+    const mockQueryBuilder = {
+      insert: jest.fn(() => mockQueryBuilder),
+      values: jest.fn(() => mockQueryBuilder),
+      orIgnore: jest.fn(() => mockQueryBuilder),
+      execute: jest.fn(() => mockQueryBuilder),
+    };
+
+    return mockQueryBuilder;
+  }
+
   findOne(conditions: Partial<T>): T | undefined {
     return this.data.find((d) => {
       return Object.entries(conditions).every(([k, v]) => {

@@ -6,7 +6,6 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { mockUser } from '../user/user.service.spec';
 import { Question } from '../question/types/question.entity';
 
-
 const mockSurveyTemplate: SurveyTemplate = {
   id: 1,
   creator: mockUser,

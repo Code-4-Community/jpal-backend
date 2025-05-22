@@ -4,7 +4,7 @@ import { ReqUser } from '../auth/decorators/user.decorator';
 import { Role } from '../user/types/role';
 import { User } from '../user/types/user.entity';
 import { CreateBatchAssignmentsDto } from './dto/create-batch-assignments.dto';
-import { CreateSurveyDto } from './dto/create-survey.dto';
+import { CreateSurveyDto, CreateSurveyReponseDto } from './dto/create-survey.dto';
 import { SurveyData } from './dto/survey-assignment.dto';
 import { SurveyService } from './survey.service';
 import { Survey } from './types/survey.entity';
@@ -21,12 +21,21 @@ export class SurveyController {
    */
   @Post()
   @Auth(Role.RESEARCHER, Role.ADMIN)
-  async create(@Body() createSurveyDto: CreateSurveyDto, @ReqUser() reqUser): Promise<Survey> {
-    return await this.surveyService.create(
+  async create(
+    @Body() createSurveyDto: CreateSurveyDto,
+    @ReqUser() reqUser,
+  ): Promise<CreateSurveyReponseDto> {
+    const createdSurvey = await this.surveyService.create(
       createSurveyDto.surveyTemplateId,
       createSurveyDto.name,
       reqUser,
     );
+
+    return {
+      uuid: createdSurvey.uuid,
+      name: createdSurvey.name,
+      id: createdSurvey.id,
+    };
   }
 
   @Patch()
