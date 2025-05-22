@@ -4,7 +4,6 @@ import { SurveyDataQuestion, SurveyTemplateService } from './surveyTemplate.serv
 import { SurveyTemplate } from './types/surveyTemplate.entity';
 import { mockUser } from '../user/user.service.spec';
 
-
 const mockSurveyTemplate: SurveyTemplate = { id: 1, creator: mockUser, questions: [] };
 
 const serviceMock = {
@@ -15,7 +14,6 @@ const serviceMock = {
     },
   ] satisfies SurveyDataQuestion[]),
 };
-
 
 describe('SurveyTemplateController', () => {
   let controller: SurveyTemplateController;

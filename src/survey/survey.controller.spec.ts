@@ -5,6 +5,7 @@ import { Survey } from './types/survey.entity';
 import { mockResearcher, mockUser } from '../user/user.service.spec';
 import { User } from 'src/user/types/user.entity';
 import { SurveyTemplate } from 'src/surveyTemplate/types/surveyTemplate.entity';
+import { CreateSurveyReponseDto } from './dto/create-survey.dto';
 
 export const UUID = '123e4567-e89b-12d3-a456-426614174000';
 
@@ -22,6 +23,12 @@ export const mockSurvey: Survey = {
   creator: mockUser,
   assignments: [],
   date: new Date('02-06-2022'),
+};
+
+const createMockSurveyResponse: CreateSurveyReponseDto = {
+  id: 1,
+  uuid: UUID,
+  name: 'Survey 1',
 };
 
 export const mockSurvey2: Survey = {
@@ -86,7 +93,7 @@ describe('SurveyController', () => {
       },
       mockUser,
     );
-    expect(survey).toEqual(mockSurvey);
+    expect(survey).toEqual(createMockSurveyResponse);
   });
 
   it('should return a survey by its uuid', async () => {

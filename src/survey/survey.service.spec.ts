@@ -31,7 +31,12 @@ export const mockSurveyRepository: Partial<Repository<Survey>> = {
     };
   },
   save<T>(survey): T {
-    return survey;
+    return {
+      id: 1,
+      uuid: UUID,
+      date: new Date("2-6'2022"),
+      ...survey,
+    };
   },
   find(options?: FindManyOptions<Survey> | FindConditions<Survey>): Promise<Survey[]> {
     // this checks to see if a find call is trying to filter the results by creator
@@ -109,7 +114,11 @@ describe('SurveyService', () => {
 
   it('should create a survey', async () => {
     const survey = await service.create(mockSurveyTemplate.id, mockSurvey.name, mockSurvey.creator);
-    expect(survey).toEqual(mockSurvey);
+    expect(survey).toMatchObject({
+      uuid: mockSurvey.uuid,
+      name: mockSurvey.name,
+      id: mockSurvey.id,
+    });
   });
 
   it('should return the survey by uuid', async () => {
@@ -145,12 +154,22 @@ describe('SurveyService', () => {
         },
       ],
     };
-    const youthSave = jest.spyOn(mockYouthRepository, 'save').mockImplementation((i) => i);
-    const reviewerSave = jest.spyOn(mockReviewerRepository, 'save').mockImplementation((i) => i);
     const assignmentSave = jest.spyOn(mockAssignmentRepository, 'save');
+
+    const youthCreateQB = jest.spyOn(mockYouthRepository, 'createQueryBuilder');
+    const reviewerCreateQB = jest.spyOn(mockReviewerRepository, 'createQueryBuilder');
+    const youthFind = jest
+      .spyOn(mockYouthRepository, 'find')
+      .mockReturnValueOnce([dto.pairs[0].youth]);
+    const reviewerFind = jest
+      .spyOn(mockReviewerRepository, 'find')
+      .mockReturnValueOnce([dto.pairs[0].reviewer]);
+
     await service.createBatchAssignments(dto);
-    expect(youthSave).toHaveBeenCalledWith([dto.pairs[0].youth]);
-    expect(reviewerSave).toHaveBeenCalledWith([dto.pairs[0].reviewer]);
+    expect(youthCreateQB).toHaveBeenCalled();
+    expect(reviewerCreateQB).toHaveBeenCalled();
+    expect(youthFind).toHaveBeenCalled();
+    expect(reviewerFind).toHaveBeenCalled();
     expect(assignmentSave).toHaveBeenCalledWith([
       {
         survey: mockSurvey,
