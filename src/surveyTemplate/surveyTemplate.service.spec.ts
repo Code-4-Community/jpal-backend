@@ -89,13 +89,10 @@ describe('SurveyTemplateService', () => {
 
   it('should return expected survey template if id in table', async () => {
     const surveyTemplate = await service.getById(1);
-    expect(surveyTemplate).toEqual([
-      {
-        question: 'What is your favorite color?',
-        options: ['Red', 'Blue'],
-      },
-    ]);
+    expect(surveyTemplate.questions[0].text).toEqual('What is your favorite color?');
+    expect(surveyTemplate.questions[0].options.map(o => o.text)).toEqual(['Red', 'Blue']);
   });
+
 
   it('should return an updated survey template', async () => {
     const surveyTemplate = await service.updateSurveyTemplate(1, questions);
@@ -118,7 +115,7 @@ describe('SurveyTemplateService', () => {
   });
 
   it('should error if the requested id is not in the table', async () => {
-    expect(async () => {
+    await expect(async () => {
       await service.updateSurveyTemplate(-1, questions);
     }).rejects.toThrow();
   });
