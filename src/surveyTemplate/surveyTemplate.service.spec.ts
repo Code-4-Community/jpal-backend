@@ -119,4 +119,30 @@ describe('SurveyTemplateService', () => {
       await service.updateSurveyTemplate(-1, questions);
     }).rejects.toThrow();
   });
+
+  it('should return an updated survey template', async () => {
+    const surveyTemplate = await service.updateSurveyTemplate(1, questions);
+    expect(surveyTemplate).toEqual({
+      id: 1,
+      creator: mockUser,
+      questions: questions,
+    })
+  });
+
+  it('should error if the requested id is not in the table', async () => {
+    expect(async () => {
+      await service.updateSurveyTemplate(-1, questions);
+    }).rejects.toThrow();
+  });
+
+  it('should return a delete result', async () => {
+    const deleteRes = await service.deleteSurveyTemplate(1);
+    expect(deleteRes).toEqual(mockDeleteResult);
+  });
+
+  it('should error if the requested id is not in the table', async () => {
+    expect(async () => {
+      await service.updateSurveyTemplate(-1, questions);
+    }).rejects.toThrow();
+  });
 });
