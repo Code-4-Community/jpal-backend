@@ -24,10 +24,21 @@ export class SurveyTemplateController {
    * @param id             id of the survey to modify
    * @param questions      new set of questions for the survey template
    */
-  @Post(':edit-survey-template')
+  @Post(':edit-survey-template-questions')
   @Auth(Role.ADMIN, Role.RESEARCHER)
   async editSurveyTemplate(id: number, questions: Question[]): Promise<SurveyTemplate> {
     return await this.surveyTemplateService.updateSurveyTemplate(id, questions);
+  }
+
+  /**
+   * Update the name of a survey template
+   * @param id   id of the survey template to be updated
+   * @param name the new name for the survey template
+   */
+  @Post(':edit-survey-template-name')
+  @Auth(Role.ADMIN, Role.RESEARCHER)
+  async editSurveyTemplateName(id: number, name: string): Promise<SurveyTemplate> {
+    return this.surveyTemplateService.updateSurveyTemplateName(id, name);
   }
 
   /**

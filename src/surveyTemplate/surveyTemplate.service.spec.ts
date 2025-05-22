@@ -9,6 +9,7 @@ import { Question } from '../question/types/question.entity';
 const mockSurveyTemplate: SurveyTemplate = {
   id: 1,
   creator: mockUser,
+  name: 'name',
   questions: [
     {
       id: 101,
@@ -64,6 +65,26 @@ const questions = [
   },
 ]
 
+const questions2 = [
+  {
+    id: 101,
+    text: 'What is your favorite food?',
+    surveyTemplate: {} as SurveyTemplate, // circular ref, safe to stub for test
+    options: [
+      {
+        id: 201,
+        text: 'Pizza',
+        question: {} as Question,
+      },
+      {
+        id: 202,
+        text: 'Pasta',
+        question: {} as Question,
+      },
+    ],
+  },
+]
+
 describe('SurveyTemplateService', () => {
   let service: SurveyTemplateService;
 
@@ -99,6 +120,7 @@ describe('SurveyTemplateService', () => {
     expect(surveyTemplate).toEqual({
       id: 1,
       creator: mockUser,
+      name: 'name',
       questions: questions,
     })
   });
@@ -121,11 +143,12 @@ describe('SurveyTemplateService', () => {
   });
 
   it('should return an updated survey template', async () => {
-    const surveyTemplate = await service.updateSurveyTemplate(1, questions);
+    const surveyTemplate = await service.updateSurveyTemplate(1, questions2);
     expect(surveyTemplate).toEqual({
       id: 1,
       creator: mockUser,
-      questions: questions,
+      name: 'name',
+      questions: questions2,
     })
   });
 
@@ -145,4 +168,14 @@ describe('SurveyTemplateService', () => {
       await service.updateSurveyTemplate(-1, questions);
     }).rejects.toThrow();
   });
+
+  it('should update the name of the survey template', async () => {
+    const updated = await service.updateSurveyTemplateName(1, 'new name')
+    expect(updated).toEqual({
+      id: 1,
+      creator: mockUser,
+      name: 'new name',
+      questions: questions2,
+    })
+  })
 });

@@ -38,6 +38,17 @@ export class SurveyTemplateService {
   }
 
   /**
+   * Update the name of a survey template
+   * @param id           the id of the survey to modify
+   * @param name         the new name of the survey template
+   */
+  async updateSurveyTemplateName(id: number, name: string): Promise<SurveyTemplate> {
+    const surveyTemplate = await this.getTemplateById(id);
+    surveyTemplate.name = name;
+    return this.surveyTemplateRepository.save(surveyTemplate);
+  }
+
+  /**
    * Delete a survey template
    * @param id    id of the survey template to be deleted
    */

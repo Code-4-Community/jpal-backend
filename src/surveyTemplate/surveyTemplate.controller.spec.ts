@@ -5,14 +5,16 @@ import { SurveyTemplate } from './types/surveyTemplate.entity';
 import { mockUser } from '../user/user.service.spec';
 import { Question } from '../question/types/question.entity';
 import { DeleteResult } from 'typeorm';
+import exp from 'node:constants';
 
 
-const mockSurveyTemplate: SurveyTemplate = { id: 1, creator: mockUser, questions: [] };
+const mockSurveyTemplate: SurveyTemplate = { id: 1, creator: mockUser, name: 'name', questions: [], };
 
 const serviceMock: Partial<SurveyTemplateService> = {
   getById: jest.fn(() => Promise.resolve(mockSurveyTemplate)),
   updateSurveyTemplate: jest.fn(() => Promise.resolve(mockSurveyTemplate)),
-  deleteSurveyTemplate: jest.fn(() => Promise.resolve(mockDeleteResult))
+  deleteSurveyTemplate: jest.fn(() => Promise.resolve(mockDeleteResult)),
+  updateSurveyTemplateName: jest.fn(() => Promise.resolve(mockSurveyTemplate))
 };
 
 const mockDeleteResult: DeleteResult = {
@@ -72,4 +74,9 @@ describe('SurveyTemplateController', () => {
     expect.assertions(1);
     expect(await controller.deleteSurveyTemplate(1)).toEqual(mockDeleteResult);
   });
+
+  it('should delegate updating a survey template name to the survey template service', async () => {
+    expect.assertions(1);
+    expect(await controller.editSurveyTemplateName(1, 'new name')).toEqual(mockSurveyTemplate);
+  })
 });
