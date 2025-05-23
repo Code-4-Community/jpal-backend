@@ -3,9 +3,21 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { SurveyTemplate } from './types/surveyTemplate.entity';
 import { DeleteResult, Repository } from 'typeorm';
 import { Question } from '../question/types/question.entity';
+import { transformQuestionToSurveyDataQuestion } from '../util/transformQuestionToSurveryDataQuestion';
+
+export interface SurveyDataQuestion {
+  question: string;
+  options: string[];
+}
+
+export interface SurveyTemplateData {
+  name: string;
+  questions: SurveyDataQuestion[];
+}
 
 @Injectable()
 export class SurveyTemplateService {
+
   constructor(
     @InjectRepository(SurveyTemplate)
     private surveyTemplateRepository: Repository<SurveyTemplate>,
@@ -14,16 +26,20 @@ export class SurveyTemplateService {
   /**
    * Gets the survey template corresponding to id.
    */
-  async getById(id: number): Promise<SurveyTemplate> {
+  async getById(id: number): Promise<SurveyTemplateData> {
     const result = await this.surveyTemplateRepository.findOne({
-      where: { id: id },
+      where: { id },
+      relations: ['questions', 'questions.options'],
     });
 
     if (!result) {
       throw new BadRequestException(`Survey template id ${id} not found`);
-    } else {
-      return result;
     }
+
+    return {
+      "name": result.name,
+      "questions": transformQuestionToSurveyDataQuestion(result.questions)
+    };
   }
 
   /**
@@ -31,10 +47,14 @@ export class SurveyTemplateService {
    * @param id             id of the survey to modify
    * @param questions      new set of questions for the survey template
    */
-  async updateSurveyTemplate(id: number, questions: Question[]): Promise<SurveyTemplate> {
+  async updateSurveyTemplate(id: number, questions: Question[]): Promise<SurveyTemplateData> {
     const surveyTemplate = await this.getTemplateById(id);
     surveyTemplate.questions = questions;
-    return this.surveyTemplateRepository.save(surveyTemplate)
+    await this.surveyTemplateRepository.save(surveyTemplate)
+    return {
+      "name": surveyTemplate.name,
+      "questions": transformQuestionToSurveyDataQuestion(questions),
+    }
   }
 
   /**
@@ -42,10 +62,14 @@ export class SurveyTemplateService {
    * @param id           the id of the survey to modify
    * @param name         the new name of the survey template
    */
-  async updateSurveyTemplateName(id: number, name: string): Promise<SurveyTemplate> {
+  async updateSurveyTemplateName(id: number, name: string): Promise<SurveyTemplateData> {
     const surveyTemplate = await this.getTemplateById(id);
     surveyTemplate.name = name;
-    return this.surveyTemplateRepository.save(surveyTemplate);
+    await this.surveyTemplateRepository.save(surveyTemplate);
+    return {
+      "name": name,
+      "questions": transformQuestionToSurveyDataQuestion(surveyTemplate.questions),
+    }
   }
 
   /**

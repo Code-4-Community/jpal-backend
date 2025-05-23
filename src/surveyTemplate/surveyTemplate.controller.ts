@@ -1,5 +1,5 @@
-import { Controller, Get, Param, ParseIntPipe, Post, Delete } from '@nestjs/common';
-import { SurveyTemplateService } from './surveyTemplate.service';
+import { Controller, Get, Param, ParseIntPipe, Post, Delete, Put } from '@nestjs/common';
+import { SurveyTemplateData, SurveyTemplateService } from './surveyTemplate.service';
 import { SurveyTemplate } from './types/surveyTemplate.entity';
 import { Auth } from '../auth/decorators/auth.decorator';
 import { Role } from '../user/types/role';
@@ -15,7 +15,7 @@ export class SurveyTemplateController {
    */
   @Get(':id')
   @Auth(Role.ADMIN, Role.RESEARCHER)
-  async getById(@Param('id', ParseIntPipe) id: number): Promise<SurveyTemplate> {
+  async getById(@Param('id', ParseIntPipe) id: number): Promise<SurveyTemplateData> {
     return await this.surveyTemplateService.getById(id);
   }
 
@@ -24,9 +24,9 @@ export class SurveyTemplateController {
    * @param id             id of the survey to modify
    * @param questions      new set of questions for the survey template
    */
-  @Post(':edit-survey-template-questions')
+  @Put(':id/questions')
   @Auth(Role.ADMIN, Role.RESEARCHER)
-  async editSurveyTemplate(id: number, questions: Question[]): Promise<SurveyTemplate> {
+  async editSurveyTemplate(id: number, questions: Question[]): Promise<SurveyTemplateData> {
     return await this.surveyTemplateService.updateSurveyTemplate(id, questions);
   }
 
@@ -35,9 +35,9 @@ export class SurveyTemplateController {
    * @param id   id of the survey template to be updated
    * @param name the new name for the survey template
    */
-  @Post(':edit-survey-template-name')
+  @Put(':id/name')
   @Auth(Role.ADMIN, Role.RESEARCHER)
-  async editSurveyTemplateName(id: number, name: string): Promise<SurveyTemplate> {
+  async editSurveyTemplateName(id: number, name: string): Promise<SurveyTemplateData> {
     return this.surveyTemplateService.updateSurveyTemplateName(id, name);
   }
 
@@ -45,7 +45,7 @@ export class SurveyTemplateController {
    * Delete a survey template
    * @param id    id of the survey template to be deleted
    */
-  @Delete(':delete-survey-template')
+  @Delete('id')
   @Auth(Role.ADMIN, Role.RESEARCHER)
   async deleteSurveyTemplate(id: number): Promise<DeleteResult> {
     return await this.surveyTemplateService.deleteSurveyTemplate(id);

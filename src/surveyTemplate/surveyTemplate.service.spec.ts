@@ -5,6 +5,7 @@ import { SurveyTemplate } from './types/surveyTemplate.entity';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { mockUser } from '../user/user.service.spec';
 import { Question } from '../question/types/question.entity';
+import { transformQuestionToSurveyDataQuestion } from '../util/transformQuestionToSurveryDataQuestion';
 
 const mockSurveyTemplate: SurveyTemplate = {
   id: 1,
@@ -110,18 +111,16 @@ describe('SurveyTemplateService', () => {
 
   it('should return expected survey template if id in table', async () => {
     const surveyTemplate = await service.getById(1);
-    expect(surveyTemplate.questions[0].text).toEqual('What is your favorite color?');
-    expect(surveyTemplate.questions[0].options.map(o => o.text)).toEqual(['Red', 'Blue']);
+    expect(surveyTemplate.questions[0].question).toEqual('What is your favorite color?');
+    expect(surveyTemplate.questions[0].options.map(o => o)).toEqual(['Red', 'Blue']);
   });
 
 
   it('should return an updated survey template', async () => {
     const surveyTemplate = await service.updateSurveyTemplate(1, questions);
     expect(surveyTemplate).toEqual({
-      id: 1,
-      creator: mockUser,
-      name: 'name',
-      questions: questions,
+      name: "name",
+      questions: transformQuestionToSurveyDataQuestion(questions)
     })
   });
 
@@ -145,12 +144,11 @@ describe('SurveyTemplateService', () => {
   it('should return an updated survey template', async () => {
     const surveyTemplate = await service.updateSurveyTemplate(1, questions2);
     expect(surveyTemplate).toEqual({
-      id: 1,
-      creator: mockUser,
-      name: 'name',
-      questions: questions2,
-    })
+      name: "name",
+      questions: transformQuestionToSurveyDataQuestion(questions2),
+    });
   });
+
 
   it('should error if the requested id is not in the table', async () => {
     expect(async () => {
@@ -172,10 +170,8 @@ describe('SurveyTemplateService', () => {
   it('should update the name of the survey template', async () => {
     const updated = await service.updateSurveyTemplateName(1, 'new name')
     expect(updated).toEqual({
-      id: 1,
-      creator: mockUser,
       name: 'new name',
-      questions: questions2,
+      questions: transformQuestionToSurveyDataQuestion(questions2),
     })
   })
 });

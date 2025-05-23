@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { SurveyTemplateController } from './surveyTemplate.controller';
-import { SurveyTemplateService } from './surveyTemplate.service';
+import { SurveyTemplateData, SurveyTemplateService } from './surveyTemplate.service';
 import { SurveyTemplate } from './types/surveyTemplate.entity';
 import { mockUser } from '../user/user.service.spec';
 import { Question } from '../question/types/question.entity';
@@ -10,11 +10,13 @@ import exp from 'node:constants';
 
 const mockSurveyTemplate: SurveyTemplate = { id: 1, creator: mockUser, name: 'name', questions: [], };
 
+const mockSurveyTemplateData: SurveyTemplateData = {name: 'name', questions: []}
+
 const serviceMock: Partial<SurveyTemplateService> = {
-  getById: jest.fn(() => Promise.resolve(mockSurveyTemplate)),
-  updateSurveyTemplate: jest.fn(() => Promise.resolve(mockSurveyTemplate)),
+  getById: jest.fn(() => Promise.resolve(mockSurveyTemplateData)),
+  updateSurveyTemplate: jest.fn(() => Promise.resolve(mockSurveyTemplateData)),
   deleteSurveyTemplate: jest.fn(() => Promise.resolve(mockDeleteResult)),
-  updateSurveyTemplateName: jest.fn(() => Promise.resolve(mockSurveyTemplate))
+  updateSurveyTemplateName: jest.fn(() => Promise.resolve(mockSurveyTemplateData))
 };
 
 const mockDeleteResult: DeleteResult = {
@@ -61,13 +63,13 @@ describe('SurveyTemplateController', () => {
 
   it('should delegate fetching survey templates to the survey template service', async () => {
     expect.assertions(2);
-    expect(await controller.getById(1)).toEqual(mockSurveyTemplate);
+    expect(await controller.getById(1)).toEqual(mockSurveyTemplateData);
     expect(serviceMock.getById).toHaveBeenCalledWith(mockSurveyTemplate.id);
   });
 
   it('should delegate updating survey templates to the survey template service', async () => {
     expect.assertions(1);
-    expect(await controller.editSurveyTemplate(1, questions)).toEqual(mockSurveyTemplate)
+    expect(await controller.editSurveyTemplate(1, questions)).toEqual(mockSurveyTemplateData)
   });
 
   it('should delegate deleting survey templates to the survey template service', async () => {
@@ -77,6 +79,6 @@ describe('SurveyTemplateController', () => {
 
   it('should delegate updating a survey template name to the survey template service', async () => {
     expect.assertions(1);
-    expect(await controller.editSurveyTemplateName(1, 'new name')).toEqual(mockSurveyTemplate);
+    expect(await controller.editSurveyTemplateName(1, 'new name')).toEqual(mockSurveyTemplateData);
   })
 });
