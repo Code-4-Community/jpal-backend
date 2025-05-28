@@ -17,7 +17,6 @@ export interface SurveyTemplateData {
 
 @Injectable()
 export class SurveyTemplateService {
-
   constructor(
     @InjectRepository(SurveyTemplate)
     private surveyTemplateRepository: Repository<SurveyTemplate>,
@@ -37,8 +36,8 @@ export class SurveyTemplateService {
     }
 
     return {
-      "name": result.name,
-      "questions": transformQuestionToSurveyDataQuestion(result.questions)
+      name: result.name,
+      questions: transformQuestionToSurveyDataQuestion(result.questions),
     };
   }
 
@@ -50,11 +49,11 @@ export class SurveyTemplateService {
   async updateSurveyTemplate(id: number, questions: Question[]): Promise<SurveyTemplateData> {
     const surveyTemplate = await this.getTemplateById(id);
     surveyTemplate.questions = questions;
-    await this.surveyTemplateRepository.save(surveyTemplate)
+    await this.surveyTemplateRepository.save(surveyTemplate);
     return {
-      "name": surveyTemplate.name,
-      "questions": transformQuestionToSurveyDataQuestion(questions),
-    }
+      name: surveyTemplate.name,
+      questions: transformQuestionToSurveyDataQuestion(questions),
+    };
   }
 
   /**
@@ -67,9 +66,9 @@ export class SurveyTemplateService {
     surveyTemplate.name = name;
     await this.surveyTemplateRepository.save(surveyTemplate);
     return {
-      "name": name,
-      "questions": transformQuestionToSurveyDataQuestion(surveyTemplate.questions),
-    }
+      name: name,
+      questions: transformQuestionToSurveyDataQuestion(surveyTemplate.questions),
+    };
   }
 
   /**
@@ -84,7 +83,6 @@ export class SurveyTemplateService {
     }
     return this.surveyTemplateRepository.delete(id);
   }
-
 
   private async getTemplateById(id: number): Promise<SurveyTemplate> {
     const result = await this.surveyTemplateRepository.findOne({

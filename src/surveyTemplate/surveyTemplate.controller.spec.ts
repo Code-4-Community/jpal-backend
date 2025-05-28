@@ -7,16 +7,20 @@ import { Question } from '../question/types/question.entity';
 import { DeleteResult } from 'typeorm';
 import exp from 'node:constants';
 
+const mockSurveyTemplate: SurveyTemplate = {
+  id: 1,
+  creator: mockUser,
+  name: 'name',
+  questions: [],
+};
 
-const mockSurveyTemplate: SurveyTemplate = { id: 1, creator: mockUser, name: 'name', questions: [], };
-
-const mockSurveyTemplateData: SurveyTemplateData = {name: 'name', questions: []}
+const mockSurveyTemplateData: SurveyTemplateData = { name: 'name', questions: [] };
 
 const serviceMock: Partial<SurveyTemplateService> = {
   getById: jest.fn(() => Promise.resolve(mockSurveyTemplateData)),
   updateSurveyTemplate: jest.fn(() => Promise.resolve(mockSurveyTemplateData)),
   deleteSurveyTemplate: jest.fn(() => Promise.resolve(mockDeleteResult)),
-  updateSurveyTemplateName: jest.fn(() => Promise.resolve(mockSurveyTemplateData))
+  updateSurveyTemplateName: jest.fn(() => Promise.resolve(mockSurveyTemplateData)),
 };
 
 const mockDeleteResult: DeleteResult = {
@@ -42,7 +46,7 @@ const questions = [
       },
     ],
   },
-]
+];
 
 describe('SurveyTemplateController', () => {
   let controller: SurveyTemplateController;
@@ -69,7 +73,7 @@ describe('SurveyTemplateController', () => {
 
   it('should delegate updating survey templates to the survey template service', async () => {
     expect.assertions(1);
-    expect(await controller.editSurveyTemplate(1, questions)).toEqual(mockSurveyTemplateData)
+    expect(await controller.editSurveyTemplate(1, questions)).toEqual(mockSurveyTemplateData);
   });
 
   it('should delegate deleting survey templates to the survey template service', async () => {
@@ -80,5 +84,5 @@ describe('SurveyTemplateController', () => {
   it('should delegate updating a survey template name to the survey template service', async () => {
     expect.assertions(1);
     expect(await controller.editSurveyTemplateName(1, 'new name')).toEqual(mockSurveyTemplateData);
-  })
+  });
 });
