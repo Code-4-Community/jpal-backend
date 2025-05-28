@@ -38,7 +38,7 @@ const mockSurveyTemplateRepository: Partial<Repository<SurveyTemplate>> = {
     return undefined;
   },
   save: jest.fn().mockImplementation(async (template) => template),
-  delete: jest.fn().mockImplementation(async (id: number) => mockDeleteResult)
+  delete: jest.fn().mockImplementation(async (id: number) => mockDeleteResult),
 };
 
 const mockDeleteResult: DeleteResult = {
@@ -64,7 +64,7 @@ const questions = [
       },
     ],
   },
-]
+];
 
 const questions2 = [
   {
@@ -84,7 +84,7 @@ const questions2 = [
       },
     ],
   },
-]
+];
 
 describe('SurveyTemplateService', () => {
   let service: SurveyTemplateService;
@@ -112,16 +112,15 @@ describe('SurveyTemplateService', () => {
   it('should return expected survey template if id in table', async () => {
     const surveyTemplate = await service.getById(1);
     expect(surveyTemplate.questions[0].question).toEqual('What is your favorite color?');
-    expect(surveyTemplate.questions[0].options.map(o => o)).toEqual(['Red', 'Blue']);
+    expect(surveyTemplate.questions[0].options.map((o) => o)).toEqual(['Red', 'Blue']);
   });
-
 
   it('should return an updated survey template', async () => {
     const surveyTemplate = await service.updateSurveyTemplate(1, questions);
     expect(surveyTemplate).toEqual({
-      name: "name",
-      questions: transformQuestionToSurveyDataQuestion(questions)
-    })
+      name: 'name',
+      questions: transformQuestionToSurveyDataQuestion(questions),
+    });
   });
 
   it('should error if the requested id is not in the table', async () => {
@@ -144,11 +143,10 @@ describe('SurveyTemplateService', () => {
   it('should return an updated survey template', async () => {
     const surveyTemplate = await service.updateSurveyTemplate(1, questions2);
     expect(surveyTemplate).toEqual({
-      name: "name",
+      name: 'name',
       questions: transformQuestionToSurveyDataQuestion(questions2),
     });
   });
-
 
   it('should error if the requested id is not in the table', async () => {
     expect(async () => {
@@ -168,10 +166,10 @@ describe('SurveyTemplateService', () => {
   });
 
   it('should update the name of the survey template', async () => {
-    const updated = await service.updateSurveyTemplateName(1, 'new name')
+    const updated = await service.updateSurveyTemplateName(1, 'new name');
     expect(updated).toEqual({
       name: 'new name',
       questions: transformQuestionToSurveyDataQuestion(questions2),
-    })
-  })
+    });
+  });
 });

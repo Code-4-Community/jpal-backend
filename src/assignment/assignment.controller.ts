@@ -23,13 +23,11 @@ export class AssignmentController {
 
   @Get(':uuid/responses')
   @Auth(Role.RESEARCHER, Role.ADMIN)
-  async viewResponse(
-    @Param('uuid', ParseUUIDPipe) uuid: string,
-    @ReqUser() reqUser,
-  ): Promise<Assignment> {
+  async viewResponse(@Param('uuid', ParseUUIDPipe) uuid: string, @ReqUser() reqUser): Promise<any> {
     const assignment = await this.assignmentService.getByUuid(uuid, [
       'responses',
       'responses.question',
+      'responses.question.options',
       'responses.option',
       'youth',
       'reviewer',
@@ -44,7 +42,18 @@ export class AssignmentController {
       throw new UnauthorizedException('Admins can only view responses for surveys they created');
     }
 
-    return assignment;
+    const cleanedResponses = assignment.responses.map((response) => {
+      return {
+        ...response,
+        option: response.option.text,
+        question: {
+          question: response.question.text,
+          options: response.question.options.map((option) => option.text),
+        },
+      };
+    });
+
+    return { ...assignment, responses: cleanedResponses };
   }
 
   /**

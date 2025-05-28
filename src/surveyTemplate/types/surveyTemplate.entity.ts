@@ -13,8 +13,7 @@ export class SurveyTemplate {
   @OneToMany(() => Question, (question) => question.surveyTemplate, {
     cascade: true,
   })
+  questions: Question[];
 
   name: string;
-
-  questions: Question[];
 }
