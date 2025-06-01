@@ -45,6 +45,12 @@ jobs:
       POSTGRES_HOST: localhost
       POSTGRES_PORT: 5432
       JWT_SECRET: test_secret_for_CI
+      # Placeholder AWS env variables
+      AWS_SES_REGION: secret
+      AWS_SES_ACCESS_KEY_ID: secret
+      AWS_SES_SECRET_ACCESS_KEY: secret
+      AWS_SES_SENDER_EMAIL: secret
+      AWS_BUCKET_NAME: secret
 
     steps:
       - uses: actions/checkout@v2
@@ -63,46 +69,46 @@ jobs:
       # - run: npm run test:e2e
       # - run: npm run test:pact  
 
-  can-i-deploy:
-    runs-on: ubuntu-latest
-    needs: test
-    steps:
-      - uses: actions/checkout@v2
-      - run: docker pull pactfoundation/pact-cli:latest
-      - name: Can I deploy?
-        run: |
-          docker run --rm \
-              pactfoundation/pact-cli:latest \
-              broker can-i-deploy \
-              --broker-base-url=${PACT_BROKER_BASE_URL} \
-              --broker-token ${PACT_BROKER_TOKEN} \
-              --pacticipant ${PACT_PACTICIPANT} \
-              --version ${GIT_COMMIT} \
-              --to prod
+  # can-i-deploy:
+  #   runs-on: ubuntu-latest
+  #   needs: test
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - run: docker pull pactfoundation/pact-cli:latest
+  #     - name: Can I deploy?
+  #       run: |
+  #         docker run --rm \
+  #             pactfoundation/pact-cli:latest \
+  #             broker can-i-deploy \
+  #             --broker-base-url=${PACT_BROKER_BASE_URL} \
+  #             --broker-token ${PACT_BROKER_TOKEN} \
+  #             --pacticipant ${PACT_PACTICIPANT} \
+  #             --version ${GIT_COMMIT} \
+  #             --to prod
       
-  #TODO: write a real deploy script
-  deploy:
-    if: ${{ github.ref == 'refs/heads/master' }}
-    runs-on: ubuntu-latest
-    needs: can-i-deploy
-    steps:
-      - uses: actions/checkout@v2
-      - run: docker pull pactfoundation/pact-cli:latest
-      - name: Tag version as prod
-        run: |
-          docker run --rm \
-              pactfoundation/pact-cli:latest \
-              broker create-version-tag \
-              --broker-base-url=${PACT_BROKER_BASE_URL} \
-              --broker-token ${PACT_BROKER_TOKEN} \
-              --pacticipant ${PACT_PACTICIPANT} \
-              --version ${GIT_COMMIT} \
-              --tag prod
-      - name: Create Sentry release
-        uses: getsentry/action-release@v1
-        env:
-          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-          SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
-          SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
-        with:
-          environment: production
+  # #TODO: write a real deploy script
+  # deploy:
+  #   if: ${{ github.ref == 'refs/heads/master' }}
+  #   runs-on: ubuntu-latest
+  #   needs: can-i-deploy
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - run: docker pull pactfoundation/pact-cli:latest
+  #     - name: Tag version as prod
+  #       run: |
+  #         docker run --rm \
+  #             pactfoundation/pact-cli:latest \
+  #             broker create-version-tag \
+  #             --broker-base-url=${PACT_BROKER_BASE_URL} \
+  #             --broker-token ${PACT_BROKER_TOKEN} \
+  #             --pacticipant ${PACT_PACTICIPANT} \
+  #             --version ${GIT_COMMIT} \
+  #             --tag prod
+  #     - name: Create Sentry release
+  #       uses: getsentry/action-release@v1
+  #       env:
+  #         SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+  #         SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+  #         SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
+  #       with:
+  #         environment: production
