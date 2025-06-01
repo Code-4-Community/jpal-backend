@@ -53,7 +53,7 @@ jobs:
         with:
           # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
           # We are using Node.js 14 because it is the current LTS version
-          node-version: 14.x  
+          node-version: 22.x  
       - uses: mansona/npm-lockfile-version@v1
       - run: npm ci
       - run: npm run check
