@@ -2,7 +2,7 @@ import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nes
 import * as Sentry from '@sentry/node';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
-import { SpanStatus } from '@sentry/tracing';
+// import { SpanStatus } from '@sentry/tracing';
 @Injectable()
 export class SentryInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
@@ -28,7 +28,8 @@ export class SentryInterceptor implements NestInterceptor {
       }),
       tap(() => {
         const response = context.switchToHttp().getResponse();
-        transaction.setStatus(SpanStatus.fromHttpCode(response.statusCode));
+        // TODO: figure out a way around deprectated `SpanStatus.fromHttpCode`
+        // transaction.setStatus(SpanStatus.fromHttpCode(response.statusCode));
         transaction.finish();
       }),
     );
