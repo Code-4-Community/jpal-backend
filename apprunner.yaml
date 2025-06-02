@@ -3,7 +3,8 @@ runtime: nodejs22
 build:
   commands:
     build:
-      - npm ci --verbose
+      - ls -l
+      - npm install --verbose
       - npm run build --verbose
 run:
   pre-run:
