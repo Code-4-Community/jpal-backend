@@ -1,0 +1,12 @@
+version: 1.0
+runtime: nodejs22
+build:
+  commands:
+    - npm ci
+    - npx nest build
+run:
+  pre-run:
+    - npm run typeorm migration:run
+  command: node dist/src/main.js
+  network:
+    port: 5000
