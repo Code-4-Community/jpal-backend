@@ -2,10 +2,8 @@ version: 1.0
 runtime: nodejs22
 build:
   commands:
-    pre-build:
-      - npm ci
     build:
-      - npx nest build
+      - npm install && npx nest build
 run:
   pre-run:
     - npm run typeorm migration:run
