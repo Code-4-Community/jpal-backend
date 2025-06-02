@@ -3,12 +3,7 @@ runtime: nodejs22
 build:
   commands:
     build:
-      - ls -l
-      - npm install --verbose
-      - npm run build --verbose
+      - npm install
+      - npx nest build
 run:
-  pre-run:
-    - npm run typeorm migration:run
   command: node dist/src/main.js
-  network:
-    port: 5000
