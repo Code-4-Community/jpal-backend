@@ -37,10 +37,10 @@ import { ReviewerModule } from './reviewer/reviewer.module';
   controllers: [AppController, UserController],
   providers: [
     AppService,
-    {
-      provide: APP_INTERCEPTOR,
-      useClass: SentryInterceptor,
-    },
+    // {
+    //   provide: APP_INTERCEPTOR,
+    //   useClass: SentryInterceptor,
+    // },
   ],
 })
 export class AppModule {
