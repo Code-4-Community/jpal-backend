@@ -7,3 +7,5 @@ build:
       - npx nest build
 run:
   command: node dist/src/main.js
+  network:
+    port: 5000
