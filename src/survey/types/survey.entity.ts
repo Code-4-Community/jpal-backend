@@ -19,6 +19,12 @@ export class Survey {
   @Generated('uuid')
   uuid: string;
 
+  @Column()
+  organizationName: string;
+
+  @Column()
+  imageURL: string;
+
   @ManyToOne(() => SurveyTemplate)
   surveyTemplate: SurveyTemplate;
 
