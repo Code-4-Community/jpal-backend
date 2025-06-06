@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, ParseUUIDPipe, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseUUIDPipe, Patch, Post, Put } from '@nestjs/common';
 import { Auth } from '../auth/decorators/auth.decorator';
 import { ReqUser } from '../auth/decorators/user.decorator';
 import { Role } from '../user/types/role';
@@ -75,5 +75,15 @@ export class SurveyController {
     } else if (user.role == Role.RESEARCHER) {
       return this.surveyService.getAllSurveys();
     }
+  }
+
+  @Put(':surveyUUID/name')
+  @Auth(Role.ADMIN, Role.RESEARCHER)
+  async updateSurveyName(
+    @Param('surveyUUID') surveyUUID: string,
+    @Body('name') name: string,
+    @ReqUser() user: User
+  ): Promise<Survey> {
+    return this.surveyService.updateSurveyName(surveyUUID, name, user);
   }
 }

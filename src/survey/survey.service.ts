@@ -294,4 +294,25 @@ export class SurveyService {
 
     return survey;
   }
+
+  async updateSurveyName(surveyUUID: string, name: string, user: User): Promise<Survey> {
+    const survey = await this.surveyRepository.findOne({
+      where: { uuid: surveyUUID },
+      relations: ['creator'],
+    });
+
+    if (!survey) {
+      throw new BadRequestException(`Survey with UUID: ${surveyUUID} not found`);
+    }
+
+    const isAdminAndCreator = user.role === Role.ADMIN && survey.creator.id === user.id;
+    const isResearcher = user.role === Role.RESEARCHER;
+
+    if (!isResearcher && !isAdminAndCreator) {
+      throw new BadRequestException(`You do not have permission to update this survey`);
+    }
+
+    survey.name = name;
+    return await this.surveyRepository.save(survey);
+  }
 }
