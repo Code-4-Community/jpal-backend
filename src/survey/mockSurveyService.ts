@@ -2,7 +2,7 @@ import { SurveyService } from './survey.service';
 import { Survey } from './types/survey.entity';
 import { User } from '../user/types/user.entity';
 import { mockSurveyTemplate } from './survey.controller.spec';
-
+// added some mock data so the application would start
 export const mockSurveyService: Partial<SurveyService> = {
   async create(surveyTemplateId: number, name: string, creator: User): Promise<Survey> {
     return {
@@ -13,6 +13,8 @@ export const mockSurveyService: Partial<SurveyService> = {
       creator,
       assignments: [],
       date: new Date('02-06-2022'),
+      organizationName: 'mock organization', 
+      imageURL: 'image url',
     };
   },
 };
