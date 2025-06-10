@@ -113,11 +113,17 @@ describe('SurveyService', () => {
   });
 
   it('should create a survey', async () => {
-    const survey = await service.create(mockSurveyTemplate.id, mockSurvey.name, mockSurvey.creator);
+    const survey = await service.create(mockSurveyTemplate.id,
+      mockSurvey.name,
+      mockSurvey.creator,
+      mockSurvey.organizationName,
+      mockSurvey.imageURL);
     expect(survey).toMatchObject({
       uuid: mockSurvey.uuid,
       name: mockSurvey.name,
       id: mockSurvey.id,
+      organizationName: mockSurvey.organizationName,
+      imageURL: mockSurvey.imageURL
     });
   });
 

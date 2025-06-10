@@ -40,7 +40,8 @@ export class SurveyService {
     private emailService: EmailService,
   ) {}
 
-  async create(surveyTemplateId: number, name: string, creator: User) {
+  async create(surveyTemplateId: number, name: string, creator: User,
+               organizationName: string, imageURL: string) {
     const surveyTemplate = await this.surveyTemplateRepository.findOne({
       id: surveyTemplateId,
     });
@@ -52,6 +53,8 @@ export class SurveyService {
       name,
       creator,
       assignments: [],
+      imageURL,
+      organizationName,
     });
   }
 
