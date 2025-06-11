@@ -94,7 +94,7 @@ export class AssignmentController {
     @Param('uuid', ParseUUIDPipe) uuid: string,
     @Body() completeAssignmentDto: CompleteAssignmentDto,
   ): Promise<Letter> {
-    const assignment = await this.assignmentService.getByUuid(uuid);
+    const assignment = await this.assignmentService.getByUuid(uuid, ['youth', 'reviewer', 'survey']);
     if (!assignment) {
       throw new BadRequestException('This assignment does not exist.');
     }

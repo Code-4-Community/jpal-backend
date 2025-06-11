@@ -178,6 +178,7 @@ export const exampleLetter: Letter = {
   shouldBeSent: true,
   date: new Date(2022, 1, 1),
   greeting: 'To Whom It May Concern',
+  headerImageURL: 'url',
   paragraphs: [
     'Joe Shmoe worked for me at the Wharton School during this past Summer. Overall, Joe was an exceptional employee.',
     'Joe always completed work related tasks in a timely manner.',
