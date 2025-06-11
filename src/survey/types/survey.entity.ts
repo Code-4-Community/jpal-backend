@@ -22,8 +22,8 @@ export class Survey {
   @Column()
   organizationName: string;
 
-  @Column()
-  imageURL: string;
+  @Column({ nullable: true })
+  imageURL: string | null;
 
   @ManyToOne(() => SurveyTemplate)
   surveyTemplate: SurveyTemplate;

@@ -4,7 +4,6 @@ import { Assignment } from '../../assignment/types/assignment.entity';
 export type Letter = {
   shouldBeSent: boolean;
   date: Date;
-  headerImageURL: string | null;
   greeting: string;
   paragraphs: string[];
   closing: string;
@@ -31,7 +30,6 @@ export type AssignmentMetaData = {
   };
   organization: string;
   dateOfLetterGeneration: Date;
-  headerImageURL: string | null;
 };
 
 export type LetterGenerationRules = {
@@ -85,7 +83,6 @@ export default function generateLetter(
   return {
     shouldBeSent: generatedParagraphs.length >= 3,
     date: metadata.dateOfLetterGeneration,
-    headerImageURL: metadata.headerImageURL,
     greeting: rules.greeting,
     paragraphs: generatedParagraphs,
     closing: rules.closing,
@@ -163,7 +160,6 @@ export function extractMetaData(assignment: Assignment, currentDate: Date): Assi
     },
     organization: assignment.survey.organizationName,
     dateOfLetterGeneration: currentDate,
-    headerImageURL: assignment.survey.imageURL,
   };
 }
 

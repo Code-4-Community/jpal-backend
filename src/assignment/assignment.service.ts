@@ -105,7 +105,14 @@ export class AssignmentService {
       assignment,
       extractMetaData(assignment, new Date()),
     );
-    const pdf = await letterToPdf(letter);
+
+    let headerImageData = null;
+    if (assignment.survey.imageURL !== null) {
+      const imageKey = new URL(assignment.survey.imageURL).pathname.substring(1);
+      headerImageData = this.awsS3Service.getImageData(imageKey);
+    }
+
+    const pdf = await letterToPdf(letter, headerImageData);
     const fileName = assignment.youth.id + '-' + assignment.id + 'LOR.pdf';
     const link = await this.awsS3Service.upload(pdf, fileName, 'application/octet-stream');
     assignment.s3LetterLink = link;
