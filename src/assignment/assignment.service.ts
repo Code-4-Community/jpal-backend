@@ -109,7 +109,7 @@ export class AssignmentService {
     let headerImageData = null;
     if (assignment.survey.imageURL !== null) {
       const imageKey = new URL(assignment.survey.imageURL).pathname.substring(1);
-      headerImageData = this.awsS3Service.getImageData(imageKey);
+      headerImageData = await this.awsS3Service.getImageData(imageKey);
     }
 
     const pdf = await letterToPdf(letter, headerImageData);
