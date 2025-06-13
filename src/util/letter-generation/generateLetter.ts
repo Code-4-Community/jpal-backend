@@ -158,7 +158,7 @@ export function extractMetaData(assignment: Assignment, currentDate: Date): Assi
       fullName: getFullName(assignment.reviewer.firstName, assignment.reviewer.lastName),
       email: assignment.reviewer.email,
     },
-    organization: 'The Wharton School', // TODO: Add organization to the assignment entity
+    organization: assignment.survey.organizationName,
     dateOfLetterGeneration: currentDate,
   };
 }

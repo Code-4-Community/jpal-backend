@@ -2,12 +2,12 @@ import { SurveyResponseDto } from 'src/assignment/dto/survey-response.dto';
 import { LetterGenerationRules } from './generateLetter';
 
 const DEFAULT_LETTER_GENERATION_RULES: LetterGenerationRules = {
-  greeting: 'To Whom It May Concern',
+  greeting: 'To Whom It May Concern:',
   paragraphs: [
     {
       sentences: [
-        ({ youth }) =>
-          `${youth.fullName} worked for me at the Wharton School during this past Summer.`,
+        ({ youth, organization }) =>
+          `${youth.fullName} worked for me at ${organization} during this past Summer.`,
         {
           toSentence: (qualifier, { youth }) =>
             `Overall, ${youth.firstName} was ${aOrAn(qualifier)} employee.`,
@@ -116,7 +116,7 @@ const DEFAULT_LETTER_GENERATION_RULES: LetterGenerationRules = {
       ],
     },
   ],
-  closing: 'Sincerely',
+  closing: 'Sincerely,',
 };
 
 /**

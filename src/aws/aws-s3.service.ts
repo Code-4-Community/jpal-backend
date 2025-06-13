@@ -1,19 +1,35 @@
-import { Injectable } from '@nestjs/common';
-import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+import { Injectable, Logger } from '@nestjs/common';
+import {
+  S3Client,
+  PutObjectCommand,
+  GetObjectCommand,
+  NoSuchKey,
+  S3ServiceException,
+} from '@aws-sdk/client-s3';
 import * as process from 'process';
 
 @Injectable()
 export class AWSS3Service {
+  private readonly logger = new Logger(AWSS3Service.name);
+
   private client: S3Client;
-  private readonly bucket: string;
+  private readonly lettersBucket: string;
+  private readonly imagesBucket: string;
   private readonly region: string;
 
   constructor() {
     this.region = process.env.AWS_REGION || 'us-east-2';
-    this.bucket = process.env.AWS_BUCKET_NAME;
-    if (!this.bucket) {
-      throw new Error('AWS_BUCKET_NAME is not defined');
+    this.lettersBucket = process.env.AWS_LETTERS_BUCKET_NAME;
+    this.imagesBucket = process.env.AWS_IMAGES_BUCKET_NAME;
+
+    if (!this.lettersBucket) {
+      throw new Error('AWS_LETTERS_BUCKET_NAME is not defined');
     }
+
+    if (!this.imagesBucket) {
+      throw new Error('AWS_IMAGES_BUCKET_NAME is not defined');
+    }
+
     this.client = new S3Client({
       region: this.region,
       credentials: {
@@ -31,7 +47,7 @@ export class AWSS3Service {
   async upload(fileBuffer: Buffer, fileName: string, mimeType: string): Promise<string> {
     try {
       const command = new PutObjectCommand({
-        Bucket: this.bucket,
+        Bucket: this.lettersBucket,
         Key: fileName,
         Body: fileBuffer,
         ContentType: mimeType,
@@ -39,9 +55,31 @@ export class AWSS3Service {
 
       await this.client.send(command);
 
-      return `https://${this.bucket}.s3.${this.region}.amazonaws.com/${fileName}`;
+      return `https://${this.lettersBucket}.s3.${this.region}.amazonaws.com/${fileName}`;
     } catch (error) {
       throw new Error('File upload to AWS failed: ' + error);
+    }
+  }
+
+  async getImageData(objectKey: string): Promise<Uint8Array | null> {
+    try {
+      const command = new GetObjectCommand({
+        Bucket: this.imagesBucket,
+        Key: objectKey,
+      });
+
+      const response = await this.client.send(command);
+      return response.Body.transformToByteArray();
+    } catch (error) {
+      if (error instanceof NoSuchKey) {
+        this.logger.error(`Failed to get image ${objectKey} - key does not exist`);
+      } else if (error instanceof S3ServiceException) {
+        this.logger.error(
+          `Failed to get image ${objectKey} - S3 service error (${error.name}: ${error.message})`,
+        );
+      }
+
+      return null;
     }
   }
 }

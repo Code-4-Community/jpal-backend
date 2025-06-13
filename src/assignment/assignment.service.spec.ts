@@ -29,6 +29,7 @@ const mockS3Service: Partial<AWSS3Service> = {
   createLink: jest
     .fn()
     .mockResolvedValue('https://jpal-letters.s3.us-east-2.amazonaws.com/1-1LOR.pdf'),
+  getImageData: jest.fn().mockResolvedValue(null),
 };
 
 const reviewer_UUID = '123e4567-e89b-12d3-a456-426614174000';

@@ -50,7 +50,8 @@ jobs:
       AWS_SES_ACCESS_KEY_ID: secret
       AWS_SES_SECRET_ACCESS_KEY: secret
       AWS_SES_SENDER_EMAIL: secret
-      AWS_BUCKET_NAME: secret
+      AWS_LETTERS_BUCKET_NAME: secret
+      AWS_IMAGES_BUCKET_NAME: secret
 
     steps:
       - uses: actions/checkout@v2
