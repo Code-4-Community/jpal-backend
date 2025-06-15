@@ -15,6 +15,7 @@ export const mockSurveyService: Partial<SurveyService> = {
       date: new Date('02-06-2022'),
       organizationName: 'test',
       imageURL: null,
+      treatmentPercentage: 50,
     };
   },
 };

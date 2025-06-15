@@ -25,6 +25,9 @@ export class Survey {
   @Column({ nullable: true })
   imageURL: string | null;
 
+  @Column({ default: 50 })
+  treatmentPercentage: number;
+
   @ManyToOne(() => SurveyTemplate)
   surveyTemplate: SurveyTemplate;
 
