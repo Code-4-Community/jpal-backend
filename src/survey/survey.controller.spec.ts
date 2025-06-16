@@ -33,6 +33,8 @@ const createMockSurveyResponse: CreateSurveyReponseDto = {
   id: 1,
   uuid: UUID,
   name: 'Survey 1',
+  organizationName: '',
+  imageURL: ''
 };
 
 export const mockSurvey2: Survey = {
@@ -51,7 +53,8 @@ export const mockSurvey2: Survey = {
 export const listMockSurveys: Survey[] = [mockSurvey, mockSurvey2];
 
 export const mockSurveyService: Partial<SurveyService> = {
-  async create(surveyTemplateId: number, name: string, creator: User): Promise<Survey> {
+  async create(surveyTemplateId: number, name: string, creator: User, organizationName: string,
+               imageURL: string): Promise<Survey> {
     return {
       id: 1,
       uuid: UUID,
@@ -100,6 +103,8 @@ describe('SurveyController', () => {
       {
         name: 'Survey 1',
         surveyTemplateId: 1,
+        organizationName: '',
+        imageURL: '',
       },
       mockUser,
     );

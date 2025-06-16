@@ -29,12 +29,16 @@ export class SurveyController {
       createSurveyDto.surveyTemplateId,
       createSurveyDto.name,
       reqUser,
+      createSurveyDto.organizationName,
+      createSurveyDto.imageURL,
     );
 
     return {
       uuid: createdSurvey.uuid,
       name: createdSurvey.name,
       id: createdSurvey.id,
+      organizationName: createdSurvey.organizationName,
+      imageURL: createdSurvey.imageURL
     };
   }
 
