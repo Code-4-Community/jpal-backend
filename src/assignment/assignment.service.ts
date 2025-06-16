@@ -98,14 +98,21 @@ export class AssignmentService {
     );
 
     await this.responseRepository.save(responsesToSave);
-    assignment = await this.getByUuid(uuid);
+    assignment = await this.getByUuid(uuid, ['youth', 'survey', 'reviewer']);
     assignment.status = AssignmentStatus.COMPLETED;
 
     const letter = await this.generateLetterFromCompletedAssignment(
       assignment,
       extractMetaData(assignment, new Date()),
     );
-    const pdf = await letterToPdf(letter).asBuffer();
+
+    let headerImageData = null;
+    if (assignment.survey.imageURL !== null) {
+      const imageKey = new URL(assignment.survey.imageURL).pathname.substring(1);
+      headerImageData = await this.awsS3Service.getImageData(imageKey);
+    }
+
+    const pdf = await letterToPdf(letter, headerImageData);
     const fileName = assignment.youth.id + '-' + assignment.id + 'LOR.pdf';
     const link = await this.awsS3Service.upload(pdf, fileName, 'application/octet-stream');
     assignment.s3LetterLink = link;
