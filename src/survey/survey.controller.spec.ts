@@ -20,8 +20,8 @@ export const mockSurvey: Survey = {
   id: 1,
   uuid: UUID,
   surveyTemplate: mockSurveyTemplate,
-  organizationName: '',
-  imageURL: null,
+  organizationName: 'test',
+  imageURL: 'https://jpal-letter-images.s3.us-east-2.amazonaws.com/test-image.png',
   treatmentPercentage: 50,
   name: 'Survey 1',
   creator: mockUser,
@@ -34,7 +34,8 @@ const createMockSurveyResponse: CreateSurveyReponseDto = {
   uuid: UUID,
   name: 'Survey 1',
   organizationName: '',
-  imageURL: ''
+  imageURL: '',
+  treatmentPercentage: 50
 };
 
 export const mockSurvey2: Survey = {
@@ -104,7 +105,8 @@ describe('SurveyController', () => {
         name: 'Survey 1',
         surveyTemplateId: 1,
         organizationName: '',
-        imageURL: '',
+        imageBase64: '',
+        treatmentPercentage: 50,
       },
       mockUser,
     );

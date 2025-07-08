@@ -20,6 +20,7 @@ import {
 import { UtilModule } from '../util/util.module';
 import { EmailService } from '../util/email/email.service';
 import { NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { AWSS3Service } from '../aws/aws-s3.service';
 
 export const mockSurveyRepository: Partial<Repository<Survey>> = {
   create(survey?: DeepPartial<Survey> | DeepPartial<Survey>[]): any {
@@ -60,6 +61,15 @@ const mockEmailService: Partial<EmailService> = {
   queueEmail: jest.fn(),
 };
 
+const mockS3Service: Partial<AWSS3Service> = {
+  upload: jest.fn().mockResolvedValue('https://jpal-letters.s3.us-east-2.amazonaws.com/1-1LOR.pdf'),
+  createLink: jest
+    .fn()
+    .mockResolvedValue('https://jpal-letters.s3.us-east-2.amazonaws.com/1-1LOR.pdf'),
+  getImageData: jest.fn().mockResolvedValue(null),
+};
+
+
 describe('SurveyService', () => {
   let service: SurveyService;
   let mockAssignmentRepository: MockRepository<Assignment>;
@@ -98,6 +108,10 @@ describe('SurveyService', () => {
           provide: getRepositoryToken(Reviewer),
           useValue: mockReviewerRepository,
         },
+        {
+          provide: AWSS3Service,
+          useValue: mockS3Service,
+        }
       ],
     }).compile();
 
@@ -117,13 +131,15 @@ describe('SurveyService', () => {
       mockSurvey.name,
       mockSurvey.creator,
       mockSurvey.organizationName,
-      mockSurvey.imageURL);
+      'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA',
+      mockSurvey.treatmentPercentage);
     expect(survey).toMatchObject({
       uuid: mockSurvey.uuid,
       name: mockSurvey.name,
       id: mockSurvey.id,
       organizationName: mockSurvey.organizationName,
-      imageURL: mockSurvey.imageURL
+      imageURL: mockSurvey.imageURL,
+      treatmentPercentage: mockSurvey.treatmentPercentage
     });
   });
 

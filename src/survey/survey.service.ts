@@ -23,6 +23,8 @@ import { Question as SurveyDataQuestion } from './dto/survey-assignment.dto';
 import { EmailService } from '../util/email/email.service';
 import { Role } from '../user/types/role';
 import { transformQuestionToSurveyDataQuestion } from '../util/transformQuestionToSurveryDataQuestion';
+import { AWSS3Service } from '../aws/aws-s3.service';
+import * as process from 'process';
 
 @Injectable()
 export class SurveyService {
@@ -38,16 +40,31 @@ export class SurveyService {
     @InjectRepository(Reviewer)
     private reviewerRepository: Repository<Reviewer>,
     private emailService: EmailService,
+    private awsS3Service: AWSS3Service,
   ) {}
 
   async create(surveyTemplateId: number, name: string, creator: User,
-               organizationName: string, imageURL: string) {
+               organizationName: string, imageBase64: string, treatmentPercentage: number) {
     const surveyTemplate = await this.surveyTemplateRepository.findOne({
       id: surveyTemplateId,
     });
     if (!surveyTemplate) {
       throw new BadRequestException('Requested survey template does not exist');
     }
+
+    const matches = imageBase64.match(/^data:(.*);base64,(.*)$/);
+    if (!matches || matches.length !== 3) {
+      throw new Error('Invalid base64 image format');
+    }
+
+    const mimeType = matches[1];
+    const base64Data = matches[2];
+    const buffer = Buffer.from(base64Data, 'base64');
+
+    const fileName = organizationName + "-image." + mimeType.substring(6);
+    await this.awsS3Service.upload(buffer, fileName, mimeType, process.env.AWS_IMAGES_BUCKET_NAME);
+    const imageURL = `https://${process.env.AWS_IMAGES_BUCKET_NAME}.s3.us-east-2.amazonaws.com/${fileName}`;
+
     return this.surveyRepository.save({
       surveyTemplate,
       name,
@@ -55,6 +72,7 @@ export class SurveyService {
       assignments: [],
       imageURL,
       organizationName,
+      treatmentPercentage
     });
   }
 

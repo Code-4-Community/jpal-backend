@@ -30,7 +30,8 @@ export class SurveyController {
       createSurveyDto.name,
       reqUser,
       createSurveyDto.organizationName,
-      createSurveyDto.imageURL,
+      createSurveyDto.imageBase64,
+      createSurveyDto.treatmentPercentage,
     );
 
     return {
@@ -38,7 +39,8 @@ export class SurveyController {
       name: createdSurvey.name,
       id: createdSurvey.id,
       organizationName: createdSurvey.organizationName,
-      imageURL: createdSurvey.imageURL
+      imageURL: createdSurvey.imageURL,
+      treatmentPercentage: createdSurvey.treatmentPercentage
     };
   }
 

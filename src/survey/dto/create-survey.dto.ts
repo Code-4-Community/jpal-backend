@@ -2,7 +2,8 @@ export class CreateSurveyDto {
   name: string;
   surveyTemplateId: number;
   organizationName: string;
-  imageURL: string;
+  imageBase64: string;
+  treatmentPercentage: number;
 }
 
 export class CreateSurveyReponseDto {
@@ -11,4 +12,5 @@ export class CreateSurveyReponseDto {
   id: number;
   organizationName: string;
   imageURL: string;
+  treatmentPercentage: number;
 }
