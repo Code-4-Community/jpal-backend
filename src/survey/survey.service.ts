@@ -25,6 +25,7 @@ import { Role } from '../user/types/role';
 import { transformQuestionToSurveyDataQuestion } from '../util/transformQuestionToSurveryDataQuestion';
 import { AWSS3Service } from '../aws/aws-s3.service';
 import * as process from 'process';
+import { s3Buckets } from '../aws/types/s3Buckets';
 
 @Injectable()
 export class SurveyService {
@@ -61,9 +62,8 @@ export class SurveyService {
     const base64Data = matches[2];
     const buffer = Buffer.from(base64Data, 'base64');
 
-    const fileName = organizationName + "-image." + mimeType.substring(6);
-    await this.awsS3Service.upload(buffer, fileName, mimeType, process.env.AWS_IMAGES_BUCKET_NAME);
-    const imageURL = `https://${process.env.AWS_IMAGES_BUCKET_NAME}.s3.us-east-2.amazonaws.com/${fileName}`;
+    const fileName = `${organizationName}-image${Date.now()}.${mimeType.substring(6)}`
+    const imageURL = await this.awsS3Service.upload(buffer, fileName, mimeType, s3Buckets.IMAGES);
 
     return this.surveyRepository.save({
       surveyTemplate,
