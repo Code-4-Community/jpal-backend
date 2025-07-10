@@ -44,8 +44,14 @@ export class SurveyService {
     private awsS3Service: AWSS3Service,
   ) {}
 
-  async create(surveyTemplateId: number, name: string, creator: User,
-               organizationName: string, imageBase64: string, treatmentPercentage: number) {
+  async create(
+    surveyTemplateId: number,
+    name: string,
+    creator: User,
+    organizationName: string,
+    imageBase64: string,
+    treatmentPercentage: number,
+  ) {
     const surveyTemplate = await this.surveyTemplateRepository.findOne({
       id: surveyTemplateId,
     });
@@ -62,7 +68,7 @@ export class SurveyService {
     const base64Data = matches[2];
     const buffer = Buffer.from(base64Data, 'base64');
 
-    const fileName = `${organizationName}-image${Date.now()}.${mimeType.substring(6)}`
+    const fileName = `${organizationName}-image${Date.now()}.${mimeType.substring(6)}`;
     const imageURL = await this.awsS3Service.upload(buffer, fileName, mimeType, s3Buckets.IMAGES);
 
     return this.surveyRepository.save({
@@ -72,7 +78,7 @@ export class SurveyService {
       assignments: [],
       imageURL,
       organizationName,
-      treatmentPercentage
+      treatmentPercentage,
     });
   }
 

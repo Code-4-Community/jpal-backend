@@ -35,7 +35,7 @@ const createMockSurveyResponse: CreateSurveyReponseDto = {
   name: 'Survey 1',
   organizationName: '',
   imageURL: '',
-  treatmentPercentage: 50
+  treatmentPercentage: 50,
 };
 
 export const mockSurvey2: Survey = {
@@ -54,8 +54,13 @@ export const mockSurvey2: Survey = {
 export const listMockSurveys: Survey[] = [mockSurvey, mockSurvey2];
 
 export const mockSurveyService: Partial<SurveyService> = {
-  async create(surveyTemplateId: number, name: string, creator: User, organizationName: string,
-               imageURL: string): Promise<Survey> {
+  async create(
+    surveyTemplateId: number,
+    name: string,
+    creator: User,
+    organizationName: string,
+    imageURL: string,
+  ): Promise<Survey> {
     return {
       id: 1,
       uuid: UUID,

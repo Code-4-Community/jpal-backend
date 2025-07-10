@@ -1,5 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { GetObjectCommand, NoSuchKey, PutObjectCommand, S3Client, S3ServiceException } from '@aws-sdk/client-s3';
+import {
+  GetObjectCommand,
+  NoSuchKey,
+  PutObjectCommand,
+  S3Client,
+  S3ServiceException,
+} from '@aws-sdk/client-s3';
 import * as process from 'process';
 import { s3Buckets } from './types/s3Buckets';
 
@@ -39,10 +45,14 @@ export class AWSS3Service {
     return `https://${bucketName}.s3.us-east-2.amazonaws.com/${fileName}`;
   }
 
-  async upload(fileBuffer: Buffer, fileName: string, mimeType: string, bucket: s3Buckets): Promise<string> {
+  async upload(
+    fileBuffer: Buffer,
+    fileName: string,
+    mimeType: string,
+    bucket: s3Buckets,
+  ): Promise<string> {
     try {
-
-      const s3Bucket = this.mapBucket(bucket)
+      const s3Bucket = this.mapBucket(bucket);
 
       const command = new PutObjectCommand({
         Bucket: s3Bucket,
@@ -62,8 +72,7 @@ export class AWSS3Service {
   mapBucket(bucketEnum: s3Buckets): string {
     if (bucketEnum === s3Buckets.LETTERS) {
       return process.env.AWS_LETTERS_BUCKET_NAME;
-    }
-    else if (bucketEnum === s3Buckets.IMAGES) {
+    } else if (bucketEnum === s3Buckets.IMAGES) {
       return process.env.AWS_IMAGES_BUCKET_NAME;
     }
   }

@@ -40,7 +40,7 @@ export class SurveyController {
       id: createdSurvey.id,
       organizationName: createdSurvey.organizationName,
       imageURL: createdSurvey.imageURL,
-      treatmentPercentage: createdSurvey.treatmentPercentage
+      treatmentPercentage: createdSurvey.treatmentPercentage,
     };
   }
 

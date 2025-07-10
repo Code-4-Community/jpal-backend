@@ -7,7 +7,11 @@ import { Option } from '../option/types/option.entity';
 import { Question } from '../question/types/question.entity';
 import { Response } from '../response/types/response.entity';
 import DEFAULT_LETTER_GENERATION_RULES from '../util/letter-generation/defaultLetterGenerationRules';
-import generateLetter, { AssignmentMetaData, extractMetaData, Letter } from '../util/letter-generation/generateLetter';
+import generateLetter, {
+  AssignmentMetaData,
+  extractMetaData,
+  Letter,
+} from '../util/letter-generation/generateLetter';
 import { SurveyResponseDto } from './dto/survey-response.dto';
 import { Assignment } from './types/assignment.entity';
 import { AssignmentStatus } from './types/assignmentStatus';
@@ -111,7 +115,12 @@ export class AssignmentService {
 
     const pdf = await letterToPdf(letter, headerImageData);
     const fileName = assignment.youth.id + '-' + assignment.id + 'LOR.pdf';
-    const link = await this.awsS3Service.upload(pdf, fileName, 'application/octet-stream', s3Buckets.LETTERS);
+    const link = await this.awsS3Service.upload(
+      pdf,
+      fileName,
+      'application/octet-stream',
+      s3Buckets.LETTERS,
+    );
     assignment.s3LetterLink = link;
     return this.assignmentRepository.save(assignment);
   }

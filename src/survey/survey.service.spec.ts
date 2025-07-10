@@ -69,7 +69,6 @@ const mockS3Service: Partial<AWSS3Service> = {
   getImageData: jest.fn().mockResolvedValue(null),
 };
 
-
 describe('SurveyService', () => {
   let service: SurveyService;
   let mockAssignmentRepository: MockRepository<Assignment>;
@@ -111,7 +110,7 @@ describe('SurveyService', () => {
         {
           provide: AWSS3Service,
           useValue: mockS3Service,
-        }
+        },
       ],
     }).compile();
 
@@ -127,19 +126,21 @@ describe('SurveyService', () => {
   });
 
   it('should create a survey', async () => {
-    const survey = await service.create(mockSurveyTemplate.id,
+    const survey = await service.create(
+      mockSurveyTemplate.id,
       mockSurvey.name,
       mockSurvey.creator,
       mockSurvey.organizationName,
       'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA',
-      mockSurvey.treatmentPercentage);
+      mockSurvey.treatmentPercentage,
+    );
     expect(survey).toMatchObject({
       uuid: mockSurvey.uuid,
       name: mockSurvey.name,
       id: mockSurvey.id,
       organizationName: mockSurvey.organizationName,
       imageURL: mockSurvey.imageURL,
-      treatmentPercentage: mockSurvey.treatmentPercentage
+      treatmentPercentage: mockSurvey.treatmentPercentage,
     });
   });
 
