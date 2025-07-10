@@ -23,6 +23,7 @@ import { Question as SurveyDataQuestion } from './dto/survey-assignment.dto';
 import { EmailService } from '../util/email/email.service';
 import { Role } from '../user/types/role';
 import { transformQuestionToSurveyDataQuestion } from '../util/transformQuestionToSurveryDataQuestion';
+import { SurveyTemplateData } from '../surveyTemplate/surveyTemplate.service';
 
 @Injectable()
 export class SurveyService {
@@ -53,6 +54,30 @@ export class SurveyService {
       creator,
       assignments: [],
     });
+  }
+
+  async edit(id: number, surveyName: string, organizationName: string, imageData: string, treatmentPercentage: number): Promise<Survey> {
+    const survey = await this.getById(id);
+    survey.name = surveyName;
+    survey.organizationName = organizationName;
+    // survey.imageURL =
+    survey.treatmentPercentage = treatmentPercentage;
+    return await this.surveyRepository.save(survey);
+  }
+
+  /**
+   * Gets the survey corresponding to id.
+   */
+  async getById(id: number): Promise<Survey> {
+    const result = await this.surveyRepository.findOne({
+      where: { id },
+    });
+
+    if (!result) {
+      throw new BadRequestException(`Survey  id ${id} not found`);
+    }
+
+    return result;
   }
 
   async getByUUID(uuid: string): Promise<Survey> {
