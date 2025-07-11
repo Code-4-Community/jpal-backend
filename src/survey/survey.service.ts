@@ -57,12 +57,24 @@ export class SurveyService {
   }
 
   async edit(id: number, surveyName: string, organizationName: string, imageData: string, treatmentPercentage: number): Promise<Survey> {
+    if (treatmentPercentage < 0 || treatmentPercentage > 100) {
+      throw new BadRequestException(`${treatmentPercentage} is not between 0 and 100 inclusive`)
+    }
+    else if (!this.isBase64Image(imageData)) {
+      throw new BadRequestException('Image data is not a base 64 image')
+    }
     const survey = await this.getById(id);
     survey.name = surveyName;
     survey.organizationName = organizationName;
     // survey.imageURL =
     survey.treatmentPercentage = treatmentPercentage;
     return await this.surveyRepository.save(survey);
+  }
+
+  isBase64Image = (base64String: string): boolean => {
+    const jpgRegex = /^\/9j\/.*$/;
+    const pngRegex = /^iVB.*$/;
+    return jpgRegex.test(base64String) || pngRegex.test(base64String);
   }
 
   /**
