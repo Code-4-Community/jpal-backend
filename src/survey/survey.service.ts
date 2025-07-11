@@ -110,7 +110,17 @@ export class SurveyService {
     const survey = await this.getByUUID(dto.surveyUUID);
     const reviewers = dto.pairs.map((p) => p.reviewer);
     const reviewerEmails = reviewers.map((r) => r.email);
-    const youth = dto.pairs.map((p) => p.youth);
+    const treatmentPercentageFraction = survey.treatmentPercentage / 100;
+
+    const youth = dto.pairs.map((p) => {
+      /**
+       * Randomly assign youth to a group weighted by the survey's treatment percentage
+       * This may not be the 100% best way, but I think we can keep it simple for now
+       */
+      const youthRole =
+        Math.random() < treatmentPercentageFraction ? YouthRoles.TREATMENT : YouthRoles.CONTROL;
+      return { ...p.youth, role: youthRole };
+    });
     const youthEmails = youth.map((y) => y.email);
 
     // If we're given any existing reviewer-youth pairs for this survey, treat it as an invalid request and require the caller to remove them
