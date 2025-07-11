@@ -54,6 +54,9 @@ export class AWSS3Service {
     try {
       const s3Bucket = this.mapBucket(bucket);
 
+      console.log(s3Bucket);
+      console.log(fileName);
+
       const command = new PutObjectCommand({
         Bucket: s3Bucket,
         Key: fileName,

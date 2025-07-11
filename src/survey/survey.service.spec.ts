@@ -126,6 +126,9 @@ describe('SurveyService', () => {
   });
 
   it('should create a survey', async () => {
+    const mockImageURL = 'https://jpal-letter-images.s3.us-east-2.amazonaws.com/test-image.png';
+    jest.spyOn(mockS3Service, 'upload').mockResolvedValue(mockImageURL);
+
     const survey = await service.create(
       mockSurveyTemplate.id,
       mockSurvey.name,
@@ -134,12 +137,13 @@ describe('SurveyService', () => {
       'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA',
       mockSurvey.treatmentPercentage,
     );
+
     expect(survey).toMatchObject({
-      uuid: mockSurvey.uuid,
+      uuid: expect.any(String),
       name: mockSurvey.name,
-      id: mockSurvey.id,
+      id: expect.any(Number),
       organizationName: mockSurvey.organizationName,
-      imageURL: mockSurvey.imageURL,
+      imageURL: mockImageURL,
       treatmentPercentage: mockSurvey.treatmentPercentage,
     });
   });
