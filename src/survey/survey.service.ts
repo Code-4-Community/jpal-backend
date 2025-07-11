@@ -24,6 +24,9 @@ import { EmailService } from '../util/email/email.service';
 import { Role } from '../user/types/role';
 import { transformQuestionToSurveyDataQuestion } from '../util/transformQuestionToSurveryDataQuestion';
 import { SurveyTemplateData } from '../surveyTemplate/surveyTemplate.service';
+import { AWSS3Service } from '../aws/aws-s3.service';
+import * as process from 'process';
+import { s3Buckets } from '../aws/types/s3Buckets';
 
 @Injectable()
 export class SurveyService {
@@ -39,20 +42,44 @@ export class SurveyService {
     @InjectRepository(Reviewer)
     private reviewerRepository: Repository<Reviewer>,
     private emailService: EmailService,
+    private awsS3Service: AWSS3Service,
   ) {}
 
-  async create(surveyTemplateId: number, name: string, creator: User) {
+  async create(
+    surveyTemplateId: number,
+    name: string,
+    creator: User,
+    organizationName: string,
+    imageBase64: string,
+    treatmentPercentage: number,
+  ) {
     const surveyTemplate = await this.surveyTemplateRepository.findOne({
       id: surveyTemplateId,
     });
     if (!surveyTemplate) {
       throw new BadRequestException('Requested survey template does not exist');
     }
+
+    const matches = imageBase64.match(/^data:(.*);base64,(.*)$/);
+    if (!matches || matches.length !== 3) {
+      throw new Error('Invalid base64 image format');
+    }
+
+    const mimeType = matches[1];
+    const base64Data = matches[2];
+    const buffer = Buffer.from(base64Data, 'base64');
+
+    const fileName = `${organizationName}-image${Date.now()}.${mimeType.substring(6)}`;
+    const imageURL = await this.awsS3Service.upload(buffer, fileName, mimeType, s3Buckets.IMAGES);
+
     return this.surveyRepository.save({
       surveyTemplate,
       name,
       creator,
       assignments: [],
+      imageURL,
+      organizationName,
+      treatmentPercentage,
     });
   }
 

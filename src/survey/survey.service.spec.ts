@@ -20,6 +20,7 @@ import {
 import { UtilModule } from '../util/util.module';
 import { EmailService } from '../util/email/email.service';
 import { NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { AWSS3Service } from '../aws/aws-s3.service';
 import { YouthRoles } from '../youth/types/youthRoles';
 
 export const mockSurveyRepository: Partial<Repository<Survey>> = {
@@ -61,6 +62,14 @@ const mockEmailService: Partial<EmailService> = {
   queueEmail: jest.fn(),
 };
 
+const mockS3Service: Partial<AWSS3Service> = {
+  upload: jest.fn().mockResolvedValue('https://jpal-letters.s3.us-east-2.amazonaws.com/1-1LOR.pdf'),
+  createLink: jest
+    .fn()
+    .mockResolvedValue('https://jpal-letters.s3.us-east-2.amazonaws.com/1-1LOR.pdf'),
+  getImageData: jest.fn().mockResolvedValue(null),
+};
+
 describe('SurveyService', () => {
   let service: SurveyService;
   let mockAssignmentRepository: MockRepository<Assignment>;
@@ -99,6 +108,10 @@ describe('SurveyService', () => {
           provide: getRepositoryToken(Reviewer),
           useValue: mockReviewerRepository,
         },
+        {
+          provide: AWSS3Service,
+          useValue: mockS3Service,
+        },
       ],
     }).compile();
 
@@ -114,11 +127,25 @@ describe('SurveyService', () => {
   });
 
   it('should create a survey', async () => {
-    const survey = await service.create(mockSurveyTemplate.id, mockSurvey.name, mockSurvey.creator);
+    const mockImageURL = 'https://jpal-letter-images.s3.us-east-2.amazonaws.com/test-image.png';
+    jest.spyOn(mockS3Service, 'upload').mockResolvedValue(mockImageURL);
+
+    const survey = await service.create(
+      mockSurveyTemplate.id,
+      mockSurvey.name,
+      mockSurvey.creator,
+      mockSurvey.organizationName,
+      'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA',
+      mockSurvey.treatmentPercentage,
+    );
+
     expect(survey).toMatchObject({
-      uuid: mockSurvey.uuid,
+      uuid: expect.any(String),
       name: mockSurvey.name,
-      id: mockSurvey.id,
+      id: expect.any(Number),
+      organizationName: mockSurvey.organizationName,
+      imageURL: mockImageURL,
+      treatmentPercentage: mockSurvey.treatmentPercentage,
     });
   });
 
