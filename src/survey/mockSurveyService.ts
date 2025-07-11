@@ -10,11 +10,11 @@ export const mockSurveyService: Partial<SurveyService> = {
       uuid: '123e4567-e89b-12d3-a456-426614174000',
       surveyTemplate: mockSurveyTemplate,
       name,
+      imageURL: '',
+      organizationName: '',
       creator,
       assignments: [],
       date: new Date('02-06-2022'),
-      organizationName: 'test',
-      imageURL: null,
       treatmentPercentage: 50,
     };
   },
