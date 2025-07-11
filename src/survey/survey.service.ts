@@ -74,17 +74,25 @@ export class SurveyService {
   }
 
   async edit(id: number, surveyName: string, organizationName: string, imageData: string, treatmentPercentage: number): Promise<Survey> {
-    if (treatmentPercentage < 0 || treatmentPercentage > 100) {
-      throw new BadRequestException(`${treatmentPercentage} is not between 0 and 100 inclusive`)
-    }
-    else if (!this.isBase64Image(imageData)) {
-      throw new BadRequestException('Image data is not a base 64 image')
-    }
     const survey = await this.getById(id);
-    survey.name = surveyName;
-    survey.organizationName = organizationName;
-    survey.imageURL = await this.processImage(imageData, organizationName);
-    survey.treatmentPercentage = treatmentPercentage;
+    if (surveyName) {
+      survey.name = surveyName;
+    }
+    else if (organizationName) {
+      survey.organizationName = organizationName;
+    }
+    else if (imageData) {
+      survey.imageURL = await this.processImage(imageData, organizationName);
+    }
+    else if (treatmentPercentage) {
+      if (treatmentPercentage < 0 || treatmentPercentage > 100) {
+        throw new BadRequestException(`${treatmentPercentage} is not between 0 and 100 inclusive`)
+      }
+      survey.treatmentPercentage = treatmentPercentage;
+    }
+    else {
+      throw new BadRequestException('At least one of surveyName, organizationName, imageData, or treatmentPercentage must be provided');
+    }
     return await this.surveyRepository.save(survey);
   }
 
