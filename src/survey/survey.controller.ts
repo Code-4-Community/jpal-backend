@@ -82,7 +82,7 @@ export class SurveyController {
   async updateSurveyName(
     @Param('surveyUUID') surveyUUID: string,
     @Body('name') name: string,
-    @ReqUser() user: User
+    @ReqUser() user: User,
   ): Promise<Survey> {
     return this.surveyService.updateSurveyName(surveyUUID, name, user);
   }

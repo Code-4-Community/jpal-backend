@@ -13,7 +13,7 @@ export const mockSurveyService: Partial<SurveyService> = {
       creator,
       assignments: [],
       date: new Date('02-06-2022'),
-      organizationName: 'mock organization', 
+      organizationName: 'mock organization',
       imageURL: 'image url',
     };
   },

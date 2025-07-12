@@ -19,7 +19,7 @@ import {
 } from './survey.controller.spec';
 import { UtilModule } from '../util/util.module';
 import { EmailService } from '../util/email/email.service';
-import { NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 
 export const mockSurveyRepository: Partial<Repository<Survey>> = {
   create(survey?: DeepPartial<Survey> | DeepPartial<Survey>[]): any {
@@ -102,6 +102,7 @@ describe('SurveyService', () => {
     }).compile();
 
     service = module.get<SurveyService>(SurveyService);
+    jest.clearAllMocks();
   });
 
   afterEach(() => {
@@ -280,5 +281,44 @@ describe('SurveyService', () => {
         UnauthorizedException,
       );
     });
+  });
+
+  it('should update survey name', async () => {
+    jest.spyOn(mockSurveyRepository, 'findOne').mockResolvedValue({ ...mockSurvey });
+
+    jest.spyOn(mockSurveyRepository, 'save').mockImplementation((s): Promise<Survey> => {
+      return Promise.resolve({
+        ...s,
+        id: s.id ?? 1,
+      } as Survey);
+    });
+
+    const survey = await service.updateSurveyName(
+      mockSurvey.uuid,
+      'new name!!',
+      mockSurvey.creator,
+    );
+
+    expect(survey).toMatchObject({
+      uuid: mockSurvey.uuid,
+      name: 'new name!!',
+      id: mockSurvey.id,
+    });
+  });
+
+  it("should throw if requesting admin isn't the creator", async () => {
+    jest
+      .spyOn(mockSurveyRepository, 'findOne')
+      .mockImplementation(() => Promise.resolve(mockSurvey2));
+    await expect(service.updateSurveyName(UUID, 'new name!!', mockUser)).rejects.toThrow(
+      UnauthorizedException,
+    );
+  });
+
+  it('should throw if the survey does not exist', async () => {
+    jest.spyOn(mockSurveyRepository, 'findOne').mockImplementation(() => null);
+    await expect(
+      service.updateSurveyName('definitely not a uuid', 'new name!!', mockSurvey.creator),
+    ).rejects.toThrow(BadRequestException);
   });
 });

@@ -305,11 +305,10 @@ export class SurveyService {
       throw new BadRequestException(`Survey with UUID: ${surveyUUID} not found`);
     }
 
-    const isAdminAndCreator = user.role === Role.ADMIN && survey.creator.id === user.id;
     const isResearcher = user.role === Role.RESEARCHER;
 
-    if (!isResearcher && !isAdminAndCreator) {
-      throw new BadRequestException(`You do not have permission to update this survey`);
+    if (!isResearcher && survey.creator.id !== user.id) {
+      throw new UnauthorizedException(`You do not have permission to update this survey`);
     }
 
     survey.name = name;
