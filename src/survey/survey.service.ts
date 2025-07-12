@@ -171,7 +171,9 @@ export class SurveyService {
         const youth = youthMap.get(pair.youth.email);
 
         if (!reviewer || !youth) {
-          throw new Error(`Reviewer or Youth not found for email: ${pair.reviewer.email}, ${pair.youth.email}`);
+          throw new Error(
+            `Reviewer or Youth not found for email: ${pair.reviewer.email}, ${pair.youth.email}`,
+          );
         }
 
         return {
@@ -182,7 +184,6 @@ export class SurveyService {
         };
       }),
     );
-
   }
 
   /**
