@@ -187,12 +187,18 @@ describe('SurveyService', () => {
 
       const youthCreateQB = jest.spyOn(mockYouthRepository, 'createQueryBuilder');
       const reviewerCreateQB = jest.spyOn(mockReviewerRepository, 'createQueryBuilder');
+      // const youthFind = jest
+      //   .spyOn(mockYouthRepository, 'find')
+      //   .mockReturnValueOnce([dto.pairs[0].youth]);
+      // const reviewerFind = jest
+      //   .spyOn(mockReviewerRepository, 'find')
+      //   .mockReturnValueOnce([dto.pairs[0].reviewer]);
       const youthFind = jest
         .spyOn(mockYouthRepository, 'find')
-        .mockReturnValueOnce([dto.pairs[0].youth]);
+        .mockResolvedValueOnce([dto.pairs[0].youth]);
       const reviewerFind = jest
         .spyOn(mockReviewerRepository, 'find')
-        .mockReturnValueOnce([dto.pairs[0].reviewer]);
+        .mockResolvedValueOnce([dto.pairs[0].reviewer]);
 
       await service.createBatchAssignments(dto);
       expect(youthCreateQB).toHaveBeenCalled();
@@ -244,8 +250,10 @@ describe('SurveyService', () => {
       youth2['role'] = YouthRoles.CONTROL;
 
       const assignmentSave = jest.spyOn(mockAssignmentRepository, 'save');
+      // jest.spyOn(mockYouthRepository, 'find').mockResolvedValueOnce([youth1, youth2]);
+      // jest.spyOn(mockReviewerRepository, 'find').mockResolvedValueOnce([reviewer, reviewer]);
       jest.spyOn(mockYouthRepository, 'find').mockResolvedValueOnce([youth1, youth2]);
-      jest.spyOn(mockReviewerRepository, 'find').mockResolvedValueOnce([reviewer, reviewer]);
+      jest.spyOn(mockReviewerRepository, 'find').mockResolvedValueOnce([reviewer]);
       // Treatment, then control
       jest.spyOn(Math, 'random').mockReturnValueOnce(0.3).mockReturnValueOnce(0.6);
 
@@ -284,6 +292,24 @@ describe('SurveyService', () => {
       lastName: 'Omega',
     };
 
+    const youth1 = {
+      id: 10,
+      uuid: 'youth1',
+      email: 'gamma@gmail.com',
+      firstName: 'Gamma',
+      lastName: 'Delta',
+    };
+
+    const youth2 = {
+      id: 11,
+      uuid: 'youth2',
+      email: 'kappa@gmail.com',
+      firstName: 'Kappa',
+      lastName: 'Iota',
+    };
+
+    mockYouthRepository.find = jest.fn().mockResolvedValue([youth1, youth2]);
+
     mockReviewerRepository.save(reviewer1);
     mockReviewerRepository.save(reviewer2);
 
@@ -317,6 +343,8 @@ describe('SurveyService', () => {
         },
       ],
     };
+
+    mockReviewerRepository.find = jest.fn().mockResolvedValue([reviewer1, reviewer2]);
 
     await service.createBatchAssignments(dto);
     await service.sendEmailToReviewersInBatchAssignment(dto);

@@ -161,13 +161,25 @@ export class SurveyService {
       this.youthRepository.find({ where: { email: In(youthEmails) } }),
     ]);
 
-    // If we get here, then none of the given reviewer-youth pairs should exist for this survey
+    // Create a lookup by email
+    const reviewerMap = new Map(reviewerEntities.map((r) => [r.email, r]));
+    const youthMap = new Map(youthEntities.map((y) => [y.email, y]));
+
     await this.assignmentRepository.save(
-      dto.pairs.map((_, i) => {
+      dto.pairs.map((pair) => {
+        const reviewer = reviewerMap.get(pair.reviewer.email);
+        const youth = youthMap.get(pair.youth.email);
+
+        if (!reviewer || !youth) {
+          throw new Error(
+            `Reviewer or Youth not found for email: ${pair.reviewer.email}, ${pair.youth.email}`,
+          );
+        }
+
         return {
           survey,
-          reviewer: reviewerEntities[i],
-          youth: youthEntities[i],
+          reviewer,
+          youth,
           responses: [],
         };
       }),
