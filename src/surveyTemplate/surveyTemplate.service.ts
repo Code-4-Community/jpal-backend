@@ -4,6 +4,7 @@ import { SurveyTemplate } from './types/surveyTemplate.entity';
 import { DeleteResult, Repository } from 'typeorm';
 import { Question } from '../question/types/question.entity';
 import { transformQuestionToSurveyDataQuestion } from '../util/transformQuestionToSurveryDataQuestion';
+import { User } from 'src/user/types/user.entity';
 
 export interface SurveyDataQuestion {
   question: string;
@@ -94,5 +95,19 @@ export class SurveyTemplateService {
     } else {
       return result;
     }
+  }
+
+  /**
+   * Creates a survey template
+   * @param creator is the creator of the survey template
+   * @param name is the name of the survey template
+   * @questions questions are the questions apart of the survey template
+   */
+  async createSurveyTemplate(creator: User, name : string, questions: Question[]) {
+    return this.surveyTemplateRepository.save({
+      creator,
+      name,
+      questions,
+    });
   }
 }
