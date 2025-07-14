@@ -23,6 +23,9 @@ import { Question as SurveyDataQuestion } from './dto/survey-assignment.dto';
 import { EmailService } from '../util/email/email.service';
 import { Role } from '../user/types/role';
 import { transformQuestionToSurveyDataQuestion } from '../util/transformQuestionToSurveryDataQuestion';
+import { AWSS3Service } from '../aws/aws-s3.service';
+import * as process from 'process';
+import { s3Buckets } from '../aws/types/s3Buckets';
 
 @Injectable()
 export class SurveyService {
@@ -38,20 +41,44 @@ export class SurveyService {
     @InjectRepository(Reviewer)
     private reviewerRepository: Repository<Reviewer>,
     private emailService: EmailService,
+    private awsS3Service: AWSS3Service,
   ) {}
 
-  async create(surveyTemplateId: number, name: string, creator: User) {
+  async create(
+    surveyTemplateId: number,
+    name: string,
+    creator: User,
+    organizationName: string,
+    imageBase64: string,
+    treatmentPercentage: number,
+  ) {
     const surveyTemplate = await this.surveyTemplateRepository.findOne({
       id: surveyTemplateId,
     });
     if (!surveyTemplate) {
       throw new BadRequestException('Requested survey template does not exist');
     }
+
+    const matches = imageBase64.match(/^data:(.*);base64,(.*)$/);
+    if (!matches || matches.length !== 3) {
+      throw new Error('Invalid base64 image format');
+    }
+
+    const mimeType = matches[1];
+    const base64Data = matches[2];
+    const buffer = Buffer.from(base64Data, 'base64');
+
+    const fileName = `${organizationName}-image${Date.now()}.${mimeType.substring(6)}`;
+    const imageURL = await this.awsS3Service.upload(buffer, fileName, mimeType, s3Buckets.IMAGES);
+
     return this.surveyRepository.save({
       surveyTemplate,
       name,
       creator,
       assignments: [],
+      imageURL,
+      organizationName,
+      treatmentPercentage,
     });
   }
 
@@ -83,7 +110,17 @@ export class SurveyService {
     const survey = await this.getByUUID(dto.surveyUUID);
     const reviewers = dto.pairs.map((p) => p.reviewer);
     const reviewerEmails = reviewers.map((r) => r.email);
-    const youth = dto.pairs.map((p) => p.youth);
+    const treatmentPercentageFraction = survey.treatmentPercentage / 100;
+
+    const youth = dto.pairs.map((p) => {
+      /**
+       * Randomly assign youth to a group weighted by the survey's treatment percentage
+       * This may not be the 100% best way, but I think we can keep it simple for now
+       */
+      const youthRole =
+        Math.random() < treatmentPercentageFraction ? YouthRoles.TREATMENT : YouthRoles.CONTROL;
+      return { ...p.youth, role: youthRole };
+    });
     const youthEmails = youth.map((y) => y.email);
 
     // If we're given any existing reviewer-youth pairs for this survey, treat it as an invalid request and require the caller to remove them
@@ -124,13 +161,25 @@ export class SurveyService {
       this.youthRepository.find({ where: { email: In(youthEmails) } }),
     ]);
 
-    // If we get here, then none of the given reviewer-youth pairs should exist for this survey
+    // Create a lookup by email
+    const reviewerMap = new Map(reviewerEntities.map((r) => [r.email, r]));
+    const youthMap = new Map(youthEntities.map((y) => [y.email, y]));
+
     await this.assignmentRepository.save(
-      dto.pairs.map((_, i) => {
+      dto.pairs.map((pair) => {
+        const reviewer = reviewerMap.get(pair.reviewer.email);
+        const youth = youthMap.get(pair.youth.email);
+
+        if (!reviewer || !youth) {
+          throw new Error(
+            `Reviewer or Youth not found for email: ${pair.reviewer.email}, ${pair.youth.email}`,
+          );
+        }
+
         return {
           survey,
-          reviewer: reviewerEntities[i],
-          youth: youthEntities[i],
+          reviewer,
+          youth,
           responses: [],
         };
       }),

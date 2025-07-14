@@ -20,6 +20,8 @@ import {
 import { UtilModule } from '../util/util.module';
 import { EmailService } from '../util/email/email.service';
 import { NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { AWSS3Service } from '../aws/aws-s3.service';
+import { YouthRoles } from '../youth/types/youthRoles';
 
 export const mockSurveyRepository: Partial<Repository<Survey>> = {
   create(survey?: DeepPartial<Survey> | DeepPartial<Survey>[]): any {
@@ -60,6 +62,14 @@ const mockEmailService: Partial<EmailService> = {
   queueEmail: jest.fn(),
 };
 
+const mockS3Service: Partial<AWSS3Service> = {
+  upload: jest.fn().mockResolvedValue('https://jpal-letters.s3.us-east-2.amazonaws.com/1-1LOR.pdf'),
+  createLink: jest
+    .fn()
+    .mockResolvedValue('https://jpal-letters.s3.us-east-2.amazonaws.com/1-1LOR.pdf'),
+  getImageData: jest.fn().mockResolvedValue(null),
+};
+
 describe('SurveyService', () => {
   let service: SurveyService;
   let mockAssignmentRepository: MockRepository<Assignment>;
@@ -98,6 +108,10 @@ describe('SurveyService', () => {
           provide: getRepositoryToken(Reviewer),
           useValue: mockReviewerRepository,
         },
+        {
+          provide: AWSS3Service,
+          useValue: mockS3Service,
+        },
       ],
     }).compile();
 
@@ -113,11 +127,25 @@ describe('SurveyService', () => {
   });
 
   it('should create a survey', async () => {
-    const survey = await service.create(mockSurveyTemplate.id, mockSurvey.name, mockSurvey.creator);
+    const mockImageURL = 'https://jpal-letter-images.s3.us-east-2.amazonaws.com/test-image.png';
+    jest.spyOn(mockS3Service, 'upload').mockResolvedValue(mockImageURL);
+
+    const survey = await service.create(
+      mockSurveyTemplate.id,
+      mockSurvey.name,
+      mockSurvey.creator,
+      mockSurvey.organizationName,
+      'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA',
+      mockSurvey.treatmentPercentage,
+    );
+
     expect(survey).toMatchObject({
-      uuid: mockSurvey.uuid,
+      uuid: expect.any(String),
       name: mockSurvey.name,
-      id: mockSurvey.id,
+      id: expect.any(Number),
+      organizationName: mockSurvey.organizationName,
+      imageURL: mockImageURL,
+      treatmentPercentage: mockSurvey.treatmentPercentage,
     });
   });
 
@@ -136,48 +164,116 @@ describe('SurveyService', () => {
     expect(goodResponse).toEqual(listMockSurveys);
   });
 
-  it('should create batch assignments', async () => {
-    const dto: CreateBatchAssignmentsDto = {
-      surveyUUID: 'test',
-      pairs: [
+  describe('createBatchAssignments', () => {
+    it('should create batch assignments', async () => {
+      const dto: CreateBatchAssignmentsDto = {
+        surveyUUID: 'test',
+        pairs: [
+          {
+            reviewer: {
+              email: 'alpha@sgmail.com',
+              firstName: 'Alpha',
+              lastName: 'Beta',
+            },
+            youth: {
+              email: 'gamma@gmail.com',
+              firstName: 'Gamma',
+              lastName: 'Delta',
+            },
+          },
+        ],
+      };
+      const assignmentSave = jest.spyOn(mockAssignmentRepository, 'save');
+
+      const youthCreateQB = jest.spyOn(mockYouthRepository, 'createQueryBuilder');
+      const reviewerCreateQB = jest.spyOn(mockReviewerRepository, 'createQueryBuilder');
+      // const youthFind = jest
+      //   .spyOn(mockYouthRepository, 'find')
+      //   .mockReturnValueOnce([dto.pairs[0].youth]);
+      // const reviewerFind = jest
+      //   .spyOn(mockReviewerRepository, 'find')
+      //   .mockReturnValueOnce([dto.pairs[0].reviewer]);
+      const youthFind = jest
+        .spyOn(mockYouthRepository, 'find')
+        .mockResolvedValueOnce([dto.pairs[0].youth]);
+      const reviewerFind = jest
+        .spyOn(mockReviewerRepository, 'find')
+        .mockResolvedValueOnce([dto.pairs[0].reviewer]);
+
+      await service.createBatchAssignments(dto);
+      expect(youthCreateQB).toHaveBeenCalled();
+      expect(reviewerCreateQB).toHaveBeenCalled();
+      expect(youthFind).toHaveBeenCalled();
+      expect(reviewerFind).toHaveBeenCalled();
+      expect(assignmentSave).toHaveBeenCalledWith([
         {
-          reviewer: {
-            email: 'alpha@sgmail.com',
-            firstName: 'Alpha',
-            lastName: 'Beta',
-          },
-          youth: {
-            email: 'gamma@gmail.com',
-            firstName: 'Gamma',
-            lastName: 'Delta',
-          },
+          survey: mockSurvey,
+          reviewer: dto.pairs[0].reviewer,
+          youth: dto.pairs[0].youth,
+          responses: [],
         },
-      ],
-    };
-    const assignmentSave = jest.spyOn(mockAssignmentRepository, 'save');
+      ]);
+    });
 
-    const youthCreateQB = jest.spyOn(mockYouthRepository, 'createQueryBuilder');
-    const reviewerCreateQB = jest.spyOn(mockReviewerRepository, 'createQueryBuilder');
-    const youthFind = jest
-      .spyOn(mockYouthRepository, 'find')
-      .mockReturnValueOnce([dto.pairs[0].youth]);
-    const reviewerFind = jest
-      .spyOn(mockReviewerRepository, 'find')
-      .mockReturnValueOnce([dto.pairs[0].reviewer]);
+    it('should assign youth to control/treatment groups', async () => {
+      const reviewer = {
+        email: 'alpha@sgmail.com',
+        firstName: 'Alpha',
+        lastName: 'Beta',
+      };
+      const youth1 = {
+        email: 'gamma@gmail.com',
+        firstName: 'Gamma',
+        lastName: 'Delta',
+      };
+      const youth2 = {
+        email: 'epsilon@gmail.com',
+        firstName: 'Epsilon',
+        lastName: 'Zeta',
+      };
 
-    await service.createBatchAssignments(dto);
-    expect(youthCreateQB).toHaveBeenCalled();
-    expect(reviewerCreateQB).toHaveBeenCalled();
-    expect(youthFind).toHaveBeenCalled();
-    expect(reviewerFind).toHaveBeenCalled();
-    expect(assignmentSave).toHaveBeenCalledWith([
-      {
-        survey: mockSurvey,
-        reviewer: dto.pairs[0].reviewer,
-        youth: dto.pairs[0].youth,
-        responses: [],
-      },
-    ]);
+      const dto: CreateBatchAssignmentsDto = {
+        surveyUUID: 'test',
+        pairs: [
+          {
+            reviewer,
+            youth: { ...youth1 },
+          },
+          {
+            reviewer,
+            youth: { ...youth2 },
+          },
+        ],
+      };
+
+      youth1['role'] = YouthRoles.TREATMENT;
+      youth2['role'] = YouthRoles.CONTROL;
+
+      const assignmentSave = jest.spyOn(mockAssignmentRepository, 'save');
+      // jest.spyOn(mockYouthRepository, 'find').mockResolvedValueOnce([youth1, youth2]);
+      // jest.spyOn(mockReviewerRepository, 'find').mockResolvedValueOnce([reviewer, reviewer]);
+      jest.spyOn(mockYouthRepository, 'find').mockResolvedValueOnce([youth1, youth2]);
+      jest.spyOn(mockReviewerRepository, 'find').mockResolvedValueOnce([reviewer]);
+      // Treatment, then control
+      jest.spyOn(Math, 'random').mockReturnValueOnce(0.3).mockReturnValueOnce(0.6);
+
+      await service.createBatchAssignments(dto);
+
+      expect(assignmentSave).toHaveBeenCalledWith([
+        {
+          survey: mockSurvey,
+          reviewer,
+          youth: { ...youth1, role: YouthRoles.TREATMENT },
+          responses: [],
+        },
+        {
+          survey: mockSurvey,
+          reviewer,
+          youth: { ...youth2, role: YouthRoles.CONTROL },
+          responses: [],
+        },
+      ]);
+    });
   });
 
   it('should email reviewers survey link after creating batch assignments', async () => {
@@ -195,6 +291,24 @@ describe('SurveyService', () => {
       firstName: 'Epsilon',
       lastName: 'Omega',
     };
+
+    const youth1 = {
+      id: 10,
+      uuid: 'youth1',
+      email: 'gamma@gmail.com',
+      firstName: 'Gamma',
+      lastName: 'Delta',
+    };
+
+    const youth2 = {
+      id: 11,
+      uuid: 'youth2',
+      email: 'kappa@gmail.com',
+      firstName: 'Kappa',
+      lastName: 'Iota',
+    };
+
+    mockYouthRepository.find = jest.fn().mockResolvedValue([youth1, youth2]);
 
     mockReviewerRepository.save(reviewer1);
     mockReviewerRepository.save(reviewer2);
@@ -229,6 +343,8 @@ describe('SurveyService', () => {
         },
       ],
     };
+
+    mockReviewerRepository.find = jest.fn().mockResolvedValue([reviewer1, reviewer2]);
 
     await service.createBatchAssignments(dto);
     await service.sendEmailToReviewersInBatchAssignment(dto);
