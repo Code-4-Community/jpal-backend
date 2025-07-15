@@ -4,6 +4,7 @@ import { SurveyTemplate } from './types/surveyTemplate.entity';
 import { DeleteResult, Repository } from 'typeorm';
 import { Question } from '../question/types/question.entity';
 import { transformQuestionToSurveyDataQuestion } from '../util/transformQuestionToSurveryDataQuestion';
+import { User } from 'src/user/types/user.entity';
 
 export interface SurveyDataQuestion {
   question: string;
@@ -17,6 +18,21 @@ export interface SurveyTemplateData {
 
 @Injectable()
 export class SurveyTemplateService {
+  async getByCreator(creator: User): Promise<string[]> {
+    const result = await this.surveyTemplateRepository.find({
+      where: { creator },
+    });
+
+    if (!result) {
+      throw new BadRequestException(`Creator ${creator.id} not found`);
+    }
+    console.log(creator.id);
+    console.log(result);
+    return result.map((surveyTemp) => {
+      console.log(surveyTemp.name);
+      return surveyTemp.name;
+    });
+  }
   constructor(
     @InjectRepository(SurveyTemplate)
     private surveyTemplateRepository: Repository<SurveyTemplate>,

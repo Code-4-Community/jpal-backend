@@ -1,4 +1,4 @@
-import { Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { User } from '../../user/types/user.entity';
 import { Question } from '../../question/types/question.entity';
 
@@ -15,5 +15,6 @@ export class SurveyTemplate {
   })
   questions: Question[];
 
+  @Column()
   name: string;
 }
