@@ -18,6 +18,7 @@ export interface SurveyTemplateData {
 
 @Injectable()
 export class SurveyTemplateService {
+  
   async getByCreator(creator: User): Promise<string[]> {
     const result = await this.surveyTemplateRepository.find({
       where: { creator },
