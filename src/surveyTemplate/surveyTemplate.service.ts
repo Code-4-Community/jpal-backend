@@ -104,7 +104,14 @@ export class SurveyTemplateService {
    * @questions questions are the questions apart of the survey template
    */
   async createSurveyTemplate(creator: User, name : string, questions: Question[]) {
-    return this.surveyTemplateRepository.save({
+    // check for duplicate names
+    if (this.surveyTemplateRepository.findOne({
+      where: { name: name },
+    })) {
+      throw new BadRequestException(`Survey template with name ${name} already exists!`)
+    }
+    
+    return await this.surveyTemplateRepository.save({
       creator,
       name,
       questions,
