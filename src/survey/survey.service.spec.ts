@@ -13,13 +13,13 @@ import { CreateBatchAssignmentsDto } from './dto/create-batch-assignments.dto';
 import {
   listMockSurveys,
   mockSurvey,
-  mockSurvey2,
+  mockSurvey2, mockSurvey3,
   mockSurveyTemplate,
   UUID,
 } from './survey.controller.spec';
 import { UtilModule } from '../util/util.module';
 import { EmailService } from '../util/email/email.service';
-import { NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { AWSS3Service } from '../aws/aws-s3.service';
 import { YouthRoles } from '../youth/types/youthRoles';
 
@@ -369,4 +369,18 @@ describe('SurveyService', () => {
       );
     });
   });
+  it('should edit a survey', async () => {
+    const survey = await service.edit(1, "new name")
+
+    expect(survey).toMatchObject(mockSurvey3);
+  });
+  it("should throw if base64 is invalid", async () => {
+    jest
+      .spyOn(mockSurveyRepository, 'findOne')
+      .mockImplementation(() => Promise.resolve(mockSurvey3));
+    await expect(service.edit(1, "name", "new name", "not base64")).rejects.toThrow(
+      BadRequestException,
+    );
+  });
+
 });

@@ -73,24 +73,29 @@ export class SurveyService {
     });
   }
 
-  async edit(id: number, surveyName: string, organizationName: string, imageData: string, treatmentPercentage: number): Promise<Survey> {
+  async edit(id: number, surveyName?: string, organizationName?: string, imageData?: string, treatmentPercentage?: number): Promise<Survey> {
     const survey = await this.getById(id);
+    let found = false;
     if (surveyName) {
       survey.name = surveyName;
+      found = true;
     }
-    else if (organizationName) {
+    if (organizationName) {
       survey.organizationName = organizationName;
+      found = true;
     }
-    else if (imageData) {
+    if (imageData) {
       survey.imageURL = await this.processImage(imageData, organizationName);
+      found = true;
     }
-    else if (treatmentPercentage) {
+    if (treatmentPercentage) {
+      found = true;
       if (treatmentPercentage < 0 || treatmentPercentage > 100) {
         throw new BadRequestException(`${treatmentPercentage} is not between 0 and 100 inclusive`)
       }
       survey.treatmentPercentage = treatmentPercentage;
     }
-    else {
+    if (!found) {
       throw new BadRequestException('At least one of surveyName, organizationName, imageData, or treatmentPercentage must be provided');
     }
     return await this.surveyRepository.save(survey);
@@ -338,7 +343,7 @@ export class SurveyService {
   async processImage(imageBase64: string, organizationName: string): Promise<string> {
     const matches = imageBase64.match(/^data:(.*);base64,(.*)$/);
     if (!matches || matches.length !== 3) {
-      throw new Error('Invalid base64 image format');
+      throw new BadRequestException('Invalid base64 image format');
     }
 
     const mimeType = matches[1];
