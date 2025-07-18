@@ -383,4 +383,13 @@ describe('SurveyService', () => {
     );
   });
 
+  it("should throw if the treatment percentage is invalid", async () => {
+    jest
+      .spyOn(mockSurveyRepository, 'findOne')
+      .mockImplementation(() => Promise.resolve(mockSurvey3));
+    await expect(service.edit(1, undefined, undefined,undefined, 101)).rejects.toThrow(
+      BadRequestException,
+    );
+  });
+
 });

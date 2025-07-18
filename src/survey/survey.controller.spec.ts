@@ -154,13 +154,18 @@ describe('SurveyController', () => {
 
   describe('editSurvey', () => {
     it('should edit the requested survey', async () => {
-      expect(await controller.edit({
-        id: 1,
-        surveyName: "new name",
-      }, mockUser)).toEqual(mockSurvey3);
-      expect(mockSurveyService.edit).toHaveBeenCalledWith({
-        id: 1,
-        surveyName: "new name", mockUser});
+      await expect(
+        controller.edit({ id: 1, surveyName: 'new name' }, mockUser)
+      ).resolves.toEqual(mockSurvey3);
+
+      expect(mockSurveyService.edit).toHaveBeenCalledWith(
+        1,
+        "new name",
+        undefined,
+        undefined,
+        undefined
+      );
     });
   });
+
 });
