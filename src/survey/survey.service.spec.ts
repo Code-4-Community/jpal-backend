@@ -13,7 +13,8 @@ import { CreateBatchAssignmentsDto } from './dto/create-batch-assignments.dto';
 import {
   listMockSurveys,
   mockSurvey,
-  mockSurvey2, mockSurvey3,
+  mockSurvey2,
+  mockSurvey3,
   mockSurveyTemplate,
   UUID,
 } from './survey.controller.spec';
@@ -370,26 +371,25 @@ describe('SurveyService', () => {
     });
   });
   it('should edit a survey', async () => {
-    const survey = await service.edit(1, "new name")
+    const survey = await service.edit(1, 'new name');
 
-    expect(survey).toMatchObject(mockSurvey3);
+    expect(survey.name).toBe('new name');
   });
-  it("should throw if base64 is invalid", async () => {
+  it('should throw if base64 is invalid', async () => {
     jest
       .spyOn(mockSurveyRepository, 'findOne')
       .mockImplementation(() => Promise.resolve(mockSurvey3));
-    await expect(service.edit(1, "name", "new name", "not base64")).rejects.toThrow(
+    await expect(service.edit(1, 'name', 'new name', 'not base64')).rejects.toThrow(
       BadRequestException,
     );
   });
 
-  it("should throw if the treatment percentage is invalid", async () => {
+  it('should throw if the treatment percentage is invalid', async () => {
     jest
       .spyOn(mockSurveyRepository, 'findOne')
       .mockImplementation(() => Promise.resolve(mockSurvey3));
-    await expect(service.edit(1, undefined, undefined,undefined, 101)).rejects.toThrow(
+    await expect(service.edit(1, undefined, undefined, undefined, 101)).rejects.toThrow(
       BadRequestException,
     );
   });
-
 });

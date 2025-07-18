@@ -73,7 +73,13 @@ export class SurveyService {
     });
   }
 
-  async edit(id: number, surveyName?: string, organizationName?: string, imageData?: string, treatmentPercentage?: number): Promise<Survey> {
+  async edit(
+    id: number,
+    surveyName?: string,
+    organizationName?: string,
+    imageData?: string,
+    treatmentPercentage?: number,
+  ): Promise<Survey> {
     const survey = await this.getById(id);
     let found = false;
     if (surveyName) {
@@ -91,12 +97,14 @@ export class SurveyService {
     if (treatmentPercentage) {
       found = true;
       if (treatmentPercentage < 0 || treatmentPercentage > 100) {
-        throw new BadRequestException(`${treatmentPercentage} is not between 0 and 100 inclusive`)
+        throw new BadRequestException(`${treatmentPercentage} is not between 0 and 100 inclusive`);
       }
       survey.treatmentPercentage = treatmentPercentage;
     }
     if (!found) {
-      throw new BadRequestException('At least one of surveyName, organizationName, imageData, or treatmentPercentage must be provided');
+      throw new BadRequestException(
+        'At least one of surveyName, organizationName, imageData, or treatmentPercentage must be provided',
+      );
     }
     return await this.surveyRepository.save(survey);
   }
@@ -105,7 +113,7 @@ export class SurveyService {
     const jpgRegex = /^\/9j\/.*$/;
     const pngRegex = /^iVB.*$/;
     return jpgRegex.test(base64String) || pngRegex.test(base64String);
-  }
+  };
 
   /**
    * Gets the survey corresponding to id.
@@ -335,7 +343,7 @@ export class SurveyService {
 
   /**
    * Processes an image by converting it from base64 to a buffer and uploading it to AWS S3.
-   * 
+   *
    * @param imageBase64 image in base64 format
    * @param organizationName organization name to use in the file name
    * @returns the URL of the uploaded image in S3

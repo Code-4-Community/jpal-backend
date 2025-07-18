@@ -52,18 +52,14 @@ export class SurveyController {
    */
   @Patch()
   @Auth(Role.RESEARCHER, Role.ADMIN)
-  async edit(
-    @Body() editSurveyDTO: EditSurveyDto,
-    @ReqUser() reqUser,
-    ): Promise<Survey> {
-
+  async edit(@Body() editSurveyDTO: EditSurveyDto, @ReqUser() reqUser): Promise<Survey> {
     return this.surveyService.edit(
       editSurveyDTO.id,
       editSurveyDTO.surveyName,
       editSurveyDTO.organizationName,
       editSurveyDTO.imageData,
-      editSurveyDTO.treatmentPercentage)
-
+      editSurveyDTO.treatmentPercentage,
+    );
   }
 
   @Patch()

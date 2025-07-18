@@ -40,7 +40,7 @@ export const mockSurvey3: Survey = {
   creator: mockUser,
   assignments: [],
   date: new Date('02-06-2022'),
-}
+};
 
 const createMockSurveyResponse: CreateSurveyReponseDto = {
   id: 1,
@@ -94,7 +94,7 @@ export const mockSurveyService: Partial<SurveyService> = {
   findAllSurveysByUser: jest.fn(() => Promise.resolve([mockSurvey])),
   getAllSurveys: jest.fn(() => Promise.resolve(listMockSurveys)),
   getSurveyAssignments: jest.fn(() => Promise.resolve(mockSurvey)),
-  edit: jest.fn(() => Promise.resolve(mockSurvey3))
+  edit: jest.fn(() => Promise.resolve(mockSurvey3)),
 };
 
 describe('SurveyController', () => {
@@ -154,18 +154,17 @@ describe('SurveyController', () => {
 
   describe('editSurvey', () => {
     it('should edit the requested survey', async () => {
-      await expect(
-        controller.edit({ id: 1, surveyName: 'new name' }, mockUser)
-      ).resolves.toEqual(mockSurvey3);
+      await expect(controller.edit({ id: 1, surveyName: 'new name' }, mockUser)).resolves.toEqual(
+        mockSurvey3,
+      );
 
       expect(mockSurveyService.edit).toHaveBeenCalledWith(
         1,
-        "new name",
+        'new name',
         undefined,
         undefined,
-        undefined
+        undefined,
       );
     });
   });
-
 });
