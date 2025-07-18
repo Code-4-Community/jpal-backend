@@ -18,10 +18,10 @@ export class Sentence {
   @Column()
   isMultiQuestion: boolean;
 
-  @Column()
-  includeIfSelectedOptions: string[]
+  @Column('text', { array: true, default: () => "'{}'" })
+  includeIfSelectedOptions: string[];
 
-  @OneToOne(() => Sentence, { cascade: true, eager: true }) // optional: cascade and eager load
+  @OneToOne(() => Question, (question: Question) => question.sentence)
   @JoinColumn()
-  sentence: Sentence;
+  question: Question;
 }
