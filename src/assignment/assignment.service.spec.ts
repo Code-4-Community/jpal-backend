@@ -19,6 +19,7 @@ import { EmailService } from '../util/email/email.service';
 import { YouthRoles } from '../youth/types/youthRoles';
 import { AWSS3Service } from '../aws/aws-s3.service';
 import * as Buffer from 'buffer';
+import { Sentence } from '../sentence/types/sentence.entity';
 
 const mockEmailService: Partial<EmailService> = {
   queueEmail: jest.fn(),
@@ -185,6 +186,7 @@ mockQuestionRepository.findOne.mockResolvedValue({
   text: 'How often is this student responsible?',
   surveyTemplate: mockSurveyTemplate,
   options: exampleOptions,
+  sentence: new Sentence(),
 });
 mockResponseRepository.find.mockResolvedValue([]);
 

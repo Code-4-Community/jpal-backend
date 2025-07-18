@@ -6,6 +6,9 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { mockUser } from '../user/user.service.spec';
 import { Question } from '../question/types/question.entity';
 import { transformQuestionToSurveyDataQuestion } from '../util/transformQuestionToSurveryDataQuestion';
+import { Sentence } from '../sentence/types/sentence.entity';
+
+const mockSentence = new Sentence();
 
 const mockSurveyTemplate: SurveyTemplate = {
   id: 1,
@@ -15,6 +18,7 @@ const mockSurveyTemplate: SurveyTemplate = {
     {
       id: 101,
       text: 'What is your favorite color?',
+      sentence: mockSentence,
       surveyTemplate: {} as SurveyTemplate, // circular ref, safe to stub for test
       options: [
         {
@@ -51,6 +55,7 @@ const questions = [
     id: 101,
     text: 'What is your favorite color?',
     surveyTemplate: {} as SurveyTemplate, // circular ref, safe to stub for test
+    sentence: mockSentence,
     options: [
       {
         id: 201,
@@ -71,6 +76,7 @@ const questions2 = [
     id: 101,
     text: 'What is your favorite food?',
     surveyTemplate: {} as SurveyTemplate, // circular ref, safe to stub for test
+    sentence: mockSentence,
     options: [
       {
         id: 201,

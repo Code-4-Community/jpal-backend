@@ -9,6 +9,7 @@ import { Reviewer } from './src/reviewer/types/reviewer.entity';
 import { Option } from './src/option/types/option.entity';
 import { Response } from './src/response/types/response.entity';
 import { Survey } from './src/survey/types/survey.entity';
+import { Sentence } from './src/sentence/types/sentence.entity'
 
 dotenv.config();
 
@@ -29,6 +30,7 @@ const config: TypeOrmModuleOptions & { seeds: string[] } = {
     Response,
     Youth,
     Reviewer,
+    Sentence
   ],
   migrationsTableName: 'migrations',
   migrations: ['dist/migrations/*.js'],
