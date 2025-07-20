@@ -50,7 +50,7 @@ export class SurveyController {
    * @param editSurveyDTO    contains all the information for the updated servey
    * @param reqUser          the user who makes the request
    */
-  @Patch()
+  @Patch(':surveyUUID')
   @Auth(Role.RESEARCHER, Role.ADMIN)
   async edit(@Body() editSurveyDTO: EditSurveyDto, @ReqUser() reqUser): Promise<Survey> {
     return this.surveyService.edit(

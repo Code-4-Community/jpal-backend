@@ -81,39 +81,33 @@ export class SurveyService {
     treatmentPercentage?: number,
   ): Promise<Survey> {
     const survey = await this.getById(id);
-    let found = false;
+    let validUpdate = false;
     if (surveyName) {
       survey.name = surveyName;
-      found = true;
+      validUpdate = true;
     }
     if (organizationName) {
       survey.organizationName = organizationName;
-      found = true;
+      validUpdate = true;
     }
     if (imageData) {
       survey.imageURL = await this.processImage(imageData, organizationName);
-      found = true;
+      validUpdate = true;
     }
     if (treatmentPercentage) {
-      found = true;
+      validUpdate = true;
       if (treatmentPercentage < 0 || treatmentPercentage > 100) {
         throw new BadRequestException(`${treatmentPercentage} is not between 0 and 100 inclusive`);
       }
       survey.treatmentPercentage = treatmentPercentage;
     }
-    if (!found) {
+    if (!validUpdate) {
       throw new BadRequestException(
         'At least one of surveyName, organizationName, imageData, or treatmentPercentage must be provided',
       );
     }
     return await this.surveyRepository.save(survey);
   }
-
-  isBase64Image = (base64String: string): boolean => {
-    const jpgRegex = /^\/9j\/.*$/;
-    const pngRegex = /^iVB.*$/;
-    return jpgRegex.test(base64String) || pngRegex.test(base64String);
-  };
 
   /**
    * Gets the survey corresponding to id.
