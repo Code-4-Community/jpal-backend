@@ -8,6 +8,7 @@ import { CreateSurveyDto, CreateSurveyReponseDto } from './dto/create-survey.dto
 import { SurveyData } from './dto/survey-assignment.dto';
 import { SurveyService } from './survey.service';
 import { Survey } from './types/survey.entity';
+import { EditSurveyDto } from './dto/edit-survey.dto';
 
 @Controller('survey')
 export class SurveyController {
@@ -42,6 +43,23 @@ export class SurveyController {
       imageURL: createdSurvey.imageURL,
       treatmentPercentage: createdSurvey.treatmentPercentage,
     };
+  }
+
+  /**
+   * Edits a survey with the given information. Must be authenticated as a Researcher or an Admin.
+   * @param editSurveyDTO    contains all the information for the updated servey
+   * @param reqUser          the user who makes the request
+   */
+  @Patch(':surveyUUID')
+  @Auth(Role.RESEARCHER, Role.ADMIN)
+  async edit(@Body() editSurveyDTO: EditSurveyDto, @ReqUser() reqUser): Promise<Survey> {
+    return this.surveyService.edit(
+      editSurveyDTO.id,
+      editSurveyDTO.surveyName,
+      editSurveyDTO.organizationName,
+      editSurveyDTO.imageData,
+      editSurveyDTO.treatmentPercentage,
+    );
   }
 
   @Patch()
