@@ -1,10 +1,10 @@
-import {MigrationInterface, QueryRunner} from "typeorm";
+import { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class AddParagraphEntity1753377136366 implements MigrationInterface {
-    name = 'AddParagraphEntity1753377136366'
+  name = 'AddParagraphEntity1753377136366';
 
-    public async up(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.query(`
+  public async up(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query(`
         CREATE TABLE "paragraph" (
             "id" SERIAL NOT NULL,
             "order" INTEGER NOT NULL,
@@ -14,7 +14,7 @@ export class AddParagraphEntity1753377136366 implements MigrationInterface {
     )
     `);
 
-        await queryRunner.query(`
+    await queryRunner.query(`
         CREATE TABLE "paragraph_sentences" (
             "paragraphId" integer NOT NULL,
             "sentenceId" integer NOT NULL,
@@ -23,12 +23,10 @@ export class AddParagraphEntity1753377136366 implements MigrationInterface {
             CONSTRAINT "FK_sentenceId" FOREIGN KEY ("sentenceId") REFERENCES "sentence"("id") ON DELETE CASCADE
         )
         `);
+  }
 
-    }
-
-    public async down(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.query(`DROP TABLE "paragraph"`);
-        await queryRunner.query(`DROP TABLE "paragraph_sentences"`);
-
-    }
+  public async down(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query(`DROP TABLE "paragraph"`);
+    await queryRunner.query(`DROP TABLE "paragraph_sentences"`);
+  }
 }

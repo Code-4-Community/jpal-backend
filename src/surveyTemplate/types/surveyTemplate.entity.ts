@@ -15,6 +15,6 @@ export class SurveyTemplate {
     cascade: true,
   })
   questions: Question[];
-  
+
   name: string;
 }
