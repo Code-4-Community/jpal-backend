@@ -43,9 +43,7 @@ const mockSurveyTemplateRepository: Partial<Repository<SurveyTemplate>> = {
     if (query.where.id === 1) return mockSurveyTemplate;
     return undefined;
   },
-  async find(conditions: any): Promise<SurveyTemplate[] | undefined> {
-    return Promise.resolve([mockSurveyTemplate]);
-  },
+  find: jest.fn().mockResolvedValue([mockSurveyTemplate]),
   save: jest.fn().mockImplementation(async (template) => template),
   delete: jest.fn().mockImplementation(async (id: number) => mockDeleteResult),
 };
