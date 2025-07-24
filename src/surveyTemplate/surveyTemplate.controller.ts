@@ -1,5 +1,9 @@
 import { Controller, Get, Param, ParseIntPipe, Post, Delete, Put } from '@nestjs/common';
-import { SurveyNameData, SurveyTemplateData, SurveyTemplateService } from './surveyTemplate.service';
+import {
+  SurveyNameData,
+  SurveyTemplateData,
+  SurveyTemplateService,
+} from './surveyTemplate.service';
 import { User } from '../user/types/user.entity';
 import { SurveyTemplate } from './types/surveyTemplate.entity';
 import { Auth } from '../auth/decorators/auth.decorator';
