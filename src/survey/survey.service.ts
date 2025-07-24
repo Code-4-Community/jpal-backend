@@ -23,6 +23,7 @@ import { Question as SurveyDataQuestion } from './dto/survey-assignment.dto';
 import { EmailService } from '../util/email/email.service';
 import { Role } from '../user/types/role';
 import { transformQuestionToSurveyDataQuestion } from '../util/transformQuestionToSurveryDataQuestion';
+import { SurveyTemplateData } from '../surveyTemplate/surveyTemplate.service';
 import { AWSS3Service } from '../aws/aws-s3.service';
 import * as process from 'process';
 import { s3Buckets } from '../aws/types/s3Buckets';
@@ -59,17 +60,7 @@ export class SurveyService {
       throw new BadRequestException('Requested survey template does not exist');
     }
 
-    const matches = imageBase64.match(/^data:(.*);base64,(.*)$/);
-    if (!matches || matches.length !== 3) {
-      throw new Error('Invalid base64 image format');
-    }
-
-    const mimeType = matches[1];
-    const base64Data = matches[2];
-    const buffer = Buffer.from(base64Data, 'base64');
-
-    const fileName = `${organizationName}-image${Date.now()}.${mimeType.substring(6)}`;
-    const imageURL = await this.awsS3Service.upload(buffer, fileName, mimeType, s3Buckets.IMAGES);
+    const imageURL = await this.processImage(imageBase64, organizationName);
 
     return this.surveyRepository.save({
       surveyTemplate,
@@ -82,22 +73,55 @@ export class SurveyService {
     });
   }
 
-  async getByUUID(uuid: string): Promise<Survey> {
-    const survey = this.surveyRepository.findOne({ where: { uuid } });
-    if (!survey) {
-      throw new BadRequestException('Requested survey does not exist');
+  async edit(
+    id: number,
+    surveyName?: string,
+    organizationName?: string,
+    imageData?: string,
+    treatmentPercentage?: number,
+  ): Promise<Survey> {
+    const survey = await this.getById(id);
+    let validUpdate = false;
+    if (surveyName) {
+      survey.name = surveyName;
+      validUpdate = true;
     }
-    return survey;
+    if (organizationName) {
+      survey.organizationName = organizationName;
+      validUpdate = true;
+    }
+    if (imageData) {
+      survey.imageURL = await this.processImage(imageData, organizationName);
+      validUpdate = true;
+    }
+    if (treatmentPercentage) {
+      validUpdate = true;
+      if (treatmentPercentage < 0 || treatmentPercentage > 100) {
+        throw new BadRequestException(`${treatmentPercentage} is not between 0 and 100 inclusive`);
+      }
+      survey.treatmentPercentage = treatmentPercentage;
+    }
+    if (!validUpdate) {
+      throw new BadRequestException(
+        'At least one of surveyName, organizationName, imageData, or treatmentPercentage must be provided',
+      );
+    }
+    return await this.surveyRepository.save(survey);
   }
 
-  async findAllSurveysByUser(user: User): Promise<Survey[]> {
-    return this.surveyRepository.find({
-      where: { creator: user },
+  /**
+   * Gets the survey corresponding to id.
+   */
+  async getById(id: number): Promise<Survey> {
+    const result = await this.surveyRepository.findOne({
+      where: { id },
     });
-  }
 
-  async getAllSurveys(): Promise<Survey[]> {
-    return this.surveyRepository.find();
+    if (!result) {
+      throw new BadRequestException(`Survey  id ${id} not found`);
+    }
+
+    return result;
   }
 
   /**
@@ -303,6 +327,45 @@ export class SurveyService {
       treatmentYouth: this.extractYouthByRole(YouthRoles.TREATMENT, assignmentsForReviewer),
       questions: transformQuestionToSurveyDataQuestion(questionEntities),
     };
+  }
+
+  async getByUUID(uuid: string): Promise<Survey> {
+    const survey = this.surveyRepository.findOne({ where: { uuid } });
+    if (!survey) {
+      throw new BadRequestException('Requested survey does not exist');
+    }
+    return survey;
+  }
+
+  async findAllSurveysByUser(user: User): Promise<Survey[]> {
+    return this.surveyRepository.find({
+      where: { creator: user },
+    });
+  }
+
+  async getAllSurveys(): Promise<Survey[]> {
+    return this.surveyRepository.find();
+  }
+
+  /**
+   * Processes an image by converting it from base64 to a buffer and uploading it to AWS S3.
+   *
+   * @param imageBase64 image in base64 format
+   * @param organizationName organization name to use in the file name
+   * @returns the URL of the uploaded image in S3
+   */
+  async processImage(imageBase64: string, organizationName: string): Promise<string> {
+    const matches = imageBase64.match(/^data:(.*);base64,(.*)$/);
+    if (!matches || matches.length !== 3) {
+      throw new BadRequestException('Invalid base64 image format');
+    }
+
+    const mimeType = matches[1];
+    const base64Data = matches[2];
+    const buffer = Buffer.from(base64Data, 'base64');
+
+    const fileName = `${organizationName}-image${Date.now()}.${mimeType.substring(6)}`;
+    return this.awsS3Service.upload(buffer, fileName, mimeType, s3Buckets.IMAGES);
   }
 
   private transformReviewerToSurveyDataReviewer(reviewerEntity: Reviewer) {

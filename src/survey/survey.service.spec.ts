@@ -14,12 +14,13 @@ import {
   listMockSurveys,
   mockSurvey,
   mockSurvey2,
+  mockSurvey3,
   mockSurveyTemplate,
   UUID,
 } from './survey.controller.spec';
 import { UtilModule } from '../util/util.module';
 import { EmailService } from '../util/email/email.service';
-import { NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { AWSS3Service } from '../aws/aws-s3.service';
 import { YouthRoles } from '../youth/types/youthRoles';
 
@@ -396,5 +397,27 @@ describe('SurveyService', () => {
         UnauthorizedException,
       );
     });
+  });
+  it('should edit a survey', async () => {
+    const survey = await service.edit(1, 'new name');
+
+    expect(survey.name).toBe('new name');
+  });
+  it('should throw if base64 is invalid', async () => {
+    jest
+      .spyOn(mockSurveyRepository, 'findOne')
+      .mockImplementation(() => Promise.resolve(mockSurvey3));
+    await expect(service.edit(1, 'name', 'new name', 'not base64')).rejects.toThrow(
+      BadRequestException,
+    );
+  });
+
+  it('should throw if the treatment percentage is invalid', async () => {
+    jest
+      .spyOn(mockSurveyRepository, 'findOne')
+      .mockImplementation(() => Promise.resolve(mockSurvey3));
+    await expect(service.edit(1, undefined, undefined, undefined, 101)).rejects.toThrow(
+      BadRequestException,
+    );
   });
 });

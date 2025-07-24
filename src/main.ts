@@ -28,6 +28,6 @@ async function bootstrap() {
   app.use(bodyParser.json({ limit: '10mb' }));
   app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
 
-  await app.listen(5000);
+  await app.listen(process.env.PORT || 5000, '0.0.0.0');
 }
 bootstrap();
