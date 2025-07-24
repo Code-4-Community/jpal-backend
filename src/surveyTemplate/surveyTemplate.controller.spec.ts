@@ -1,9 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { SurveyTemplateController } from './surveyTemplate.controller';
-import {
-  SurveyTemplateData,
-  SurveyTemplateService,
-} from './surveyTemplate.service';
+import { SurveyTemplateData, SurveyTemplateService } from './surveyTemplate.service';
 import { SurveyTemplate } from './types/surveyTemplate.entity';
 import { mockUser } from '../user/user.service.spec';
 import { Question } from '../question/types/question.entity';
