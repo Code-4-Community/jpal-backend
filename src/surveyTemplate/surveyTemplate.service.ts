@@ -5,6 +5,7 @@ import { DeleteResult, Repository } from 'typeorm';
 import { Question } from '../question/types/question.entity';
 import { transformQuestionToSurveyDataQuestion } from '../util/transformQuestionToSurveryDataQuestion';
 import { User } from 'src/user/types/user.entity';
+import { integer } from 'aws-sdk/clients/cloudfront';
 
 export interface SurveyDataQuestion {
   question: string;
@@ -14,6 +15,13 @@ export interface SurveyDataQuestion {
 export interface SurveyTemplateData {
   name: string;
   questions: SurveyDataQuestion[];
+}
+
+export interface SurveyTemplateData2 {
+  id: integer;
+  creator: User;
+  name: string;
+  questions: Question[];
 }
 
 @Injectable()
