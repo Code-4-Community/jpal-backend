@@ -7,6 +7,7 @@ import { mockUser } from '../user/user.service.spec';
 import { Question } from '../question/types/question.entity';
 import { transformQuestionToSurveyDataQuestion } from '../util/transformQuestionToSurveryDataQuestion';
 import { Role } from '../user/types/role';
+import { BadRequestException } from '@nestjs/common';
 import { Sentence } from '../sentence/types/sentence.entity';
 
 const mockSentence = new Sentence();
@@ -45,6 +46,7 @@ const mockSurveyNameData: SurveyNameData = {
 const mockSurveyTemplateRepository: Partial<Repository<SurveyTemplate>> = {
   async findOne(query: any): Promise<SurveyTemplate | undefined> {
     if (query.where.id === 1) return mockSurveyTemplate;
+    if (query.where.name === 'name') return mockSurveyTemplate;
     return undefined;
   },
   async find(query: any): Promise<SurveyTemplate[] | undefined> {
@@ -205,5 +207,22 @@ describe('SurveyTemplateService', () => {
       name: 'new name',
       questions: transformQuestionToSurveyDataQuestion(questions2),
     });
+  });
+
+  it('should return a create result', async () => {
+    expect(async () => {
+      const newSurvey = await service.createSurveyTemplate(mockUser, 'new name', []);
+      expect(newSurvey).toEqual({
+        creator: mockUser,
+        name: 'new name',
+        questions: [],
+      });
+    });
+  });
+
+  it('should error if the template name already exists in database', async () => {
+    await expect(service.createSurveyTemplate(mockUser, 'name', questions)).rejects.toThrow(
+      BadRequestException,
+    );
   });
 });

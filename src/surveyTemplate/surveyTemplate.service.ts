@@ -114,4 +114,31 @@ export class SurveyTemplateService {
       return result;
     }
   }
+
+  /**
+   * Creates a survey template
+   * @param creator is the creator of the survey template
+   * @param name is the name of the survey template
+   * @questions questions are the questions apart of the survey template
+   */
+  async createSurveyTemplate(
+    creator: User,
+    name: string,
+    questions: Question[],
+  ): Promise<SurveyTemplate> {
+    // check for duplicate names
+    if (
+      await this.surveyTemplateRepository.findOne({
+        where: { name: name },
+      })
+    ) {
+      throw new BadRequestException(`Survey template with name ${name} already exists!`);
+    }
+
+    return await this.surveyTemplateRepository.save({
+      creator,
+      name,
+      questions,
+    });
+  }
 }
