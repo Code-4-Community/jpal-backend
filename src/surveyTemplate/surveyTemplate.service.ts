@@ -28,8 +28,6 @@ export class SurveyTemplateService {
       where: { creator },
     });
 
-    console.log('result: ', result);
-
     if (!result) {
       throw new BadRequestException(`Creator ${creator.id} not found`);
     }

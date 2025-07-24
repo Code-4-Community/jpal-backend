@@ -35,7 +35,7 @@ const mockSurveyTemplate: SurveyTemplate = {
 
 const mockSurveyNameData: SurveyNameData = {
   id: 1,
-  name: 'survey1',
+  name: 'name',
 };
 
 const mockSurveyTemplateRepository: Partial<Repository<SurveyTemplate>> = {
@@ -43,7 +43,10 @@ const mockSurveyTemplateRepository: Partial<Repository<SurveyTemplate>> = {
     if (query.where.id === 1) return mockSurveyTemplate;
     return undefined;
   },
-  find: jest.fn().mockResolvedValue([mockSurveyTemplate]),
+  async find(query: any): Promise<SurveyTemplate[] | undefined> {
+    if (query.where.creator.id === 1) return [mockSurveyTemplate];
+    return undefined;
+  },
   save: jest.fn().mockImplementation(async (template) => template),
   delete: jest.fn().mockImplementation(async (id: number) => mockDeleteResult),
 };
@@ -125,7 +128,7 @@ describe('SurveyTemplateService', () => {
   it('should error if the requested user does not exist', async () => {
     expect(async () => {
       await service.getByCreator({
-        id: 100000000,
+        id: -2,
         email: 'test@test.com',
         firstName: 'Random',
         lastName: 'user',
