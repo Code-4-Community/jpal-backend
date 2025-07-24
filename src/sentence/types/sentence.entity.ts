@@ -1,5 +1,6 @@
-import { Column, Entity, OneToOne, PrimaryGeneratedColumn, JoinColumn } from 'typeorm';
+import { Column, Entity, OneToOne, PrimaryGeneratedColumn, JoinColumn, OneToMany } from 'typeorm';
 import { Question } from '../../question/types/question.entity';
+import { Fragment } from 'src/fragment/types/fragment.entity';
 
 @Entity()
 export class Sentence {
