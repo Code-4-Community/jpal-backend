@@ -60,21 +60,17 @@ export class SurveyTemplateController {
   @Auth(Role.ADMIN)
   async createSurveyTemplate(
     @Body() createSurveyTemplate: CreateSurveyTemplateDto,
-  ): Promise <CreateSurveyTemplateDto> {
+  ): Promise<CreateSurveyTemplateDto> {
     const createdSurveyTemplate = await this.surveyTemplateService.createSurveyTemplate(
       createSurveyTemplate.creator,
       createSurveyTemplate.name,
       createSurveyTemplate.questions,
     );
-    
+
     return {
       creator: createdSurveyTemplate.creator,
       name: createdSurveyTemplate.name,
-      questions: createdSurveyTemplate.questions
+      questions: createdSurveyTemplate.questions,
     };
   }
-  
-  
-  
-
 }

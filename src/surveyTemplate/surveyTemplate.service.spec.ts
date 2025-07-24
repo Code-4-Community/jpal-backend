@@ -183,18 +183,18 @@ describe('SurveyTemplateService', () => {
 
   it('should return a create result', async () => {
     expect(async () => {
-      const newSurvey = await service.createSurveyTemplate(mockUser, "new name", []);
+      const newSurvey = await service.createSurveyTemplate(mockUser, 'new name', []);
       expect(newSurvey).toEqual({
         creator: mockUser,
-        name: "new name",
+        name: 'new name',
         questions: [],
       });
     });
   });
 
   it('should error if the template name already exists in database', async () => {
-  await expect(
-    service.createSurveyTemplate(mockUser, 'name', questions)
-  ).rejects.toThrow(BadRequestException);
+    await expect(service.createSurveyTemplate(mockUser, 'name', questions)).rejects.toThrow(
+      BadRequestException,
+    );
   });
-})
+});

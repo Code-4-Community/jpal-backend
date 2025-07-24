@@ -1,6 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { SurveyTemplateController } from './surveyTemplate.controller';
-import { SurveyTemplateData, SurveyTemplateData2, SurveyTemplateService } from './surveyTemplate.service';
+import {
+  SurveyTemplateData,
+  SurveyTemplateData2,
+  SurveyTemplateService,
+} from './surveyTemplate.service';
 import { SurveyTemplate } from './types/surveyTemplate.entity';
 import { mockUser } from '../user/user.service.spec';
 import { Question } from '../question/types/question.entity';
@@ -23,7 +27,7 @@ const serviceMock: Partial<SurveyTemplateService> = {
   updateSurveyTemplate: jest.fn(() => Promise.resolve(mockSurveyTemplateData)),
   deleteSurveyTemplate: jest.fn(() => Promise.resolve(mockDeleteResult)),
   updateSurveyTemplateName: jest.fn(() => Promise.resolve(mockSurveyTemplateData)),
-  createSurveyTemplate:jest.fn(() => Promise.resolve(mockSurveyTemplate))
+  createSurveyTemplate: jest.fn(() => Promise.resolve(mockSurveyTemplate)),
 };
 
 const mockDeleteResult: DeleteResult = {
@@ -90,21 +94,19 @@ describe('SurveyTemplateController', () => {
     expect(await controller.editSurveyTemplateName(1, 'new name')).toEqual(mockSurveyTemplateData);
   });
 
-  it ('should create a new survey template with the given parameters', async () => {
+  it('should create a new survey template with the given parameters', async () => {
     const mockCreateDto = {
       creator: mockUser,
-      name: "name",
+      name: 'name',
       questions: [],
     };
-    
+
     const result = await controller.createSurveyTemplate(mockCreateDto);
     expect(result).toEqual(mockCreateDto);
     expect(serviceMock.createSurveyTemplate).toHaveBeenCalledWith(
       mockCreateDto.creator,
       mockCreateDto.name,
-      mockCreateDto.questions
+      mockCreateDto.questions,
     );
-  
-  }
-  )
+  });
 });
