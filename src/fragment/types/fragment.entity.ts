@@ -16,7 +16,6 @@ export class Fragment {
   @ManyToOne(() => Question)
   question: Question;
 
-
   @Column('text', { array: true, default: () => "'{}'" })
   includeIfSelectedOptions: string[];
 }
