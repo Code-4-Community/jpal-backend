@@ -17,12 +17,6 @@ export interface SurveyTemplateData {
   questions: SurveyDataQuestion[];
 }
 
-export interface SurveyTemplateData2 {
-  id: integer;
-  creator: User;
-  name: string;
-  questions: Question[];
-}
 
 @Injectable()
 export class SurveyTemplateService {
@@ -111,10 +105,10 @@ export class SurveyTemplateService {
    * @param name is the name of the survey template
    * @questions questions are the questions apart of the survey template
    */
-  async createSurveyTemplate(creator: User, name: string, questions: Question[]) {
+  async createSurveyTemplate(creator: User, name: string, questions: Question[]): Promise<SurveyTemplate> {
     // check for duplicate names
     if (
-      this.surveyTemplateRepository.findOne({
+      await this.surveyTemplateRepository.findOne({
         where: { name: name },
       })
     ) {

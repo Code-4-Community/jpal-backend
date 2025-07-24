@@ -57,7 +57,7 @@ export class SurveyTemplateController {
    * Creates a survey template
    */
   @Post('survey-template')
-  @Auth(Role.ADMIN)
+  @Auth(Role.ADMIN, Role.RESEARCHER)
   async createSurveyTemplate(
     @Body() createSurveyTemplate: CreateSurveyTemplateDto,
   ): Promise<CreateSurveyTemplateDto> {
