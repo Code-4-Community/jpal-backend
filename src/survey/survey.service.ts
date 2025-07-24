@@ -23,6 +23,10 @@ import { Question as SurveyDataQuestion } from './dto/survey-assignment.dto';
 import { EmailService } from '../util/email/email.service';
 import { Role } from '../user/types/role';
 import { transformQuestionToSurveyDataQuestion } from '../util/transformQuestionToSurveryDataQuestion';
+import { SurveyTemplateData } from '../surveyTemplate/surveyTemplate.service';
+import { AWSS3Service } from '../aws/aws-s3.service';
+import * as process from 'process';
+import { s3Buckets } from '../aws/types/s3Buckets';
 
 @Injectable()
 export class SurveyService {
@@ -38,39 +42,86 @@ export class SurveyService {
     @InjectRepository(Reviewer)
     private reviewerRepository: Repository<Reviewer>,
     private emailService: EmailService,
+    private awsS3Service: AWSS3Service,
   ) {}
 
-  async create(surveyTemplateId: number, name: string, creator: User) {
+  async create(
+    surveyTemplateId: number,
+    name: string,
+    creator: User,
+    organizationName: string,
+    imageBase64: string,
+    treatmentPercentage: number,
+  ) {
     const surveyTemplate = await this.surveyTemplateRepository.findOne({
       id: surveyTemplateId,
     });
     if (!surveyTemplate) {
       throw new BadRequestException('Requested survey template does not exist');
     }
+
+    const imageURL = await this.processImage(imageBase64, organizationName);
+
     return this.surveyRepository.save({
       surveyTemplate,
       name,
       creator,
       assignments: [],
+      imageURL,
+      organizationName,
+      treatmentPercentage,
     });
   }
 
-  async getByUUID(uuid: string): Promise<Survey> {
-    const survey = this.surveyRepository.findOne({ where: { uuid } });
-    if (!survey) {
-      throw new BadRequestException('Requested survey does not exist');
+  async edit(
+    id: number,
+    surveyName?: string,
+    organizationName?: string,
+    imageData?: string,
+    treatmentPercentage?: number,
+  ): Promise<Survey> {
+    const survey = await this.getById(id);
+    let validUpdate = false;
+    if (surveyName) {
+      survey.name = surveyName;
+      validUpdate = true;
     }
-    return survey;
+    if (organizationName) {
+      survey.organizationName = organizationName;
+      validUpdate = true;
+    }
+    if (imageData) {
+      survey.imageURL = await this.processImage(imageData, organizationName);
+      validUpdate = true;
+    }
+    if (treatmentPercentage) {
+      validUpdate = true;
+      if (treatmentPercentage < 0 || treatmentPercentage > 100) {
+        throw new BadRequestException(`${treatmentPercentage} is not between 0 and 100 inclusive`);
+      }
+      survey.treatmentPercentage = treatmentPercentage;
+    }
+    if (!validUpdate) {
+      throw new BadRequestException(
+        'At least one of surveyName, organizationName, imageData, or treatmentPercentage must be provided',
+      );
+    }
+    return await this.surveyRepository.save(survey);
   }
 
-  async findAllSurveysByUser(user: User): Promise<Survey[]> {
-    return this.surveyRepository.find({
-      where: { creator: user },
+  /**
+   * Gets the survey corresponding to id.
+   */
+  async getById(id: number): Promise<Survey> {
+    const result = await this.surveyRepository.findOne({
+      where: { id },
     });
-  }
 
-  async getAllSurveys(): Promise<Survey[]> {
-    return this.surveyRepository.find();
+    if (!result) {
+      throw new BadRequestException(`Survey  id ${id} not found`);
+    }
+
+    return result;
   }
 
   /**
@@ -83,7 +134,17 @@ export class SurveyService {
     const survey = await this.getByUUID(dto.surveyUUID);
     const reviewers = dto.pairs.map((p) => p.reviewer);
     const reviewerEmails = reviewers.map((r) => r.email);
-    const youth = dto.pairs.map((p) => p.youth);
+    const treatmentPercentageFraction = survey.treatmentPercentage / 100;
+
+    const youth = dto.pairs.map((p) => {
+      /**
+       * Randomly assign youth to a group weighted by the survey's treatment percentage
+       * This may not be the 100% best way, but I think we can keep it simple for now
+       */
+      const youthRole =
+        Math.random() < treatmentPercentageFraction ? YouthRoles.TREATMENT : YouthRoles.CONTROL;
+      return { ...p.youth, role: youthRole };
+    });
     const youthEmails = youth.map((y) => y.email);
 
     // If we're given any existing reviewer-youth pairs for this survey, treat it as an invalid request and require the caller to remove them
@@ -124,13 +185,25 @@ export class SurveyService {
       this.youthRepository.find({ where: { email: In(youthEmails) } }),
     ]);
 
-    // If we get here, then none of the given reviewer-youth pairs should exist for this survey
+    // Create a lookup by email
+    const reviewerMap = new Map(reviewerEntities.map((r) => [r.email, r]));
+    const youthMap = new Map(youthEntities.map((y) => [y.email, y]));
+
     await this.assignmentRepository.save(
-      dto.pairs.map((_, i) => {
+      dto.pairs.map((pair) => {
+        const reviewer = reviewerMap.get(pair.reviewer.email);
+        const youth = youthMap.get(pair.youth.email);
+
+        if (!reviewer || !youth) {
+          throw new Error(
+            `Reviewer or Youth not found for email: ${pair.reviewer.email}, ${pair.youth.email}`,
+          );
+        }
+
         return {
           survey,
-          reviewer: reviewerEntities[i],
-          youth: youthEntities[i],
+          reviewer,
+          youth,
           responses: [],
         };
       }),
@@ -254,6 +327,45 @@ export class SurveyService {
       treatmentYouth: this.extractYouthByRole(YouthRoles.TREATMENT, assignmentsForReviewer),
       questions: transformQuestionToSurveyDataQuestion(questionEntities),
     };
+  }
+
+  async getByUUID(uuid: string): Promise<Survey> {
+    const survey = this.surveyRepository.findOne({ where: { uuid } });
+    if (!survey) {
+      throw new BadRequestException('Requested survey does not exist');
+    }
+    return survey;
+  }
+
+  async findAllSurveysByUser(user: User): Promise<Survey[]> {
+    return this.surveyRepository.find({
+      where: { creator: user },
+    });
+  }
+
+  async getAllSurveys(): Promise<Survey[]> {
+    return this.surveyRepository.find();
+  }
+
+  /**
+   * Processes an image by converting it from base64 to a buffer and uploading it to AWS S3.
+   *
+   * @param imageBase64 image in base64 format
+   * @param organizationName organization name to use in the file name
+   * @returns the URL of the uploaded image in S3
+   */
+  async processImage(imageBase64: string, organizationName: string): Promise<string> {
+    const matches = imageBase64.match(/^data:(.*);base64,(.*)$/);
+    if (!matches || matches.length !== 3) {
+      throw new BadRequestException('Invalid base64 image format');
+    }
+
+    const mimeType = matches[1];
+    const base64Data = matches[2];
+    const buffer = Buffer.from(base64Data, 'base64');
+
+    const fileName = `${organizationName}-image${Date.now()}.${mimeType.substring(6)}`;
+    return this.awsS3Service.upload(buffer, fileName, mimeType, s3Buckets.IMAGES);
   }
 
   private transformReviewerToSurveyDataReviewer(reviewerEntity: Reviewer) {

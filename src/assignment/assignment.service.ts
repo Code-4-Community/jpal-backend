@@ -19,6 +19,7 @@ import { Cron } from '@nestjs/schedule';
 import { YouthRoles } from '../youth/types/youthRoles';
 import { letterToPdf } from '../util/letter-generation/letter-to-pdf';
 import { AWSS3Service } from '../aws/aws-s3.service';
+import { s3Buckets } from '../aws/types/s3Buckets';
 
 @Injectable()
 export class AssignmentService {
@@ -114,7 +115,12 @@ export class AssignmentService {
 
     const pdf = await letterToPdf(letter, headerImageData);
     const fileName = assignment.youth.id + '-' + assignment.id + 'LOR.pdf';
-    const link = await this.awsS3Service.upload(pdf, fileName, 'application/octet-stream');
+    const link = await this.awsS3Service.upload(
+      pdf,
+      fileName,
+      'application/octet-stream',
+      s3Buckets.LETTERS,
+    );
     assignment.s3LetterLink = link;
     return this.assignmentRepository.save(assignment);
   }

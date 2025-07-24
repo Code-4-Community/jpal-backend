@@ -10,6 +10,7 @@ import { mockUser } from '../user/user.service.spec';
 import { Question } from '../question/types/question.entity';
 import { DeleteResult } from 'typeorm';
 import exp from 'node:constants';
+import { Sentence } from '../sentence/types/sentence.entity';
 
 const mockSurveyTemplate: SurveyTemplate = {
   id: 1,
@@ -55,6 +56,7 @@ const questions = [
         question: {} as Question,
       },
     ],
+    sentence: new Sentence(),
   },
 ];
 

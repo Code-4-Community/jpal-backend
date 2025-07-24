@@ -4,6 +4,7 @@ import { SwaggerModule } from '@nestjs/swagger';
 import * as Sentry from '@sentry/node';
 import { AppModule } from './app.module';
 import swaggerDocumentConfig from './swagger.config';
+import * as bodyParser from 'body-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -24,6 +25,9 @@ async function bootstrap() {
     tracesSampleRate: 1.0,
   });
 
-  await app.listen(5000);
+  app.use(bodyParser.json({ limit: '10mb' }));
+  app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
+
+  await app.listen(process.env.PORT || 5000, '0.0.0.0');
 }
 bootstrap();

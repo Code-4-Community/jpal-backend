@@ -1,12 +1,13 @@
 import { Injectable, Logger } from '@nestjs/common';
 import {
-  S3Client,
-  PutObjectCommand,
   GetObjectCommand,
   NoSuchKey,
+  PutObjectCommand,
+  S3Client,
   S3ServiceException,
 } from '@aws-sdk/client-s3';
 import * as process from 'process';
+import { s3Buckets } from './types/s3Buckets';
 
 @Injectable()
 export class AWSS3Service {
@@ -44,10 +45,20 @@ export class AWSS3Service {
     return `https://${bucketName}.s3.us-east-2.amazonaws.com/${fileName}`;
   }
 
-  async upload(fileBuffer: Buffer, fileName: string, mimeType: string): Promise<string> {
+  async upload(
+    fileBuffer: Buffer,
+    fileName: string,
+    mimeType: string,
+    bucket: s3Buckets,
+  ): Promise<string> {
     try {
+      const s3Bucket = this.mapBucket(bucket);
+
+      console.log(s3Bucket);
+      console.log(fileName);
+
       const command = new PutObjectCommand({
-        Bucket: this.lettersBucket,
+        Bucket: s3Bucket,
         Key: fileName,
         Body: fileBuffer,
         ContentType: mimeType,
@@ -55,9 +66,17 @@ export class AWSS3Service {
 
       await this.client.send(command);
 
-      return `https://${this.lettersBucket}.s3.${this.region}.amazonaws.com/${fileName}`;
+      return `https://${s3Bucket}.s3.${this.region}.amazonaws.com/${fileName}`;
     } catch (error) {
       throw new Error('File upload to AWS failed: ' + error);
+    }
+  }
+
+  mapBucket(bucketEnum: s3Buckets): string {
+    if (bucketEnum === s3Buckets.LETTERS) {
+      return process.env.AWS_LETTERS_BUCKET_NAME;
+    } else if (bucketEnum === s3Buckets.IMAGES) {
+      return process.env.AWS_IMAGES_BUCKET_NAME;
     }
   }
 

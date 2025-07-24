@@ -20,10 +20,23 @@ export const mockSurvey: Survey = {
   id: 1,
   uuid: UUID,
   surveyTemplate: mockSurveyTemplate,
-  organizationName: '',
-  imageURL: null,
+  organizationName: 'test',
+  imageURL: 'https://jpal-letter-images.s3.us-east-2.amazonaws.com/test-image.png',
   treatmentPercentage: 50,
   name: 'Survey 1',
+  creator: mockUser,
+  assignments: [],
+  date: new Date('02-06-2022'),
+};
+
+export const mockSurvey3: Survey = {
+  id: 1,
+  uuid: UUID,
+  surveyTemplate: mockSurveyTemplate,
+  organizationName: 'test',
+  imageURL: 'https://jpal-letter-images.s3.us-east-2.amazonaws.com/test-image.png',
+  treatmentPercentage: 50,
+  name: 'new name',
   creator: mockUser,
   assignments: [],
   date: new Date('02-06-2022'),
@@ -33,6 +46,9 @@ const createMockSurveyResponse: CreateSurveyReponseDto = {
   id: 1,
   uuid: UUID,
   name: 'Survey 1',
+  organizationName: '',
+  imageURL: '',
+  treatmentPercentage: 50,
 };
 
 export const mockSurvey2: Survey = {
@@ -51,7 +67,13 @@ export const mockSurvey2: Survey = {
 export const listMockSurveys: Survey[] = [mockSurvey, mockSurvey2];
 
 export const mockSurveyService: Partial<SurveyService> = {
-  async create(surveyTemplateId: number, name: string, creator: User): Promise<Survey> {
+  async create(
+    surveyTemplateId: number,
+    name: string,
+    creator: User,
+    organizationName: string,
+    imageURL: string,
+  ): Promise<Survey> {
     return {
       id: 1,
       uuid: UUID,
@@ -72,6 +94,7 @@ export const mockSurveyService: Partial<SurveyService> = {
   findAllSurveysByUser: jest.fn(() => Promise.resolve([mockSurvey])),
   getAllSurveys: jest.fn(() => Promise.resolve(listMockSurveys)),
   getSurveyAssignments: jest.fn(() => Promise.resolve(mockSurvey)),
+  edit: jest.fn(() => Promise.resolve(mockSurvey3)),
 };
 
 describe('SurveyController', () => {
@@ -95,11 +118,14 @@ describe('SurveyController', () => {
     expect(controller).toBeDefined();
   });
 
-  it('should create a user', async () => {
+  it('should create a survey', async () => {
     const survey = await controller.create(
       {
         name: 'Survey 1',
         surveyTemplateId: 1,
+        organizationName: '',
+        imageBase64: '',
+        treatmentPercentage: 50,
       },
       mockUser,
     );
@@ -123,6 +149,22 @@ describe('SurveyController', () => {
     it('should get the requested survey', async () => {
       expect(await controller.getSurveyAssignments(UUID, mockUser)).toEqual(mockSurvey);
       expect(mockSurveyService.getSurveyAssignments).toHaveBeenCalledWith(UUID, mockUser);
+    });
+  });
+
+  describe('editSurvey', () => {
+    it('should edit the requested survey', async () => {
+      await expect(controller.edit({ id: 1, surveyName: 'new name' }, mockUser)).resolves.toEqual(
+        mockSurvey3,
+      );
+
+      expect(mockSurveyService.edit).toHaveBeenCalledWith(
+        1,
+        'new name',
+        undefined,
+        undefined,
+        undefined,
+      );
     });
   });
 });
