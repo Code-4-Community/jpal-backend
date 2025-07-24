@@ -1,12 +1,12 @@
 import { Controller, Get, Param, ParseIntPipe, Post, Delete, Put } from '@nestjs/common';
-import { SurveyTemplateData, SurveyTemplateService } from './surveyTemplate.service';
+import { SurveyNameData, SurveyTemplateData, SurveyTemplateService } from './surveyTemplate.service';
 import { User } from '../user/types/user.entity';
 import { SurveyTemplate } from './types/surveyTemplate.entity';
 import { Auth } from '../auth/decorators/auth.decorator';
 import { Role } from '../user/types/role';
 import { Question } from '../question/types/question.entity';
 import { DeleteResult } from 'typeorm';
-import { ReqUser } from 'src/auth/decorators/user.decorator';
+import { ReqUser } from '../auth/decorators/user.decorator';
 
 @Controller('survey-template')
 export class SurveyTemplateController {
@@ -26,7 +26,7 @@ export class SurveyTemplateController {
    */
   @Get()
   @Auth(Role.ADMIN, Role.RESEARCHER)
-  async getByCreator(@ReqUser() reqUser): Promise<string[]> {
+  async getByCreator(@ReqUser() reqUser): Promise<SurveyNameData[]> {
     return await this.surveyTemplateService.getByCreator(reqUser);
   }
 

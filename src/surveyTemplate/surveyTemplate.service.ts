@@ -16,10 +16,14 @@ export interface SurveyTemplateData {
   questions: SurveyDataQuestion[];
 }
 
+export interface SurveyNameData {
+  id: number;
+  name: string;
+}
+
 @Injectable()
 export class SurveyTemplateService {
-  
-  async getByCreator(creator: User): Promise<string[]> {
+  async getByCreator(creator: User): Promise<SurveyNameData[]> {
     const result = await this.surveyTemplateRepository.find({
       where: { creator },
     });
@@ -27,11 +31,9 @@ export class SurveyTemplateService {
     if (!result) {
       throw new BadRequestException(`Creator ${creator.id} not found`);
     }
-    console.log(creator.id);
-    console.log(result);
+
     return result.map((surveyTemp) => {
-      console.log(surveyTemp.name);
-      return surveyTemp.name;
+      return { name: surveyTemp.name, id: surveyTemp.id };
     });
   }
   constructor(
