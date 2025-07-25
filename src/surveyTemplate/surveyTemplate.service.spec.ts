@@ -1,11 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { SurveyTemplateService } from './surveyTemplate.service';
+import { SurveyNameData, SurveyTemplateService } from './surveyTemplate.service';
 import { DeleteResult, Repository } from 'typeorm';
 import { SurveyTemplate } from './types/surveyTemplate.entity';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { mockUser } from '../user/user.service.spec';
 import { Question } from '../question/types/question.entity';
 import { transformQuestionToSurveyDataQuestion } from '../util/transformQuestionToSurveryDataQuestion';
+import { Role } from '../user/types/role';
 import { BadRequestException } from '@nestjs/common';
 import { Sentence } from '../sentence/types/sentence.entity';
 
@@ -37,10 +38,19 @@ const mockSurveyTemplate: SurveyTemplate = {
   ],
 };
 
+const mockSurveyNameData: SurveyNameData = {
+  id: 1,
+  name: 'name',
+};
+
 const mockSurveyTemplateRepository: Partial<Repository<SurveyTemplate>> = {
   async findOne(query: any): Promise<SurveyTemplate | undefined> {
     if (query.where.id === 1) return mockSurveyTemplate;
     if (query.where.name === 'name') return mockSurveyTemplate;
+    return undefined;
+  },
+  async find(query: any): Promise<SurveyTemplate[] | undefined> {
+    if (query.where.creator.id === 1) return [mockSurveyTemplate];
     return undefined;
   },
   save: jest.fn().mockImplementation(async (template) => template),
@@ -121,6 +131,24 @@ describe('SurveyTemplateService', () => {
     const surveyTemplate = await service.getById(1);
     expect(surveyTemplate.questions[0].question).toEqual('What is your favorite color?');
     expect(surveyTemplate.questions[0].options.map((o) => o)).toEqual(['Red', 'Blue']);
+  });
+
+  it('should error if the requested user does not exist', async () => {
+    expect(async () => {
+      await service.getByCreator({
+        id: -2,
+        email: 'test@test.com',
+        firstName: 'Random',
+        lastName: 'user',
+        role: Role.RESEARCHER,
+        createdDate: new Date('2023-09-24'),
+      });
+    }).rejects.toThrow();
+  });
+
+  it('should return expected list of survey name data objects if creator exists', async () => {
+    const surveyNameData = await service.getByCreator(mockUser);
+    expect(surveyNameData[0]).toEqual(mockSurveyNameData);
   });
 
   it('should return an updated survey template', async () => {
