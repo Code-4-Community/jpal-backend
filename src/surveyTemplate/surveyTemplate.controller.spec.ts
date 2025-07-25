@@ -1,11 +1,16 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { SurveyTemplateController } from './surveyTemplate.controller';
-import { SurveyTemplateData, SurveyTemplateService } from './surveyTemplate.service';
+import {
+  SurveyNameData,
+  SurveyTemplateData,
+  SurveyTemplateService,
+} from './surveyTemplate.service';
 import { SurveyTemplate } from './types/surveyTemplate.entity';
 import { mockUser } from '../user/user.service.spec';
 import { Question } from '../question/types/question.entity';
 import { DeleteResult } from 'typeorm';
 import exp from 'node:constants';
+import { User } from 'src/user/types/user.entity';
 import { Sentence } from '../sentence/types/sentence.entity';
 
 const mockSurveyTemplate: SurveyTemplate = {
@@ -15,13 +20,20 @@ const mockSurveyTemplate: SurveyTemplate = {
   questions: [],
 };
 
+const mockSurveyNameData: SurveyNameData = {
+  id: 1,
+  name: 'survey',
+};
+
 const mockSurveyTemplateData: SurveyTemplateData = { name: 'name', questions: [] };
 
 const serviceMock: Partial<SurveyTemplateService> = {
+  getByCreator: jest.fn(() => Promise.resolve([mockSurveyNameData])),
   getById: jest.fn(() => Promise.resolve(mockSurveyTemplateData)),
   updateSurveyTemplate: jest.fn(() => Promise.resolve(mockSurveyTemplateData)),
   deleteSurveyTemplate: jest.fn(() => Promise.resolve(mockDeleteResult)),
   updateSurveyTemplateName: jest.fn(() => Promise.resolve(mockSurveyTemplateData)),
+  createSurveyTemplate: jest.fn(() => Promise.resolve(mockSurveyTemplate)),
 };
 
 const mockDeleteResult: DeleteResult = {
@@ -86,5 +98,26 @@ describe('SurveyTemplateController', () => {
   it('should delegate updating a survey template name to the survey template service', async () => {
     expect.assertions(1);
     expect(await controller.editSurveyTemplateName(1, 'new name')).toEqual(mockSurveyTemplateData);
+  });
+
+  it('should delegate fetching survey templates by creator to the survey template service', async () => {
+    expect.assertions(2);
+    expect(await controller.getByCreator(mockUser)).toEqual([mockSurveyNameData]);
+    expect(serviceMock.getByCreator).toHaveBeenCalledWith(mockUser);
+  });
+  it('should create a new survey template with the given parameters', async () => {
+    const mockCreateDto = {
+      creator: mockUser,
+      name: 'name',
+      questions: [],
+    };
+
+    const result = await controller.createSurveyTemplate(mockCreateDto);
+    expect(result).toEqual(mockCreateDto);
+    expect(serviceMock.createSurveyTemplate).toHaveBeenCalledWith(
+      mockCreateDto.creator,
+      mockCreateDto.name,
+      mockCreateDto.questions,
+    );
   });
 });

@@ -1,10 +1,15 @@
-import { Controller, Get, Param, ParseIntPipe, Post, Delete, Put } from '@nestjs/common';
-import { SurveyTemplateData, SurveyTemplateService } from './surveyTemplate.service';
-import { SurveyTemplate } from './types/surveyTemplate.entity';
+import { Controller, Get, Param, ParseIntPipe, Post, Delete, Put, Body } from '@nestjs/common';
+import {
+  SurveyNameData,
+  SurveyTemplateData,
+  SurveyTemplateService,
+} from './surveyTemplate.service';
 import { Auth } from '../auth/decorators/auth.decorator';
 import { Role } from '../user/types/role';
 import { Question } from '../question/types/question.entity';
 import { DeleteResult } from 'typeorm';
+import { ReqUser } from '../auth/decorators/user.decorator';
+import { CreateSurveyTemplateDto } from './dto/createSurveyTemplate.dto';
 
 @Controller('survey-template')
 export class SurveyTemplateController {
@@ -17,6 +22,15 @@ export class SurveyTemplateController {
   @Auth(Role.ADMIN, Role.RESEARCHER)
   async getById(@Param('id', ParseIntPipe) id: number): Promise<SurveyTemplateData> {
     return await this.surveyTemplateService.getById(id);
+  }
+
+  /**
+   * Get all survey templates created by a given creator.
+   */
+  @Get()
+  @Auth(Role.ADMIN, Role.RESEARCHER)
+  async getByCreator(@ReqUser() reqUser): Promise<SurveyNameData[]> {
+    return await this.surveyTemplateService.getByCreator(reqUser);
   }
 
   /**
@@ -49,5 +63,26 @@ export class SurveyTemplateController {
   @Auth(Role.ADMIN, Role.RESEARCHER)
   async deleteSurveyTemplate(id: number): Promise<DeleteResult> {
     return await this.surveyTemplateService.deleteSurveyTemplate(id);
+  }
+
+  /**
+   * Creates a survey template
+   */
+  @Post('survey-template')
+  @Auth(Role.ADMIN, Role.RESEARCHER)
+  async createSurveyTemplate(
+    @Body() createSurveyTemplate: CreateSurveyTemplateDto,
+  ): Promise<CreateSurveyTemplateDto> {
+    const createdSurveyTemplate = await this.surveyTemplateService.createSurveyTemplate(
+      createSurveyTemplate.creator,
+      createSurveyTemplate.name,
+      createSurveyTemplate.questions,
+    );
+
+    return {
+      creator: createdSurveyTemplate.creator,
+      name: createdSurveyTemplate.name,
+      questions: createdSurveyTemplate.questions,
+    };
   }
 }
