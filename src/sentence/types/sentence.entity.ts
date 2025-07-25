@@ -10,7 +10,6 @@ import {
   JoinTable,
   OneToMany,
 } from 'typeorm';
-import { Question } from '../../question/types/question.entity';
 import { Paragraph } from 'src/paragraph/types/paragraph.entity';
 
 @Entity()
