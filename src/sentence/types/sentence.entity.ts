@@ -1,3 +1,5 @@
+import { Question } from '../../question/types/question.entity';
+import { Fragment } from 'src/fragment/types/fragment.entity';
 import {
   Column,
   Entity,
@@ -6,8 +8,8 @@ import {
   JoinColumn,
   ManyToMany,
   JoinTable,
+  OneToMany,
 } from 'typeorm';
-import { Question } from '../../question/types/question.entity';
 import { Paragraph } from 'src/paragraph/types/paragraph.entity';
 
 @Entity()
