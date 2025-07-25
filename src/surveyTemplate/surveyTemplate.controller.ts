@@ -1,13 +1,9 @@
-import { Controller, Get, Param, ParseIntPipe, Post, Delete, Put } from '@nestjs/common';
+import { Controller, Get, Param, ParseIntPipe, Post, Delete, Put, Body } from '@nestjs/common';
 import {
   SurveyNameData,
   SurveyTemplateData,
   SurveyTemplateService,
 } from './surveyTemplate.service';
-import { User } from '../user/types/user.entity';
-import { Controller, Get, Param, ParseIntPipe, Post, Delete, Put, Body } from '@nestjs/common';
-import { SurveyTemplateData, SurveyTemplateService } from './surveyTemplate.service';
-import { SurveyTemplate } from './types/surveyTemplate.entity';
 import { Auth } from '../auth/decorators/auth.decorator';
 import { Role } from '../user/types/role';
 import { Question } from '../question/types/question.entity';

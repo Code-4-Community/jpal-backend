@@ -100,7 +100,6 @@ describe('SurveyTemplateController', () => {
     expect(await controller.editSurveyTemplateName(1, 'new name')).toEqual(mockSurveyTemplateData);
   });
 
-
   it('should delegate fetching survey templates by creator to the survey template service', async () => {
     expect.assertions(2);
     expect(await controller.getByCreator(mockUser)).toEqual([mockSurveyNameData]);
