@@ -6,7 +6,6 @@ import { Question } from './types/question.entity';
 import { Sentence } from '../sentence/types/sentence.entity';
 import { Option } from '../option/types/option.entity';
 
-
 @Module({
   imports: [TypeOrmModule.forFeature([Question, Option, Sentence])],
   providers: [QuestionService],

@@ -1,7 +1,4 @@
-import {
-  Logger,
-  Injectable,
-} from '@nestjs/common';
+import { Logger, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Question } from './types/question.entity';
@@ -17,6 +14,4 @@ export class QuestionService {
     @InjectRepository(Sentence) private sentenceRepository: Repository<Sentence>,
     @InjectRepository(Sentence) private optionRepository: Repository<Option>,
   ) {}
-
-
 }
