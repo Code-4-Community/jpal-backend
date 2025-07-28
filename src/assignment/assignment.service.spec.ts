@@ -20,7 +20,6 @@ import { YouthRoles } from '../youth/types/youthRoles';
 import { AWSS3Service } from '../aws/aws-s3.service';
 import * as Buffer from 'buffer';
 import { Sentence } from '../sentence/types/sentence.entity';
-
 const mockEmailService: Partial<EmailService> = {
   queueEmail: jest.fn(),
 };

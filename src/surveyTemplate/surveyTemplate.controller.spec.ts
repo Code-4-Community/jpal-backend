@@ -18,6 +18,9 @@ const mockSurveyTemplate: SurveyTemplate = {
   creator: mockUser,
   name: 'name',
   questions: [],
+  greeting: 'hello',
+  closing: 'goodbye',
+  paragraphs: []
 };
 
 const mockSurveyNameData: SurveyNameData = {
