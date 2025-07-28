@@ -13,6 +13,8 @@ import { Sentence } from './src/sentence/types/sentence.entity'
 
 dotenv.config();
 
+const isProduction = process.env.NODE_ENV === 'production';
+
 const config: TypeOrmModuleOptions & { seeds: string[] } = {
   type: 'postgres',
   host: process.env.POSTGRES_HOST,
@@ -38,6 +40,7 @@ const config: TypeOrmModuleOptions & { seeds: string[] } = {
     migrationsDir: 'migrations',
   },
   seeds: ['src/seeds/**/*{.ts,.js}'],
+  ssl: isProduction ? { rejectUnauthorized: false } : false,
 };
 
 export default config;
