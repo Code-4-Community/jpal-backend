@@ -12,14 +12,12 @@ export interface QuestionData {
   options: Option[];
 }
 
-export function transformToQuestionData(
-  questionEntities: Question[],
-): QuestionData[] {
+export function transformToQuestionData(questionEntities: Question[]): QuestionData[] {
   return questionEntities.map((q) => ({
     id: q.id,
     text: q.text,
     template: q.sentence.template,
-    options: q.options
+    options: q.options,
   }));
 }
 

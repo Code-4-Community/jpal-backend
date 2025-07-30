@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Param, ParseUUIDPipe, Patch, Post } from '@nestjs/common';
 import { QuestionData, QuestionService } from './question.service';
-import {Auth} from '../auth/decorators/auth.decorator'
+import { Auth } from '../auth/decorators/auth.decorator';
 import { Role } from '../user/types/role';
 @Controller('question')
 export class QuestionController {
