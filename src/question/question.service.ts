@@ -9,7 +9,7 @@ export interface QuestionData {
   id: number;
   text: string;
   template: string;
-  options: Option[];
+  options: string[];
 }
 
 export function transformToQuestionData(questionEntities: Question[]): QuestionData[] {
@@ -17,7 +17,7 @@ export function transformToQuestionData(questionEntities: Question[]): QuestionD
     id: q.id,
     text: q.text,
     template: q.sentence.template,
-    options: q.options,
+    options: q.options.map((o) => o.text),
   }));
 }
 

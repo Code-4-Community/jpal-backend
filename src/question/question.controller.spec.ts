@@ -25,7 +25,7 @@ export const mockSurveyTemplate: SurveyTemplate = {
   questions: [],
 };
 
-export const exampleOptions: Option[] = [
+export const mockOptions: Option[] = [
   {
     id: 1,
     text: 'Never',
@@ -53,11 +53,13 @@ export const exampleOptions: Option[] = [
   },
 ];
 
+export const mockOptionsData: string[] = mockOptions.map((o) => o.text);
+
 export const mockQuestion1: Question = {
   id: 1,
   text: 'How often is this student responsible?',
   surveyTemplate: mockSurveyTemplate,
-  options: exampleOptions,
+  options: mockOptions,
   sentence: new Sentence(),
 };
 
@@ -65,14 +67,14 @@ export const mockReturnedQuestion1: QuestionData = {
   id: mockQuestion1.id,
   text: mockQuestion1.text,
   template: mockQuestion1.sentence.template,
-  options: mockQuestion1.options,
+  options: mockOptionsData,
 };
 
 export const mockQuestion2: Question = {
   id: 2,
   text: 'How often did this student arrive on time for work?',
   surveyTemplate: mockSurveyTemplate,
-  options: exampleOptions,
+  options: mockOptions,
   sentence: new Sentence(),
 };
 
@@ -80,7 +82,7 @@ export const mockReturnedQuestion2: QuestionData = {
   id: mockQuestion2.id,
   text: mockQuestion2.text,
   template: mockQuestion2.sentence.template,
-  options: mockQuestion2.options,
+  options: mockOptionsData,
 };
 
 export const mockQuestionService: Partial<QuestionService> = {
