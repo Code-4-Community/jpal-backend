@@ -19,7 +19,7 @@ export class Paragraph {
   @Column()
   order: number;
 
-  @ManyToOne(() => SurveyTemplate)
+  @ManyToOne(() => SurveyTemplate, (template) => template.paragraphs)
   template: SurveyTemplate;
 
   @ManyToMany(() => Sentence)
