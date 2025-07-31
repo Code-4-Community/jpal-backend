@@ -1,6 +1,5 @@
 import { Option } from '../../option/types/option.entity';
-import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, OneToOne, JoinTable, ManyToMany } from 'typeorm';
-import { SurveyTemplate } from '../../surveyTemplate/types/surveyTemplate.entity';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn, OneToOne } from 'typeorm';
 import { Sentence } from '../../sentence/types/sentence.entity';
 import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';

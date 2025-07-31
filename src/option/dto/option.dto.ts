@@ -1,11 +1,15 @@
-import { QuestionDto } from '../../question/dto/question.dto';
+// option.dto.ts
+import { ApiProperty } from '@nestjs/swagger';
 
 export class OptionDto {
+  @ApiProperty()
   id: number;
+
+  @ApiProperty()
   text: string;
-  question: QuestionDto;
 }
 
 export class OptionCreateDto {
+  @ApiProperty()
   text: string;
 }

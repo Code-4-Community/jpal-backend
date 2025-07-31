@@ -1,19 +1,39 @@
-import { QuestionDto } from '../../question/dto/question.dto';
+// sentence.dto.ts
+import { ApiProperty } from '@nestjs/swagger';
 
 export class SentenceDto {
+  @ApiProperty()
   id: number;
+
+  @ApiProperty()
   template: string;
+
+  @ApiProperty({ required: false })
   multiTemplate?: string;
+
+  @ApiProperty()
   isPlainText: boolean;
+
+  @ApiProperty()
   isMultiQuestion: boolean;
+
+  @ApiProperty({ type: [String] })
   includeIfSelectedOptions: string[];
-  question: QuestionDto;
 }
 
 export class SentenceCreateDto {
+  @ApiProperty()
   template: string;
+
+  @ApiProperty({ required: false })
   multiTemplate?: string;
+
+  @ApiProperty()
   isPlainText: boolean;
+
+  @ApiProperty()
   isMultiQuestion: boolean;
+
+  @ApiProperty({ type: [String] })
   includeIfSelectedOptions: string[];
 }

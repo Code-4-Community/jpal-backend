@@ -55,8 +55,8 @@ export class QuestionService {
   constructor(
     @InjectRepository(Question) private questionRepository: Repository<Question>,
     @InjectRepository(Sentence) private sentenceRepository: Repository<Sentence>,
-    @InjectRepository(Sentence) private optionRepository: Repository<Option>,
-    @InjectRepository(Sentence) private fragmentRepository: Repository<Fragment>,
+    @InjectRepository(Option) private optionRepository: Repository<Option>,
+    @InjectRepository(Fragment) private fragmentRepository: Repository<Fragment>,
   ) {}
 
   /**

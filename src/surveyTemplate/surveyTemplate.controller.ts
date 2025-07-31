@@ -41,8 +41,11 @@ export class SurveyTemplateController {
    */
   @Put(':id/questions')
   @Auth(Role.ADMIN, Role.RESEARCHER)
-  async editSurveyTemplate(editSurveyTemplateDTO: EditSurveyTemplateDTO): Promise<SurveyTemplateData> {
-    return await this.surveyTemplateService.updateSurveyTemplate(editSurveyTemplateDTO.id, editSurveyTemplateDTO.questions);
+  async editSurveyTemplate(
+    @Param('id', ParseIntPipe) id: number,  // Add this parameter
+    @Body() editSurveyTemplateDTO: EditSurveyTemplateDTO
+  ): Promise<SurveyTemplateData> {
+    return await this.surveyTemplateService.updateSurveyTemplate(id, editSurveyTemplateDTO.questions);
   }
 
   /**
