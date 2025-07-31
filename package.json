@@ -112,7 +112,7 @@
       "ts"
     ],
     "transformIgnorePatterns": [
-      "/node_modules/(?!(axios)/)"
+      "/node_modules/"
     ],
     "moduleNameMapper": {
       "^axios$": "axios/dist/node/axios.cjs"
