@@ -1,8 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { QuestionService } from './question.service';
-import {
-  Repository,
-} from 'typeorm';
+import { Repository } from 'typeorm';
 import { SurveyTemplate } from './../surveyTemplate/types/surveyTemplate.entity';
 import { Sentence } from './../sentence/types/sentence.entity';
 import { Question } from './types/question.entity';
