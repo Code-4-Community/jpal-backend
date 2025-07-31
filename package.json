@@ -112,9 +112,11 @@
       "ts"
     ],
     "transformIgnorePatterns": [
-      "/node_modules/(?!(axios)/)"
+      "/node_modules/"
     ],
-    "moduleNameMapper": {},
+    "moduleNameMapper": {
+      "^axios$": "axios/dist/node/axios.cjs"
+    },
     "rootDir": "src",
     "testRegex": ".*\\.spec\\.ts$",
     "transform": {
