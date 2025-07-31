@@ -2,6 +2,8 @@ import { Column, Entity, JoinTable, ManyToOne, ManyToMany, PrimaryGeneratedColum
 import { User } from '../../user/types/user.entity';
 import { Question } from '../../question/types/question.entity';
 import { Paragraph } from 'src/paragraph/types/paragraph.entity';
+import { ApiHideProperty } from '@nestjs/swagger';
+
 
 @Entity()
 export class SurveyTemplate {
@@ -11,6 +13,7 @@ export class SurveyTemplate {
   @ManyToOne(() => User)
   creator: User;
 
+  @ApiHideProperty()
   @ManyToMany(() => Question)
   @JoinTable()
   questions: Question[];

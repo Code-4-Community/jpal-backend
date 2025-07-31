@@ -1,8 +1,25 @@
-import { Question } from 'src/question/types/question.entity';
-import { User } from 'src/user/types/user.entity';
+import { Role } from '../../user/types/role';
+
+export class QuestionCreateDto {
+  id: number
+}
+
+export class UserDto {
+  id: number;
+  email: string;
+  firstName: string;
+  lastName: string;
+  role: Role;
+  createdDate: Date;
+}
 
 export class CreateSurveyTemplateDto {
-  creator: User;
   name: string;
-  questions: Question[];
+  questions: QuestionCreateDto[];
+}
+
+export class CreateSurveyTemplateResponseDto {
+  creator: UserDto;
+  name: string;
+  questions: { text: string }[];
 }

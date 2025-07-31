@@ -9,7 +9,8 @@ import { Role } from '../user/types/role';
 import { Question } from '../question/types/question.entity';
 import { DeleteResult } from 'typeorm';
 import { ReqUser } from '../auth/decorators/user.decorator';
-import { CreateSurveyTemplateDto } from './dto/createSurveyTemplate.dto';
+import { CreateSurveyTemplateDto, CreateSurveyTemplateResponseDto } from './dto/createSurveyTemplate.dto';
+import { EditSurveyTemplateDTO } from './dto/editSurveyTemplateQuestions.dto';
 
 @Controller('survey-template')
 export class SurveyTemplateController {
@@ -40,8 +41,8 @@ export class SurveyTemplateController {
    */
   @Put(':id/questions')
   @Auth(Role.ADMIN, Role.RESEARCHER)
-  async editSurveyTemplate(id: number, questions: Question[]): Promise<SurveyTemplateData> {
-    return await this.surveyTemplateService.updateSurveyTemplate(id, questions);
+  async editSurveyTemplate(editSurveyTemplateDTO: EditSurveyTemplateDTO): Promise<SurveyTemplateData> {
+    return await this.surveyTemplateService.updateSurveyTemplate(editSurveyTemplateDTO.id, editSurveyTemplateDTO.questions);
   }
 
   /**
@@ -72,17 +73,18 @@ export class SurveyTemplateController {
   @Auth(Role.ADMIN, Role.RESEARCHER)
   async createSurveyTemplate(
     @Body() createSurveyTemplate: CreateSurveyTemplateDto,
-  ): Promise<CreateSurveyTemplateDto> {
+    @ReqUser() reqUser
+  ): Promise<CreateSurveyTemplateResponseDto> {
     const createdSurveyTemplate = await this.surveyTemplateService.createSurveyTemplate(
-      createSurveyTemplate.creator,
+      reqUser,
       createSurveyTemplate.name,
-      createSurveyTemplate.questions,
+      reqUser,
     );
 
     return {
-      creator: createdSurveyTemplate.creator,
+      creator: reqUser,
       name: createdSurveyTemplate.name,
-      questions: createdSurveyTemplate.questions,
+      questions: createdSurveyTemplate.questions.map(q => ({ text: q.text })),
     };
   }
 }
