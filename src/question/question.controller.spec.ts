@@ -1,65 +1,18 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { QuestionController } from './question.controller';
 import { QuestionData, QuestionService } from './question.service';
-import { Option } from './../option/types/option.entity';
-import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, OneToOne } from 'typeorm';
-import { SurveyTemplate } from './../surveyTemplate/types/surveyTemplate.entity';
 import { Sentence } from './../sentence/types/sentence.entity';
-import { User } from './../user/types/user.entity';
-import { Role } from './../user/types/role';
 import { Question } from './types/question.entity';
+import { exampleOptions } from './question.examples';
+import { mockSurveyTemplate } from './../survey/survey.controller.spec';
 
-export const mockUser: User = {
-  id: 1,
-  email: 'test@test.com',
-  firstName: 'William',
-  lastName: 'user',
-  role: Role.ADMIN,
-  createdDate: new Date('2023-09-24'),
-};
-
-export const mockSurveyTemplate: SurveyTemplate = {
-  id: 1,
-  creator: mockUser,
-  name: 'name',
-  questions: [],
-};
-
-export const mockOptions: Option[] = [
-  {
-    id: 1,
-    text: 'Never',
-    question: undefined,
-  },
-  {
-    id: 2,
-    text: 'Rarely',
-    question: undefined,
-  },
-  {
-    id: 3,
-    text: 'Somewhat',
-    question: undefined,
-  },
-  {
-    id: 4,
-    text: 'Often',
-    question: undefined,
-  },
-  {
-    id: 5,
-    text: 'Always',
-    question: undefined,
-  },
-];
-
-export const mockOptionsData: string[] = mockOptions.map((o) => o.text);
+export const mockOptionsData: string[] = exampleOptions.map((o) => o.text);
 
 export const mockQuestion1: Question = {
   id: 1,
   text: 'How often is this student responsible?',
   surveyTemplate: mockSurveyTemplate,
-  options: mockOptions,
+  options: exampleOptions,
   sentence: new Sentence(),
 };
 
@@ -74,7 +27,7 @@ export const mockQuestion2: Question = {
   id: 2,
   text: 'How often did this student arrive on time for work?',
   surveyTemplate: mockSurveyTemplate,
-  options: mockOptions,
+  options: exampleOptions,
   sentence: new Sentence(),
 };
 

@@ -1,20 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { QuestionController } from './question.controller';
-import { QuestionData, QuestionService } from './question.service';
-import { Option } from './../option/types/option.entity';
+import { QuestionService } from './question.service';
 import {
-  Column,
-  Entity,
-  ManyToOne,
-  OneToMany,
-  PrimaryGeneratedColumn,
-  OneToOne,
   Repository,
 } from 'typeorm';
 import { SurveyTemplate } from './../surveyTemplate/types/surveyTemplate.entity';
 import { Sentence } from './../sentence/types/sentence.entity';
-import { User } from './../user/types/user.entity';
-import { Role } from './../user/types/role';
 import { Question } from './types/question.entity';
 import {
   mockQuestion1,
