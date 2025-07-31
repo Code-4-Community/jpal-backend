@@ -1,3 +1,5 @@
+import { QuestionDto } from '../../question/dto/question.dto';
+
 export class SentenceDto {
   id: number;
   template: string;
@@ -5,6 +7,7 @@ export class SentenceDto {
   isPlainText: boolean;
   isMultiQuestion: boolean;
   includeIfSelectedOptions: string[];
+  question: QuestionDto;
 }
 
 export class SentenceCreateDto {

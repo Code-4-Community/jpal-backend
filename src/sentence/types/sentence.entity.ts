@@ -1,16 +1,11 @@
 import { Question } from '../../question/types/question.entity';
-import { Fragment } from 'src/fragment/types/fragment.entity';
 import {
   Column,
   Entity,
   OneToOne,
   PrimaryGeneratedColumn,
   JoinColumn,
-  ManyToMany,
-  JoinTable,
-  OneToMany,
 } from 'typeorm';
-import { Paragraph } from 'src/paragraph/types/paragraph.entity';
 import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
 

@@ -4,8 +4,8 @@ import { SentenceDto, SentenceCreateDto } from '../../sentence/dto/sentence.dto'
 export class QuestionDto {
   id: number;
   text: string;
-  options?: OptionDto[];
-  sentence?: SentenceDto;
+  options: OptionDto[];
+  sentence: SentenceDto;
 }
 
 export class QuestionCreateDto {
