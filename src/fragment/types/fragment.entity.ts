@@ -5,9 +5,11 @@ import { ApiHideProperty } from '@nestjs/swagger';
 
 @Entity()
 export class Fragment {
+  @ApiHideProperty()
   @PrimaryGeneratedColumn()
   id: number;
 
+  @ApiHideProperty()
   @Column()
   text: string;
 
@@ -19,6 +21,7 @@ export class Fragment {
   @ManyToOne(() => Question)
   question: Question;
 
+  @ApiHideProperty()
   @Column()
   includeIfSelectedOption: string;
 }

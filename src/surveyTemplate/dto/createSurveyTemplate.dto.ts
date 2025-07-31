@@ -1,4 +1,4 @@
-// createSurveyTemplate.dto.ts
+// createSurveyTemplate.dto.ts - Updated with lazy resolvers
 import { ApiProperty } from '@nestjs/swagger';
 import { Role } from '../../user/types/role';
 
@@ -34,17 +34,17 @@ export class CreateSurveyTemplateDto {
   @ApiProperty()
   name: string;
 
-  @ApiProperty({ type: () => [QuestionBasicDto] })
+  @ApiProperty({ type: () => [QuestionBasicDto] })  // Use lazy resolver
   questions: QuestionBasicDto[];
 }
 
 export class CreateSurveyTemplateResponseDto {
-  @ApiProperty({ type: () => UserDto })
+  @ApiProperty({ type: () => UserDto })  // Use lazy resolver
   creator: UserDto;
 
   @ApiProperty()
   name: string;
 
-  @ApiProperty({ type: () => [{ text: String }] })
+  @ApiProperty({ type: () => [{ text: String }] })  // This is fine as is
   questions: { text: string }[];
 }
