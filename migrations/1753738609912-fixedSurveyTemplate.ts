@@ -6,7 +6,7 @@ export class fixedSurveyTemplate1753738609912 implements MigrationInterface {
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`ALTER TABLE "survey_template" ADD COLUMN "greeting" text NOT NULL DEFAULT ' '`);
         await queryRunner.query(`ALTER TABLE "survey_template" ADD COLUMN "closing" text NOT NULL DEFAULT ' ' `);
-        await queryRunner.query(`ALTER TABLE "paragraph" ADD COLUMN "surveyTemplateId" INTEGER`);
+        await queryRunner.query(`ALTER TABLE "paragraph" ADD COLUMN "surveyTemplateId" INTEGER NOT NULL`);
         await queryRunner.query(`ALTER TABLE "paragraph"
         ADD CONSTRAINT "FK_paragraph_surveyTemplate"
         FOREIGN KEY ("surveyTemplateId") REFERENCES "survey_template"("id")
