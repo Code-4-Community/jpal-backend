@@ -100,7 +100,7 @@ export class QuestionService {
         isPlainText: false,
         isMultiQuestion: false,
         includeIfSelectedOptions: questionInfo.include_if_selected_options,
-        question: question,
+        // question: question,
       });
 
       question.sentence = sentence;
