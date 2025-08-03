@@ -29,5 +29,4 @@ export class SurveyTemplate {
     cascade: true,
   })
   paragraphs: Paragraph[];
-
 }

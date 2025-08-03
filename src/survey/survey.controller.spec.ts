@@ -16,7 +16,7 @@ export const mockSurveyTemplate: SurveyTemplate = {
   questions: [],
   greeting: 'hello',
   closing: 'goodbye',
-  paragraphs: []
+  paragraphs: [],
 };
 
 export const mockSurvey: Survey = {
