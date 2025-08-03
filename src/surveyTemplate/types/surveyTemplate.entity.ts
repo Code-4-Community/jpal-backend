@@ -1,7 +1,7 @@
 import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { User } from '../../user/types/user.entity';
 import { Question } from '../../question/types/question.entity';
-import { Paragraph } from 'src/paragraph/types/paragraph.entity';
+import { Paragraph } from '../../paragraph/types/paragraph.entity';
 
 @Entity()
 export class SurveyTemplate {
@@ -18,4 +18,15 @@ export class SurveyTemplate {
 
   @Column()
   name: string;
+
+  @Column()
+  greeting: string;
+
+  @Column()
+  closing: string;
+
+  @OneToMany(() => Paragraph, (paragraph) => paragraph.template, {
+    cascade: true,
+  })
+  paragraphs: Paragraph[];
 }

@@ -8,8 +8,8 @@ import {
   ManyToMany,
   JoinTable,
 } from 'typeorm';
-import { Sentence } from 'src/sentence/types/sentence.entity';
-import { SurveyTemplate } from 'src/surveyTemplate/types/surveyTemplate.entity';
+import { SurveyTemplate } from '../../surveyTemplate/types/surveyTemplate.entity';
+import { Sentence } from '../../sentence/types/sentence.entity';
 
 @Entity()
 export class Paragraph {
@@ -19,7 +19,7 @@ export class Paragraph {
   @Column()
   order: number;
 
-  @ManyToOne(() => SurveyTemplate)
+  @ManyToOne(() => SurveyTemplate, (template) => template.paragraphs)
   template: SurveyTemplate;
 
   @ManyToMany(() => Sentence)
