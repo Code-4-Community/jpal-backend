@@ -4,7 +4,6 @@ import { Question } from '../../question/types/question.entity';
 import { Paragraph } from 'src/paragraph/types/paragraph.entity';
 import { ApiProperty, ApiHideProperty } from '@nestjs/swagger';
 
-
 @Entity()
 export class SurveyTemplate {
   @ApiProperty()

@@ -9,7 +9,10 @@ import { Role } from '../user/types/role';
 import { Question } from '../question/types/question.entity';
 import { DeleteResult } from 'typeorm';
 import { ReqUser } from '../auth/decorators/user.decorator';
-import { CreateSurveyTemplateDto, CreateSurveyTemplateResponseDto } from './dto/createSurveyTemplate.dto';
+import {
+  CreateSurveyTemplateDto,
+  CreateSurveyTemplateResponseDto,
+} from './dto/createSurveyTemplate.dto';
 import { EditSurveyTemplateDTO } from './dto/editSurveyTemplateQuestions.dto';
 
 @Controller('survey-template')
@@ -41,11 +44,8 @@ export class SurveyTemplateController {
    */
   @Put(':id/questions')
   @Auth(Role.ADMIN, Role.RESEARCHER)
-  async editSurveyTemplate(
-    @Param('id', ParseIntPipe) id: number,  // Add this parameter
-    @Body() editSurveyTemplateDTO: EditSurveyTemplateDTO
-  ): Promise<SurveyTemplateData> {
-    return await this.surveyTemplateService.updateSurveyTemplate(id, editSurveyTemplateDTO.questions);
+  async editSurveyTemplate(id: number, questions: Question[]): Promise<SurveyTemplateData> {
+    return await this.surveyTemplateService.updateSurveyTemplate(id, questions);
   }
 
   /**
@@ -56,8 +56,8 @@ export class SurveyTemplateController {
   @Put(':id/name')
   @Auth(Role.ADMIN, Role.RESEARCHER)
   async editSurveyTemplateName(
-    @Param('id', ParseIntPipe) id: number,  // Add this
-    @Body('name') name: string              // And this for the body
+    @Param('id', ParseIntPipe) id: number, // Add this
+    @Body('name') name: string, // And this for the body
   ): Promise<SurveyTemplateData> {
     return this.surveyTemplateService.updateSurveyTemplateName(id, name);
   }
@@ -79,18 +79,34 @@ export class SurveyTemplateController {
   @Auth(Role.ADMIN, Role.RESEARCHER)
   async createSurveyTemplate(
     @Body() createSurveyTemplate: CreateSurveyTemplateDto,
-    @ReqUser() reqUser
+    @ReqUser() reqUser,
   ): Promise<CreateSurveyTemplateResponseDto> {
+    // Transform DTOs to the format expected by the service
+    const questions = createSurveyTemplate.questions.map((questionDto) => ({
+      ...questionDto,
+      options: questionDto.options?.map((optionDto) => ({
+        ...optionDto,
+        question: null, // Will be set by the service
+      })),
+      sentence: questionDto.sentence
+        ? {
+            ...questionDto.sentence,
+            question: null, // Will be set by the service
+          }
+        : undefined,
+    }));
+
     const createdSurveyTemplate = await this.surveyTemplateService.createSurveyTemplate(
       reqUser,
       createSurveyTemplate.name,
-      reqUser,
+      questions,
     );
 
     return {
+      id: createdSurveyTemplate.id,
       creator: reqUser,
       name: createdSurveyTemplate.name,
-      questions: createdSurveyTemplate.questions.map(q => ({ text: q.text })),
+      questions: createdSurveyTemplate.questions.map((q) => ({ text: q.text })),
     };
   }
 }

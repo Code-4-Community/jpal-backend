@@ -45,7 +45,6 @@ const questions = [
   {
     id: 101,
     text: 'What is your favorite color?',
-    surveyTemplate: {} as SurveyTemplate, // circular ref, safe to stub for test
     options: [
       {
         id: 201,
@@ -107,15 +106,14 @@ describe('SurveyTemplateController', () => {
   });
   it('should create a new survey template with the given parameters', async () => {
     const mockCreateDto = {
-      creator: mockUser,
       name: 'name',
       questions: [],
     };
 
-    const result = await controller.createSurveyTemplate(mockCreateDto);
-    expect(result).toEqual(mockCreateDto);
+    const result = await controller.createSurveyTemplate(mockCreateDto, mockUser);
+    expect(result).toEqual(mockSurveyTemplate); // Use mockSurveyTemplate instead of mockCreateDto
     expect(serviceMock.createSurveyTemplate).toHaveBeenCalledWith(
-      mockCreateDto.creator,
+      mockUser, // The user comes from the request context
       mockCreateDto.name,
       mockCreateDto.questions,
     );

@@ -5,6 +5,6 @@ export class EditSurveyTemplateDTO {
   @ApiProperty()
   id: number;
 
-  @ApiProperty({ type: () => [QuestionDto] })  // Use lazy resolver
+  @ApiProperty({ type: () => [QuestionDto] }) // Use lazy resolver
   questions: QuestionDto[];
 }

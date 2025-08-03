@@ -21,7 +21,6 @@ const mockSurveyTemplate: SurveyTemplate = {
       id: 101,
       text: 'What is your favorite color?',
       sentence: mockSentence,
-      surveyTemplate: {} as SurveyTemplate, // circular ref, safe to stub for test
       options: [
         {
           id: 201,

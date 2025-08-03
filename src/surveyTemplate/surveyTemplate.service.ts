@@ -67,15 +67,7 @@ export class SurveyTemplateService {
    * @param id             id of the survey to modify
    * @param questionDtos      new set of questions for the survey template
    */
-  async updateSurveyTemplate(id: number, questionDtos: QuestionDto[]): Promise<SurveyTemplateData> {
-
-    const questions: Question[] = [];
-
-    for (const questionDto of questionDtos) {
-      const question = await this.convertDtoToEntity(questionDto);
-      questions.push(question);
-    }
-
+  async updateSurveyTemplate(id: number, questions: Question[]): Promise<SurveyTemplateData> {
     const surveyTemplate = await this.getTemplateById(id);
     surveyTemplate.questions = questions;
     await this.surveyTemplateRepository.save(surveyTemplate);
@@ -84,7 +76,6 @@ export class SurveyTemplateService {
       questions: transformQuestionToSurveyDataQuestion(questions),
     };
   }
-
   /**
    * Update the name of a survey template
    * @param id           the id of the survey to modify
@@ -129,7 +120,7 @@ export class SurveyTemplateService {
    * Creates a survey template
    * @param creator is the creator of the survey template
    * @param name is the name of the survey template
-   * @questions questions are the questions apart of the survey template
+   * @param questions questions are the questions apart of the survey template
    */
   async createSurveyTemplate(
     creator: User,
@@ -180,18 +171,21 @@ export class SurveyTemplateService {
     return {
       id: question.id,
       text: question.text,
-      options: question.options?.map(option => ({
-        id: option.id,
-        text: option.text
-      })) || [],
-      sentence: question.sentence ? {
-        id: question.sentence.id,
-        template: question.sentence.template,
-        multiTemplate: question.sentence.multiTemplate,
-        isPlainText: question.sentence.isPlainText,
-        isMultiQuestion: question.sentence.isMultiQuestion,
-        includeIfSelectedOptions: question.sentence.includeIfSelectedOptions
-      } : undefined
+      options:
+        question.options?.map((option) => ({
+          id: option.id,
+          text: option.text,
+        })) || [],
+      sentence: question.sentence
+        ? {
+            id: question.sentence.id,
+            template: question.sentence.template,
+            multiTemplate: question.sentence.multiTemplate,
+            isPlainText: question.sentence.isPlainText,
+            isMultiQuestion: question.sentence.isMultiQuestion,
+            includeIfSelectedOptions: question.sentence.includeIfSelectedOptions,
+          }
+        : undefined,
     };
   }
 }

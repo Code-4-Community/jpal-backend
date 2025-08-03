@@ -16,14 +16,13 @@ export class UploadQuestionData {
     text: string,
     options: string[],
     sentence_template: string,
-    include_if_selected_options: string[]
+    include_if_selected_options: string[],
   ) {
     this.text = text;
     this.options = options;
     this.sentence_template = sentence_template;
     this.include_if_selected_options = include_if_selected_options;
   }
-
 }
 
 export class UploadMultiQuestionData {
@@ -38,7 +37,7 @@ export class UploadMultiQuestionData {
     fragment_texts: string[],
     question_texts: string[],
     options: string[][],
-    include_if_selected_option: string[]
+    include_if_selected_option: string[],
   ) {
     this.sentence_template = sentence_template;
     this.fragment_texts = fragment_texts;
@@ -63,53 +62,49 @@ export class QuestionService {
    * Create plain text sentences
    * @param plain_text  array of plain text sentence templates
    */
-  async batchCreatePlainText(
-    plain_text: string[]
-  ): Promise <number> {
-
+  async batchCreatePlainText(plain_text: string[]): Promise<number> {
     let numCreatedSentences = 0;
 
-    for (const sentence of plain_text){
+    for (const sentence of plain_text) {
       await this.sentenceRepository.insert({
         template: sentence,
         isPlainText: true,
         isMultiQuestion: false,
         includeIfSelectedOptions: [],
-        question: undefined
-      })
+        question: undefined,
+      });
 
       numCreatedSentences++;
     }
     return numCreatedSentences;
   }
 
-  async batchCreateQuestions(
-    questionData: UploadQuestionData[]
-  ): Promise<number> {
+  async batchCreateQuestions(questionData: UploadQuestionData[]): Promise<number> {
     let numCreatedQuestions = 0;
 
-    for (const questionInfo of questionData){
+    for (const questionInfo of questionData) {
       const question = await this.questionRepository.save({
         text: questionInfo.text,
-      })
+      });
 
-      questionInfo.options.map(async (optionText) => await this.optionRepository.save({
+      questionInfo.options.map(
+        async (optionText) =>
+          await this.optionRepository.save({
+            question: question,
+            text: optionText,
+          }),
+      );
+
+      const sentence = await this.sentenceRepository.save({
+        template: questionInfo.sentence_template,
+        isPlainText: false,
+        isMultiQuestion: false,
+        includeIfSelectedOptions: questionInfo.include_if_selected_options,
         question: question,
-        text: optionText
-      }))
-
-      const sentence = await this.sentenceRepository.save(
-        {
-          template: questionInfo.sentence_template,
-          isPlainText: false,
-          isMultiQuestion: false,
-          includeIfSelectedOptions: questionInfo.include_if_selected_options,
-          question: question
-        }
-      )
+      });
 
       question.sentence = sentence;
-      await this.questionRepository.save(question)
+      await this.questionRepository.save(question);
 
       numCreatedQuestions++;
     }
@@ -117,15 +112,10 @@ export class QuestionService {
     return numCreatedQuestions;
   }
 
-  async batchCreateMultiQuestions(
-    multiQuestionData: UploadMultiQuestionData[]
-  ): Promise<number> {
-
+  async batchCreateMultiQuestions(multiQuestionData: UploadMultiQuestionData[]): Promise<number> {
     let numCreatedQuestions = 0;
 
-
     for (const questionInfo of multiQuestionData) {
-
       for (let i = 0; i < questionInfo.question_texts.length; i++) {
         const questionText = questionInfo.question_texts[i];
         const fragmentText = questionInfo.fragment_texts[i];
@@ -134,38 +124,35 @@ export class QuestionService {
 
         const question = await this.questionRepository.save({
           text: questionText,
-        })
+        });
 
-        optionList.map(async (optionText) => await this.optionRepository.save({
-          question: question,
-          text: optionText
-        }))
+        optionList.map(
+          async (optionText) =>
+            await this.optionRepository.save({
+              question: question,
+              text: optionText,
+            }),
+        );
 
         // sentence should not have template and multitemplate
-        const sentence = await this.sentenceRepository.save(
-          {
-            template: questionInfo.sentence_template,
-            isPlainText: false,
-            isMultiQuestion: true,
-            question: question
-          }
-        )
+        const sentence = await this.sentenceRepository.save({
+          template: questionInfo.sentence_template,
+          isPlainText: false,
+          isMultiQuestion: true,
+          question: question,
+        });
 
-        await this.fragmentRepository.save(
-          {
-            text: fragmentText,
-            sentence: sentence,
-            question: question,
-            includeIfSelectedOption: includeIfSelected,
-          }
-        )
+        await this.fragmentRepository.save({
+          text: fragmentText,
+          sentence: sentence,
+          question: question,
+          includeIfSelectedOption: includeIfSelected,
+        });
 
         question.sentence = sentence;
-        await this.questionRepository.save(question)
-
-        numCreatedQuestions++
-
+        await this.questionRepository.save(question);
       }
+      numCreatedQuestions++;
     }
 
     return numCreatedQuestions;

@@ -184,7 +184,6 @@ mockOptionRepository.findOne.mockResolvedValue(exampleOptions[0]);
 mockQuestionRepository.findOne.mockResolvedValue({
   id: 1,
   text: 'How often is this student responsible?',
-  surveyTemplate: mockSurveyTemplate,
   options: exampleOptions,
   sentence: new Sentence(),
 });
