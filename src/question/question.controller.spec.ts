@@ -1,6 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { QuestionController } from './question.controller';
-import { QuestionService } from './question.service';
 import {
   FIVE_SENTIMENT_OPTIONS,
   NEVER,
@@ -11,8 +10,11 @@ import {
 } from './question.examples';
 import { UploadQuestionsDTO, UploadQuestionResponseDTO } from './dto/upload-question.dto';
 import { Question } from './types/question.entity';
-import { mockSurveyTemplate } from './../survey/survey.controller.spec';
 import { Sentence } from '../sentence/types/sentence.entity';
+import { QuestionService } from './question.service';
+import { QuestionData } from './question.service';
+
+export const mockOptionsData: string[] = exampleOptions.map((o) => o.text);
 
 export const mockQuestion1: Question = {
   id: 1,
@@ -27,6 +29,14 @@ export const mockQuestion2: Question = {
   options: exampleOptions,
   sentence: new Sentence(),
 };
+
+export const mockReturnedQuestion1: QuestionData = {
+  id: mockQuestion1.id,
+  text: mockQuestion1.text,
+  template: mockQuestion1.sentence.template,
+  options: mockOptionsData,
+};
+
 
 class questionDTO {
   text: string;
@@ -95,9 +105,17 @@ export const mockUploadQuestionResponseDTO: UploadQuestionResponseDTO = {
 };
 
 export const mockQuestionService: Partial<QuestionService> = {
+  getAllQuestions: jest.fn(() => Promise.resolve([mockReturnedQuestion1, mockReturnedQuestion2])),
   batchCreatePlainText: jest.fn(() => Promise.resolve(2)),
   batchCreateQuestions: jest.fn(() => Promise.resolve(2)),
-  batchCreateMultiQuestions: jest.fn(() => Promise.resolve(3)),
+  batchCreateMultiQuestions: jest.fn(() => Promise.resolve(3))
+}
+
+export const mockReturnedQuestion2: QuestionData = {
+  id: mockQuestion2.id,
+  text: mockQuestion2.text,
+  template: mockQuestion2.sentence.template,
+  options: mockOptionsData,
 };
 
 describe('QuestionController', () => {
@@ -127,6 +145,16 @@ describe('QuestionController', () => {
       expect(mockQuestionService.batchCreateMultiQuestions).toHaveBeenCalled();
       expect(mockQuestionService.batchCreatePlainText).toHaveBeenCalled();
       expect(mockQuestionService.batchCreateQuestions).toHaveBeenCalled();
+    });
+  });
+
+  describe('getSurveyAssignments', () => {
+    it('should return questions', async () => {
+      expect(await controller.getAllQuestions()).toEqual([
+        mockReturnedQuestion1,
+        mockReturnedQuestion2,
+      ]);
+      expect(mockQuestionService.getAllQuestions).toHaveBeenCalled();
     });
   });
 });

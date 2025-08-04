@@ -1,8 +1,8 @@
-import { Column, Entity, JoinTable, ManyToOne, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinTable, ManyToOne, ManyToMany, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import { User } from '../../user/types/user.entity';
 import { Question } from '../../question/types/question.entity';
-import { Paragraph } from 'src/paragraph/types/paragraph.entity';
 import { ApiProperty, ApiHideProperty } from '@nestjs/swagger';
+import { Paragraph } from '../../paragraph/types/paragraph.entity';
 
 @Entity()
 export class SurveyTemplate {
@@ -22,4 +22,15 @@ export class SurveyTemplate {
   @ApiProperty()
   @Column()
   name: string;
+
+  @Column()
+  greeting: string;
+
+  @Column()
+  closing: string;
+
+  @OneToMany(() => Paragraph, (paragraph) => paragraph.template, {
+    cascade: true,
+  })
+  paragraphs: Paragraph[];
 }

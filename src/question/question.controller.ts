@@ -1,10 +1,10 @@
-import { Body, Controller, Get, Param, ParseUUIDPipe, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post } from '@nestjs/common';
 import { QuestionService, UploadMultiQuestionData, UploadQuestionData } from './question.service';
+import { UploadQuestionResponseDTO, UploadQuestionsDTO } from './dto/upload-question.dto';
 import { Auth } from '../auth/decorators/auth.decorator';
 import { Role } from '../user/types/role';
-import { CreateSurveyDto, CreateSurveyReponseDto } from '../survey/dto/create-survey.dto';
-import { ReqUser } from '../auth/decorators/user.decorator';
-import { UploadQuestionResponseDTO, UploadQuestionsDTO } from './dto/upload-question.dto';
+import { QuestionData } from './question.service';
+
 @Controller('question')
 export class QuestionController {
   constructor(private questionService: QuestionService) {}
@@ -54,5 +54,14 @@ export class QuestionController {
       multi_question_sentences: numberOfMultiQuestions,
       plain_text_sentences: numberOfPlainText,
     };
+  }
+
+  /**
+   * Gets all the questions.
+   */
+  @Get('/questions')
+  @Auth(Role.ADMIN, Role.RESEARCHER)
+  async getAllQuestions(): Promise<QuestionData[]> {
+    return await this.questionService.getAllQuestions();
   }
 }

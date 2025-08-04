@@ -47,6 +47,22 @@ export class UploadMultiQuestionData {
   }
 }
 
+export interface QuestionData {
+  id: number;
+  text: string;
+  template: string;
+  options: string[];
+}
+
+export function transformToQuestionData(questionEntities: Question[]): QuestionData[] {
+  return questionEntities.map((q) => ({
+    id: q.id,
+    text: q.text,
+    template: q.sentence.template,
+    options: q.options.map((o) => o.text),
+  }));
+}
+
 @Injectable()
 export class QuestionService {
   private logger = new Logger(QuestionService.name);
@@ -156,5 +172,10 @@ export class QuestionService {
     }
 
     return numCreatedQuestions;
+  }
+
+  async getAllQuestions(): Promise<QuestionData[]> {
+    const result = await this.questionRepository.find({});
+    return transformToQuestionData(result);
   }
 }

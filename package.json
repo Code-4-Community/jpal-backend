@@ -58,7 +58,7 @@
     "bcrypt": "^5.0.1",
     "bottleneck": "^2.19.5",
     "class-transformer": "^0.4.0",
-    "class-validator": "^0.13.1",
+    "class-validator": "^0.14.2",
     "cognito-jwt-token-validator": "^1.0.0",
     "cross-fetch": "^3.1.4",
     "dotenv": "^8.6.0",
@@ -78,7 +78,7 @@
     "typeorm-seeding": "^1.6.1"
   },
   "devDependencies": {
-    "@nestjs/cli": "^8.1.1",
+    "@nestjs/cli": "^9.5.0",
     "@nestjs/schematics": "^8.0.3",
     "@nestjs/testing": "^8.0.0",
     "@pact-foundation/pact": "^9.17.2",
@@ -111,10 +111,17 @@
       "json",
       "ts"
     ],
+    "transformIgnorePatterns": [
+      "/node_modules/"
+    ],
+    "moduleNameMapper": {
+      "^axios$": "axios/dist/node/axios.cjs"
+    },
     "rootDir": "src",
     "testRegex": ".*\\.spec\\.ts$",
     "transform": {
-      "^.+\\.(t|j)s$": "ts-jest"
+      "^.+\\.(t|j)s$": "ts-jest",
+      "^.+\\.js$": "babel-jest"
     },
     "collectCoverageFrom": [
       "**/*.(t|j)s"
@@ -132,5 +139,12 @@
     "{src,test,migrations}/**/*.{js,jsx,ts,tsx,json,css,scss,md}": [
       "prettier --write"
     ]
+  },
+  "overrides": {
+    "form-data": "^4.0.4",
+    "multer": "^2.0.2",
+    "axios": ">=0.30.0",
+    "path-to-regexp": "^3.3.0",
+    "body-parser": "^1.20.3"
   }
 }
