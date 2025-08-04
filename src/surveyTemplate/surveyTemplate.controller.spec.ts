@@ -13,14 +13,11 @@ import exp from 'node:constants';
 import { User } from 'src/user/types/user.entity';
 import { Sentence } from '../sentence/types/sentence.entity';
 
-const mockSurveyTemplate: SurveyTemplate = {
+const mockSurveyTemplate: any = {
   id: 1,
   creator: mockUser,
   name: 'name',
   questions: [],
-  greeting: 'hello',
-  closing: 'goodbye',
-  paragraphs: [],
 };
 
 const mockSurveyNameData: SurveyNameData = {
