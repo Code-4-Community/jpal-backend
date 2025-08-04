@@ -11,13 +11,12 @@ import {
   question2,
   multiQuestion1,
   plainTextSentences,
-  mockUploadQuestionDTO,
   mockReturnedQuestion1,
   mockReturnedQuestion2,
 } from './question.controller.spec';
 import { mock } from 'jest-mock-extended';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { mockSurveyTemplateRepository } from './../survey/survey.service.spec';
+import { mockSurveyTemplateRepository } from '../survey/survey.service.spec';
 import { Option } from '../option/types/option.entity';
 import { Fragment } from '../fragment/types/fragment.entity';
 
@@ -80,10 +79,11 @@ describe('QuestionService', () => {
   it('should return the number of multi questions created question entities created', async () => {
     const createReturned = await service.batchCreateMultiQuestions([multiQuestion1]);
     expect(createReturned).toBe(1);
+  });
+
   it('should return expected list of questions', async () => {
     const questionDataReturned = await service.getAllQuestions();
     expect(questionDataReturned[0]).toEqual(mockReturnedQuestion1);
     expect(questionDataReturned[1]).toEqual(mockReturnedQuestion2);
   });
-});
 })
