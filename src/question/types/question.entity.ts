@@ -6,23 +6,17 @@ import { Exclude } from 'class-transformer';
 
 @Entity()
 export class Question {
-  @ApiProperty()
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ApiProperty()
   @Column()
   text: string;
 
-  @Exclude()
-  @ApiHideProperty()
   @OneToMany(() => Option, (option) => option.question, {
     cascade: true,
   })
   options: Option[];
 
-  @Exclude()
-  @ApiHideProperty()
   @OneToOne(() => Sentence, (sentence) => sentence.question, {
     cascade: true,
   })

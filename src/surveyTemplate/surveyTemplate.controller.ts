@@ -56,8 +56,8 @@ export class SurveyTemplateController {
   @Put(':id/name')
   @Auth(Role.ADMIN, Role.RESEARCHER)
   async editSurveyTemplateName(
-    @Param('id', ParseIntPipe) id: number, // Add this
-    @Body('name') name: string, // And this for the body
+    @Param('id', ParseIntPipe) id: number,
+    @Body('name') name: string,
   ): Promise<SurveyTemplateData> {
     return this.surveyTemplateService.updateSurveyTemplateName(id, name);
   }

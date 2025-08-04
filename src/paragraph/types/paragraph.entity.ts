@@ -14,19 +14,15 @@ import { Sentence } from '../../sentence/types/sentence.entity';
 
 @Entity()
 export class Paragraph {
-  @ApiHideProperty()
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ApiHideProperty()
   @Column()
   order: number;
 
-  @ApiHideProperty()
   @ManyToOne(() => SurveyTemplate)
   template: SurveyTemplate;
 
-  @ApiHideProperty()
   @ManyToMany(() => Sentence)
   @JoinTable()
   sentences: Sentence[];

@@ -14,20 +14,18 @@ import { Paragraph } from '../../paragraph/types/paragraph.entity';
 
 @Entity()
 export class SurveyTemplate {
-  @ApiProperty()
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ApiProperty()
   @ManyToOne(() => User)
   creator: User;
 
-  @ApiHideProperty()
   @ManyToMany(() => Question)
-  @JoinTable()
+  @JoinTable({
+    name: 'question_surveytemplate',
+  })
   questions: Question[];
 
-  @ApiProperty()
   @Column()
   name: string;
 

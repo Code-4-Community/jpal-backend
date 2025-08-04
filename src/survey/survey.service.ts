@@ -60,7 +60,8 @@ export class SurveyService {
       throw new BadRequestException('Requested survey template does not exist');
     }
 
-    const imageURL = await this.processImage(imageBase64, organizationName);
+    // const imageURL = await this.processImage(imageBase64, organizationName);
+    const imageURL = null;
 
     return this.surveyRepository.save({
       surveyTemplate,
