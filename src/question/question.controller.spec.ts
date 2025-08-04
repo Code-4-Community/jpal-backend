@@ -37,7 +37,6 @@ export const mockReturnedQuestion1: QuestionData = {
   options: mockOptionsData,
 };
 
-
 class questionDTO {
   text: string;
   options: string[];
@@ -108,8 +107,8 @@ export const mockQuestionService: Partial<QuestionService> = {
   getAllQuestions: jest.fn(() => Promise.resolve([mockReturnedQuestion1, mockReturnedQuestion2])),
   batchCreatePlainText: jest.fn(() => Promise.resolve(2)),
   batchCreateQuestions: jest.fn(() => Promise.resolve(2)),
-  batchCreateMultiQuestions: jest.fn(() => Promise.resolve(3))
-}
+  batchCreateMultiQuestions: jest.fn(() => Promise.resolve(3)),
+};
 
 export const mockReturnedQuestion2: QuestionData = {
   id: mockQuestion2.id,

@@ -28,7 +28,6 @@ const mockSentenceRepository = mock<Repository<Sentence>>();
 const mockOptionRepository = mock<Repository<Option>>();
 const mockFragmentRepository = mock<Repository<Fragment>>();
 
-
 describe('QuestionService', () => {
   let service: QuestionService;
 
@@ -86,4 +85,4 @@ describe('QuestionService', () => {
     expect(questionDataReturned[0]).toEqual(mockReturnedQuestion1);
     expect(questionDataReturned[1]).toEqual(mockReturnedQuestion2);
   });
-})
+});
