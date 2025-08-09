@@ -107,6 +107,7 @@ export const mockQuestionService: Partial<QuestionService> = {
   batchCreatePlainText: jest.fn(() => Promise.resolve(2)),
   batchCreateQuestions: jest.fn(() => Promise.resolve(2)),
   batchCreateMultiQuestions: jest.fn(() => Promise.resolve(3)),
+  getAllQuestions: jest.fn(() => Promise.resolve([mockReturnedQuestion1, mockReturnedQuestion2])),
 };
 
 export const mockReturnedQuestion2: QuestionData = {
@@ -135,6 +136,16 @@ describe('QuestionController', () => {
 
   it('should be defined', () => {
     expect(controller).toBeDefined();
+  });
+
+  describe('getSurveyAssignments', () => {
+    it('should return questions', async () => {
+      expect(await controller.getAllQuestions()).toEqual([
+        mockReturnedQuestion1,
+        mockReturnedQuestion2,
+      ]);
+      expect(mockQuestionService.getAllQuestions).toHaveBeenCalled();
+    });
   });
 
   describe('create questions', () => {

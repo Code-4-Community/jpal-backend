@@ -65,6 +65,12 @@ describe('QuestionService', () => {
     expect(service).toBeDefined();
   });
 
+  it('should return expected list of questions', async () => {
+    const questionDataReturned = await service.getAllQuestions();
+    expect(questionDataReturned[0]).toEqual(mockReturnedQuestion1);
+    expect(questionDataReturned[1]).toEqual(mockReturnedQuestion2);
+  });
+
   it('should return the number of created plain text entities created', async () => {
     const createReturned = await service.batchCreatePlainText(plainTextSentences);
     expect(createReturned).toBe(2);
