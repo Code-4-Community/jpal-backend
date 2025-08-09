@@ -35,9 +35,6 @@ const mockSurveyTemplate: SurveyTemplate = {
       ],
     },
   ],
-  greeting: 'hello',
-  closing: 'goodbye',
-  paragraphs: [],
 };
 
 const mockSurveyNameData: SurveyNameData = {

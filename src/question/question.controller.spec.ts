@@ -104,7 +104,6 @@ export const mockUploadQuestionResponseDTO: UploadQuestionResponseDTO = {
 };
 
 export const mockQuestionService: Partial<QuestionService> = {
-  getAllQuestions: jest.fn(() => Promise.resolve([mockReturnedQuestion1, mockReturnedQuestion2])),
   batchCreatePlainText: jest.fn(() => Promise.resolve(2)),
   batchCreateQuestions: jest.fn(() => Promise.resolve(2)),
   batchCreateMultiQuestions: jest.fn(() => Promise.resolve(3)),
@@ -144,16 +143,6 @@ describe('QuestionController', () => {
       expect(mockQuestionService.batchCreateMultiQuestions).toHaveBeenCalled();
       expect(mockQuestionService.batchCreatePlainText).toHaveBeenCalled();
       expect(mockQuestionService.batchCreateQuestions).toHaveBeenCalled();
-    });
-  });
-
-  describe('getSurveyAssignments', () => {
-    it('should return questions', async () => {
-      expect(await controller.getAllQuestions()).toEqual([
-        mockReturnedQuestion1,
-        mockReturnedQuestion2,
-      ]);
-      expect(mockQuestionService.getAllQuestions).toHaveBeenCalled();
     });
   });
 });

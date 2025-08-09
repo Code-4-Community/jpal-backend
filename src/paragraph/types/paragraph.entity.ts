@@ -8,9 +8,8 @@ import {
   ManyToMany,
   JoinTable,
 } from 'typeorm';
-import { ApiHideProperty } from '@nestjs/swagger';
-import { SurveyTemplate } from '../../surveyTemplate/types/surveyTemplate.entity';
-import { Sentence } from '../../sentence/types/sentence.entity';
+import { Sentence } from 'src/sentence/types/sentence.entity';
+import { SurveyTemplate } from 'src/surveyTemplate/types/surveyTemplate.entity';
 
 @Entity()
 export class Paragraph {

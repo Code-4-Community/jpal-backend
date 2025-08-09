@@ -183,8 +183,7 @@ export class AssignmentService {
   }
 
   // Send letters to treatment youth every day at 5pm
-  // @Cron('0 17 * * *')
-  @Cron('*/5 * * * *')
+  @Cron('0 17 * * *')
   async sendUnsentSurveysToYouth(): Promise<void> {
     const unsentAssignments = await this.assignmentRepository.find({
       relations: ['youth', 'reviewer'],

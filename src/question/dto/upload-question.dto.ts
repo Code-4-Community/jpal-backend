@@ -1,14 +1,10 @@
-import { IsArray, ValidateNested } from 'class-validator';
-
 export class UploadQuestionsDTO {
-  @IsArray()
   questions: {
     text: string;
     options: string[];
     sentence_template: string;
     include_if_selected_options: string[];
   }[];
-  @IsArray()
   multi_questions: {
     sentence_template: string;
     fragment_texts: string[];

@@ -9,11 +9,7 @@ import { Role } from '../user/types/role';
 import { Question } from '../question/types/question.entity';
 import { DeleteResult } from 'typeorm';
 import { ReqUser } from '../auth/decorators/user.decorator';
-import {
-  CreateSurveyTemplateDto,
-  CreateSurveyTemplateResponseDto,
-} from './dto/createSurveyTemplate.dto';
-import { EditSurveyTemplateDTO } from './dto/editSurveyTemplateQuestions.dto';
+import { CreateSurveyTemplateDto } from './dto/createSurveyTemplate.dto';
 
 @Controller('survey-template')
 export class SurveyTemplateController {
@@ -55,10 +51,7 @@ export class SurveyTemplateController {
    */
   @Put(':id/name')
   @Auth(Role.ADMIN, Role.RESEARCHER)
-  async editSurveyTemplateName(
-    @Param('id', ParseIntPipe) id: number,
-    @Body('name') name: string,
-  ): Promise<SurveyTemplateData> {
+  async editSurveyTemplateName(id: number, name: string): Promise<SurveyTemplateData> {
     return this.surveyTemplateService.updateSurveyTemplateName(id, name);
   }
 
@@ -79,34 +72,17 @@ export class SurveyTemplateController {
   @Auth(Role.ADMIN, Role.RESEARCHER)
   async createSurveyTemplate(
     @Body() createSurveyTemplate: CreateSurveyTemplateDto,
-    @ReqUser() reqUser,
-  ): Promise<CreateSurveyTemplateResponseDto> {
-    // Transform DTOs to the format expected by the service
-    const questions = createSurveyTemplate.questions.map((questionDto) => ({
-      ...questionDto,
-      options: questionDto.options?.map((optionDto) => ({
-        ...optionDto,
-        question: null, // Will be set by the service
-      })),
-      sentence: questionDto.sentence
-        ? {
-            ...questionDto.sentence,
-            question: null, // Will be set by the service
-          }
-        : undefined,
-    }));
-
+  ): Promise<CreateSurveyTemplateDto> {
     const createdSurveyTemplate = await this.surveyTemplateService.createSurveyTemplate(
-      reqUser,
+      createSurveyTemplate.creator,
       createSurveyTemplate.name,
-      questions,
+      createSurveyTemplate.questions,
     );
 
     return {
-      id: createdSurveyTemplate.id,
-      creator: reqUser,
+      creator: createdSurveyTemplate.creator,
       name: createdSurveyTemplate.name,
-      questions: createdSurveyTemplate.questions.map((q) => ({ text: q.text })),
+      questions: createdSurveyTemplate.questions,
     };
   }
 }

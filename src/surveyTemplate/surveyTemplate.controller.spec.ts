@@ -13,7 +13,7 @@ import exp from 'node:constants';
 import { User } from 'src/user/types/user.entity';
 import { Sentence } from '../sentence/types/sentence.entity';
 
-const mockSurveyTemplate: any = {
+const mockSurveyTemplate: SurveyTemplate = {
   id: 1,
   creator: mockUser,
   name: 'name',
@@ -45,6 +45,7 @@ const questions = [
   {
     id: 101,
     text: 'What is your favorite color?',
+    surveyTemplate: {} as SurveyTemplate, // circular ref, safe to stub for test
     options: [
       {
         id: 201,
@@ -106,14 +107,15 @@ describe('SurveyTemplateController', () => {
   });
   it('should create a new survey template with the given parameters', async () => {
     const mockCreateDto = {
+      creator: mockUser,
       name: 'name',
       questions: [],
     };
 
-    const result = await controller.createSurveyTemplate(mockCreateDto, mockUser);
-    expect(result).toEqual(mockSurveyTemplate); // Use mockSurveyTemplate instead of mockCreateDto
+    const result = await controller.createSurveyTemplate(mockCreateDto);
+    expect(result).toEqual(mockCreateDto);
     expect(serviceMock.createSurveyTemplate).toHaveBeenCalledWith(
-      mockUser, // The user comes from the request context
+      mockCreateDto.creator,
       mockCreateDto.name,
       mockCreateDto.questions,
     );

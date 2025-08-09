@@ -1,7 +1,16 @@
 import { Question } from '../../question/types/question.entity';
-import { Column, Entity, OneToOne, PrimaryGeneratedColumn, JoinColumn } from 'typeorm';
-import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
-import { Exclude } from 'class-transformer';
+import { Fragment } from 'src/fragment/types/fragment.entity';
+import {
+  Column,
+  Entity,
+  OneToOne,
+  PrimaryGeneratedColumn,
+  JoinColumn,
+  ManyToMany,
+  JoinTable,
+  OneToMany,
+} from 'typeorm';
+import { Paragraph } from 'src/paragraph/types/paragraph.entity';
 
 @Entity()
 export class Sentence {
@@ -11,19 +20,19 @@ export class Sentence {
   @Column()
   template: string;
 
-  @Column({ nullable: true })
+  @Column()
   multiTemplate?: string;
 
   @Column()
   isPlainText: boolean;
 
-  @Column({ nullable: true })
+  @Column()
   isMultiQuestion: boolean;
 
   @Column('text', { array: true, default: () => "'{}'" })
   includeIfSelectedOptions: string[];
 
-  @OneToOne(() => Question, (question) => question.sentence)
+  @OneToOne(() => Question, (question: Question) => question.sentence)
   @JoinColumn()
   question: Question;
 }

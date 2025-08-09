@@ -79,10 +79,4 @@ describe('QuestionService', () => {
     const createReturned = await service.batchCreateMultiQuestions([multiQuestion1]);
     expect(createReturned).toBe(1);
   });
-
-  it('should return expected list of questions', async () => {
-    const questionDataReturned = await service.getAllQuestions();
-    expect(questionDataReturned[0]).toEqual(mockReturnedQuestion1);
-    expect(questionDataReturned[1]).toEqual(mockReturnedQuestion2);
-  });
 });

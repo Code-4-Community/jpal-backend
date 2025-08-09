@@ -14,9 +14,6 @@ export const mockSurveyTemplate: SurveyTemplate = {
   creator: mockUser,
   name: 'name',
   questions: [],
-  greeting: 'hello',
-  closing: 'goodbye',
-  paragraphs: [],
 };
 
 export const mockSurvey: Survey = {

@@ -1,19 +1,19 @@
-import { MigrationInterface, QueryRunner } from 'typeorm';
+import {MigrationInterface, QueryRunner} from "typeorm";
 
 export class questionSurveytempManyToMany1753839095238 implements MigrationInterface {
-  name = 'questionSurveytempManyToMany1753839095238';
+    name = 'questionSurveytempManyToMany1753839095238'
 
-  public async up(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(`
+    public async up(queryRunner: QueryRunner): Promise<void> {
+        await queryRunner.query(`
             ALTER TABLE "question" DROP CONSTRAINT "FK_783cde4ed2147788de76868894f"
         `);
 
-    // Drop the column itself
-    await queryRunner.query(`
+        // Drop the column itself
+        await queryRunner.query(`
             ALTER TABLE "question" DROP COLUMN "surveyTemplateId"
         `);
 
-    await queryRunner.query(`
+        await queryRunner.query(`
         CREATE TABLE "question_surveytemplate" (
             "questionId" integer NOT NULL,
             "surveyTemplateId" integer NOT NULL,
@@ -22,14 +22,15 @@ export class questionSurveytempManyToMany1753839095238 implements MigrationInter
             CONSTRAINT "FK_surveyTemplateId" FOREIGN KEY ("surveyTemplateId") REFERENCES "survey_template"("id") ON DELETE CASCADE
         )
         `);
-  }
+    }
 
-  public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(`ALTER TABLE "question" ADD COLUMN "surveyTemplateId"`);
-    await queryRunner.query(
-      `ALTER TABLE "question" ADD CONSTRAINT "FK_surveyTemplateID" FOREIGN KEY ("surveyTemplateId") REFERENCES "survey_template"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
-    );
+    public async down(queryRunner: QueryRunner): Promise<void> {
+        await queryRunner.query(`ALTER TABLE "question" ADD COLUMN "surveyTemplateId"`);
+        await queryRunner.query(
+          `ALTER TABLE "question" ADD CONSTRAINT "FK_surveyTemplateID" FOREIGN KEY ("surveyTemplateId") REFERENCES "survey_template"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
+        );
 
-    await queryRunner.query(`DROP TABLE "question_surveytemplate"`);
-  }
+        await queryRunner.query(`DROP TABLE "question_surveytemplate"`);
+    }
+
 }
