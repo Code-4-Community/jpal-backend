@@ -1,4 +1,4 @@
-import { Logger, Injectable } from '@nestjs/common';
+import { Logger, Injectable, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DeleteResult } from 'typeorm';
 import { Question } from './types/question.entity';
@@ -42,9 +42,11 @@ export class QuestionService {
    * @returns A promise that resolves when the question is deleted.
    */
   async deleteQuestion(id: number): Promise<DeleteResult> {
-    try {
-      await this.questionRepository.findOne(id);
-    } catch (BadRequestException) {
+    const question = await this.questionRepository.findOne({
+      where: { id },
+      relations: ['options', 'sentence'],
+    });
+    if (!question) {
       throw new BadRequestException(`Question id ${id} not found`);
     }
     return await this.questionRepository.delete(id);
