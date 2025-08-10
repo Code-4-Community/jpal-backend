@@ -20,9 +20,9 @@ export class Paragraph {
   order: number;
 
   @ManyToOne(() => SurveyTemplate, (template) => template.paragraphs)
-  template: SurveyTemplate;
+  surveyTemplate: SurveyTemplate;
 
   @ManyToMany(() => Sentence)
-  @JoinTable()
+  @JoinTable({ name: 'paragraph_sentences' })
   sentences: Sentence[];
 }
