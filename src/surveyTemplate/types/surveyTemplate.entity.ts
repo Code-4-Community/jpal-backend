@@ -25,7 +25,7 @@ export class SurveyTemplate {
   @Column()
   closing: string;
 
-  @OneToMany(() => Paragraph, (paragraph) => paragraph.template, {
+  @OneToMany(() => Paragraph, (paragraph) => paragraph.surveyTemplate, {
     cascade: true,
   })
   paragraphs: Paragraph[];

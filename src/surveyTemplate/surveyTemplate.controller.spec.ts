@@ -9,8 +9,6 @@ import { SurveyTemplate } from './types/surveyTemplate.entity';
 import { mockUser } from '../user/user.service.spec';
 import { Question } from '../question/types/question.entity';
 import { DeleteResult } from 'typeorm';
-import exp from 'node:constants';
-import { User } from 'src/user/types/user.entity';
 import { Sentence } from '../sentence/types/sentence.entity';
 
 const mockSurveyTemplate: SurveyTemplate = {
@@ -113,6 +111,9 @@ describe('SurveyTemplateController', () => {
       creator: mockUser,
       name: 'name',
       questions: [],
+      greeting: 'hello',
+      closing: 'goodbye',
+      paragraphs: [],
     };
 
     const result = await controller.createSurveyTemplate(mockCreateDto);
@@ -121,6 +122,9 @@ describe('SurveyTemplateController', () => {
       mockCreateDto.creator,
       mockCreateDto.name,
       mockCreateDto.questions,
+      mockCreateDto.greeting,
+      mockCreateDto.closing,
+      mockCreateDto.paragraphs,
     );
   });
 });
