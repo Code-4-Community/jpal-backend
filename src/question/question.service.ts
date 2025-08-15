@@ -13,45 +13,19 @@ export interface QuestionData {
   options: string[];
 }
 
-export class UploadQuestionData {
+export interface UploadQuestionData {
   text: string;
   options: string[];
   sentence_template: string;
   include_if_selected_options: string[];
-
-  constructor(
-    text: string,
-    options: string[],
-    sentence_template: string,
-    include_if_selected_options: string[],
-  ) {
-    this.text = text;
-    this.options = options;
-    this.sentence_template = sentence_template;
-    this.include_if_selected_options = include_if_selected_options;
-  }
 }
 
-export class UploadMultiQuestionData {
+export interface UploadMultiQuestionData {
   sentence_template: string;
   fragment_texts: string[];
   question_texts: string[];
   options: string[][];
   include_if_selected_option: string[];
-
-  constructor(
-    sentence_template: string,
-    fragment_texts: string[],
-    question_texts: string[],
-    options: string[][],
-    include_if_selected_option: string[],
-  ) {
-    this.sentence_template = sentence_template;
-    this.fragment_texts = fragment_texts;
-    this.question_texts = question_texts;
-    this.options = options;
-    this.include_if_selected_option = include_if_selected_option;
-  }
 }
 
 export function transformToQuestionData(questionEntities: Question[]): QuestionData[] {
@@ -70,8 +44,8 @@ export class QuestionService {
   constructor(
     @InjectRepository(Question) private questionRepository: Repository<Question>,
     @InjectRepository(Sentence) private sentenceRepository: Repository<Sentence>,
-    @InjectRepository(Sentence) private optionRepository: Repository<Option>,
-    @InjectRepository(Sentence) private fragmentRepository: Repository<Fragment>,
+    @InjectRepository(Option) private optionRepository: Repository<Option>,
+    @InjectRepository(Fragment) private fragmentRepository: Repository<Fragment>,
   ) {}
 
   async getAllQuestions(): Promise<QuestionData[]> {
@@ -80,61 +54,115 @@ export class QuestionService {
   }
 
   /**
+   * Validates that includeIfSelected options exist in the available options
+   * @param includeIfSelected - Array of options that should be included
+   * @param availableOptions - Array of all available options
+   * @param contextInfo - Additional context for error messaging (e.g., question index)
+   */
+  private validateIncludeIfSelectedOptions(
+    includeIfSelected: string[],
+    availableOptions: string[],
+    contextInfo: string,
+  ): void {
+    if (!includeIfSelected?.length) return;
+
+    const invalidOptions = includeIfSelected.filter(
+      (selectedOption) => !availableOptions.includes(selectedOption),
+    );
+
+    if (invalidOptions.length > 0) {
+      throw new BadRequestException(
+        `${contextInfo}: includeIfSelectedOptions contains invalid options: ${invalidOptions.join(
+          ', ',
+        )}`,
+      );
+    }
+  }
+
+  /**
    * Create plain text sentences
    * @param plain_text  array of plain text sentence templates
    */
   async batchCreatePlainText(plain_text: string[]): Promise<number> {
-    let numCreatedSentences = 0;
-
-    for (const sentence of plain_text) {
-      await this.sentenceRepository.insert({
+    const savedResults = await this.sentenceRepository.save(
+      plain_text.map((sentence) => ({
         template: sentence,
         isPlainText: true,
         isMultiQuestion: false,
         includeIfSelectedOptions: [],
         question: undefined,
-      });
-
-      numCreatedSentences++;
-    }
-    return numCreatedSentences;
+      })),
+    );
+    return savedResults ? savedResults.length : 0;
   }
 
   async batchCreateQuestions(questionData: UploadQuestionData[]): Promise<number> {
-    let numCreatedQuestions = 0;
-
-    for (const questionInfo of questionData) {
-      const question = await this.questionRepository.save({
-        text: questionInfo.text,
-      });
-
-      questionInfo.options.map(
-        async (optionText) =>
-          await this.optionRepository.save({
-            question: question,
-            text: optionText,
-          }),
+    // Validate include_if_selected_options are in options
+    questionData.forEach((q, index) => {
+      this.validateIncludeIfSelectedOptions(
+        q.include_if_selected_options,
+        q.options,
+        `Question ${index}`,
       );
+    });
 
-      const sentence = await this.sentenceRepository.save({
-        template: questionInfo.sentence_template,
-        isPlainText: false,
-        isMultiQuestion: false,
-        includeIfSelectedOptions: questionInfo.include_if_selected_options,
-        question: question,
-      });
+    // Create questions
+    const questions = await this.questionRepository.save(
+      questionData.map((q) => this.questionRepository.create({ text: q.text })),
+    );
 
-      question.sentence = sentence;
-      await this.questionRepository.save(question);
+    // Create options for all questions
+    const allOptions = questionData.flatMap((q, index) =>
+      q.options.map((optionText) =>
+        this.optionRepository.create({
+          text: optionText,
+          question: questions[index],
+        }),
+      ),
+    );
+    await this.optionRepository.save(allOptions);
 
-      numCreatedQuestions++;
-    }
+    // Create sentences
+    const sentences = await this.sentenceRepository.save(
+      questionData.map((q, index) =>
+        this.sentenceRepository.create({
+          template: q.sentence_template,
+          isPlainText: false,
+          isMultiQuestion: false,
+          includeIfSelectedOptions: q.include_if_selected_options,
+          question: questions[index],
+        }),
+      ),
+    );
 
-    return numCreatedQuestions;
+    // Update questions with sentence references
+    questions.forEach((question, index) => {
+      if (question && sentences[index]) {
+        question.sentence = sentences[index];
+      }
+    });
+
+    await this.questionRepository.save(questions.filter((q) => q));
+
+    return questionData.length;
   }
 
   async batchCreateMultiQuestions(multiQuestionData: UploadMultiQuestionData[]): Promise<number> {
-    let numCreatedQuestions = 0;
+    // Validate include_if_selected_options are in options
+    multiQuestionData.forEach((multiQuestion, multiIndex) => {
+      for (let i = 0; i < multiQuestion.question_texts.length; i++) {
+        const optionList = multiQuestion.options[i];
+        const includeIfSelected = multiQuestion.include_if_selected_option[i];
+
+        this.validateIncludeIfSelectedOptions(
+          [includeIfSelected],
+          optionList,
+          `Multi-question ${multiIndex}, sub-question ${i}`,
+        );
+      }
+    });
+
+    let numCreatedSentences = 0;
 
     for (const questionInfo of multiQuestionData) {
       for (let i = 0; i < questionInfo.question_texts.length; i++) {
@@ -143,10 +171,12 @@ export class QuestionService {
         const optionList = questionInfo.options[i];
         const includeIfSelected = questionInfo.include_if_selected_option[i];
 
+        // save question
         const question = await this.questionRepository.save({
           text: questionText,
         });
 
+        // save options
         optionList.map(
           async (optionText) =>
             await this.optionRepository.save({
@@ -155,7 +185,8 @@ export class QuestionService {
             }),
         );
 
-        // sentence should not have template and multitemplate
+        // save sentences
+        // note: sentence should not have template and multitemplate
         const sentence = await this.sentenceRepository.save({
           template: questionInfo.sentence_template,
           isPlainText: false,
@@ -163,6 +194,7 @@ export class QuestionService {
           question: question,
         });
 
+        // save fragment
         await this.fragmentRepository.save({
           text: fragmentText,
           sentence: sentence,
@@ -170,13 +202,14 @@ export class QuestionService {
           includeIfSelectedOption: includeIfSelected,
         });
 
+        // update sentence reference in question
         question.sentence = sentence;
         await this.questionRepository.save(question);
       }
 
-      numCreatedQuestions++;
+      numCreatedSentences++;
     }
 
-    return numCreatedQuestions;
+    return numCreatedSentences;
   }
 }

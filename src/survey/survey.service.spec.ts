@@ -399,7 +399,7 @@ describe('SurveyService', () => {
     });
   });
   it('should edit a survey', async () => {
-    const survey = await service.edit(1, 'new name');
+    const survey = await service.edit(UUID, 'new name');
 
     expect(survey.name).toBe('new name');
   });
@@ -407,7 +407,7 @@ describe('SurveyService', () => {
     jest
       .spyOn(mockSurveyRepository, 'findOne')
       .mockImplementation(() => Promise.resolve(mockSurvey3));
-    await expect(service.edit(1, 'name', 'new name', 'not base64')).rejects.toThrow(
+    await expect(service.edit(UUID, 'name', 'new name', 'not base64')).rejects.toThrow(
       BadRequestException,
     );
   });
@@ -416,7 +416,7 @@ describe('SurveyService', () => {
     jest
       .spyOn(mockSurveyRepository, 'findOne')
       .mockImplementation(() => Promise.resolve(mockSurvey3));
-    await expect(service.edit(1, undefined, undefined, undefined, 101)).rejects.toThrow(
+    await expect(service.edit(UUID, undefined, undefined, undefined, 101)).rejects.toThrow(
       BadRequestException,
     );
   });

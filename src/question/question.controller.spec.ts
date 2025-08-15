@@ -60,7 +60,7 @@ export const question2: questionDTO = {
 
 const questionInfo: questionDTO[] = [question1, question2];
 
-class multiQuestionDTO {
+export class multiQuestionDTO {
   sentence_template: string;
   fragment_texts: string[];
   question_texts: string[];

@@ -5,7 +5,7 @@ export class fragments1753369615805 implements MigrationInterface {
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
-      `CREATE TABLE "fragment" ("id" SERIAL NOT NULL, "text" character varying NOT NULL, "includeIfSelectedOptions" text NOT NULL, "questionId" INTEGER, "sentenceId" INTEGER, CONSTRAINT "PK_fragment_id" PRIMARY KEY ("id"))`,
+      `CREATE TABLE "fragment" ("id" SERIAL NOT NULL, "text" character varying NOT NULL, "includeIfSelectedOption" text NOT NULL, "questionId" INTEGER, "sentenceId" INTEGER, CONSTRAINT "PK_fragment_id" PRIMARY KEY ("id"))`,
     );
 
     await queryRunner.query(`

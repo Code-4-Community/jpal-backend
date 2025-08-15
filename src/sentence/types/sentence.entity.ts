@@ -1,21 +1,11 @@
 import { Question } from '../../question/types/question.entity';
-import { Fragment } from 'src/fragment/types/fragment.entity';
-import {
-  Column,
-  Entity,
-  OneToOne,
-  PrimaryGeneratedColumn,
-  JoinColumn,
-  ManyToMany,
-  JoinTable,
-  OneToMany,
-} from 'typeorm';
-import { Paragraph } from 'src/paragraph/types/paragraph.entity';
+import { Column, Entity, OneToOne, PrimaryGeneratedColumn, JoinColumn } from 'typeorm';
 
 @Entity()
 export class Sentence {
+  // optional for creation
   @PrimaryGeneratedColumn()
-  id: number;
+  id?: number;
 
   @Column()
   template: string;

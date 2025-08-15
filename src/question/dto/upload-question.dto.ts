@@ -1,17 +1,41 @@
+import { IsArray } from 'class-validator';
+
+class SingleQuestionDTO {
+  text: string;
+
+  @IsArray()
+  options: string[];
+
+  sentence_template: string;
+
+  @IsArray()
+  include_if_selected_options: string[];
+}
+
+class MultiQuestionDTO {
+  sentence_template: string;
+
+  @IsArray()
+  fragment_texts: string[];
+
+  @IsArray()
+  question_texts: string[];
+
+  @IsArray()
+  options: string[][];
+
+  @IsArray()
+  include_if_selected_option: string[];
+}
+
 export class UploadQuestionsDTO {
-  questions: {
-    text: string;
-    options: string[];
-    sentence_template: string;
-    include_if_selected_options: string[];
-  }[];
-  multi_questions: {
-    sentence_template: string;
-    fragment_texts: string[];
-    question_texts: string[];
-    options: string[][];
-    include_if_selected_option: string[];
-  }[];
+  @IsArray()
+  questions: SingleQuestionDTO[];
+
+  @IsArray()
+  multi_questions: MultiQuestionDTO[];
+
+  @IsArray()
   plain_text: string[];
 }
 
