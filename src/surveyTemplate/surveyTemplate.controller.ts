@@ -68,7 +68,7 @@ export class SurveyTemplateController {
   /**
    * Creates a survey template
    */
-  @Post('survey-template')
+  @Post()
   @Auth(Role.ADMIN, Role.RESEARCHER)
   async createSurveyTemplate(
     @Body() createSurveyTemplate: CreateSurveyTemplateDto,
@@ -77,12 +77,18 @@ export class SurveyTemplateController {
       createSurveyTemplate.creator,
       createSurveyTemplate.name,
       createSurveyTemplate.questions,
+      createSurveyTemplate.greeting,
+      createSurveyTemplate.closing,
+      createSurveyTemplate.paragraphs,
     );
 
     return {
       creator: createdSurveyTemplate.creator,
       name: createdSurveyTemplate.name,
       questions: createdSurveyTemplate.questions,
+      greeting: createdSurveyTemplate.greeting,
+      closing: createdSurveyTemplate.closing,
+      paragraphs: createdSurveyTemplate.paragraphs,
     };
   }
 }

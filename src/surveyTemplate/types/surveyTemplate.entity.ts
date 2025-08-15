@@ -1,6 +1,15 @@
-import { Column, Entity, JoinTable, ManyToOne, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinTable,
+  ManyToOne,
+  ManyToMany,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { User } from '../../user/types/user.entity';
 import { Question } from '../../question/types/question.entity';
+import { Paragraph } from '../../paragraph/types/paragraph.entity';
 
 @Entity()
 export class SurveyTemplate {
@@ -16,4 +25,15 @@ export class SurveyTemplate {
 
   @Column()
   name: string;
+
+  @Column()
+  greeting: string;
+
+  @Column()
+  closing: string;
+
+  @OneToMany(() => Paragraph, (paragraph) => paragraph.surveyTemplate, {
+    cascade: true,
+  })
+  paragraphs: Paragraph[];
 }

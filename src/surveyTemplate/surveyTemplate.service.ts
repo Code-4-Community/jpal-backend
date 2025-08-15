@@ -5,6 +5,7 @@ import { DeleteResult, Repository } from 'typeorm';
 import { Question } from '../question/types/question.entity';
 import { transformQuestionToSurveyDataQuestion } from '../util/transformQuestionToSurveryDataQuestion';
 import { User } from 'src/user/types/user.entity';
+import { Paragraph } from 'src/paragraph/types/paragraph.entity';
 
 export interface SurveyDataQuestion {
   question: string;
@@ -125,6 +126,9 @@ export class SurveyTemplateService {
     creator: User,
     name: string,
     questions: Question[],
+    greeting: string,
+    closing: string,
+    paragraphs: Paragraph[],
   ): Promise<SurveyTemplate> {
     // check for duplicate names
     if (
@@ -139,6 +143,9 @@ export class SurveyTemplateService {
       creator,
       name,
       questions,
+      greeting,
+      closing,
+      paragraphs,
     });
   }
 }

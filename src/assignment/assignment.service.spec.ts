@@ -3,7 +3,7 @@ import { FindConditions, FindManyOptions, Repository } from 'typeorm';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Assignment } from './types/assignment.entity';
 import { AssignmentService } from './assignment.service';
-import { mockSurvey, mockSurveyTemplate } from '../survey/survey.controller.spec';
+import { mockSurvey } from '../survey/survey.controller.spec';
 import { reviewerExamples } from '../reviewer/reviewer.examples';
 import { youthExamples } from '../youth/youth.examples';
 import { AssignmentStatus } from './types/assignmentStatus';
@@ -18,7 +18,6 @@ import { Response } from '../response/types/response.entity';
 import { EmailService } from '../util/email/email.service';
 import { YouthRoles } from '../youth/types/youthRoles';
 import { AWSS3Service } from '../aws/aws-s3.service';
-import * as Buffer from 'buffer';
 import { Sentence } from '../sentence/types/sentence.entity';
 
 const mockEmailService: Partial<EmailService> = {

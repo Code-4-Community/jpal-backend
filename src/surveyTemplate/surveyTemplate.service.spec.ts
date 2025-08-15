@@ -9,13 +9,19 @@ import { transformQuestionToSurveyDataQuestion } from '../util/transformQuestion
 import { Role } from '../user/types/role';
 import { BadRequestException } from '@nestjs/common';
 import { Sentence } from '../sentence/types/sentence.entity';
+import { Paragraph } from '../paragraph/types/paragraph.entity';
+import { mock } from 'jest-mock-extended';
 
 const mockSentence = new Sentence();
+const mockSentence2 = new Sentence();
 
 const mockSurveyTemplate: SurveyTemplate = {
   id: 1,
   creator: mockUser,
   name: 'name',
+  greeting: 'Hello!',
+  paragraphs: [],
+  closing: 'Goodbye!',
   questions: [
     {
       id: 101,
@@ -79,6 +85,21 @@ const questions = [
         question: {} as Question,
       },
     ],
+  },
+];
+
+const mockParagraphs: Paragraph[] = [
+  {
+    id: 1,
+    order: 1,
+    surveyTemplate: new SurveyTemplate(),
+    sentences: [mockSentence],
+  },
+  {
+    id: 2,
+    order: 2,
+    surveyTemplate: new SurveyTemplate(),
+    sentences: [mockSentence, mockSentence2],
   },
 ];
 
@@ -210,18 +231,28 @@ describe('SurveyTemplateService', () => {
 
   it('should return a create result', async () => {
     expect(async () => {
-      const newSurvey = await service.createSurveyTemplate(mockUser, 'new name', []);
+      const newSurvey = await service.createSurveyTemplate(
+        mockUser,
+        'new name',
+        [],
+        'hello',
+        'goodbye',
+        mockParagraphs,
+      );
       expect(newSurvey).toEqual({
         creator: mockUser,
         name: 'new name',
         questions: [],
+        greeting: 'hello',
+        closing: 'goodbye',
+        paragraphs: mockParagraphs,
       });
     });
   });
 
   it('should error if the template name already exists in database', async () => {
-    await expect(service.createSurveyTemplate(mockUser, 'name', questions)).rejects.toThrow(
-      BadRequestException,
-    );
+    await expect(
+      service.createSurveyTemplate(mockUser, 'name', questions, 'hello', 'goodbye', []),
+    ).rejects.toThrow(BadRequestException);
   });
 });

@@ -1,15 +1,6 @@
-import {
-  Column,
-  Entity,
-  OneToOne,
-  PrimaryGeneratedColumn,
-  JoinColumn,
-  ManyToOne,
-  ManyToMany,
-  JoinTable,
-} from 'typeorm';
-import { Sentence } from 'src/sentence/types/sentence.entity';
-import { SurveyTemplate } from 'src/surveyTemplate/types/surveyTemplate.entity';
+import { Column, Entity, PrimaryGeneratedColumn, ManyToOne, ManyToMany, JoinTable } from 'typeorm';
+import { Sentence } from '../../sentence/types/sentence.entity';
+import { SurveyTemplate } from '../../surveyTemplate/types/surveyTemplate.entity';
 
 @Entity()
 export class Paragraph {
@@ -20,9 +11,9 @@ export class Paragraph {
   order: number;
 
   @ManyToOne(() => SurveyTemplate)
-  template: SurveyTemplate;
+  surveyTemplate: SurveyTemplate;
 
   @ManyToMany(() => Sentence)
-  @JoinTable()
+  @JoinTable({ name: 'paragraph_sentences' })
   sentences: Sentence[];
 }
