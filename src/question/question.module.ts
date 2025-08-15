@@ -11,4 +11,4 @@ import { Option } from '../option/types/option.entity';
   providers: [QuestionService],
   controllers: [QuestionController],
 })
-export class SurveyModule {}
+export class QuestionModule {}

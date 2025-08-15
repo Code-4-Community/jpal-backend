@@ -17,6 +17,7 @@ import { SurveyModule } from './survey/survey.module';
 import { AssignmentModule } from './assignment/assignment.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { ReviewerModule } from './reviewer/reviewer.module';
+import { QuestionModule } from './question/question.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { ReviewerModule } from './reviewer/reviewer.module';
     SurveyModule,
     AssignmentModule,
     ReviewerModule,
+    QuestionModule,
     ScheduleModule.forRoot(),
   ],
   controllers: [AppController, UserController],

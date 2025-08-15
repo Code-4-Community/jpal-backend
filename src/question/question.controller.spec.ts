@@ -5,6 +5,7 @@ import { Sentence } from './../sentence/types/sentence.entity';
 import { Question } from './types/question.entity';
 import { exampleOptions } from './question.examples';
 import { mockSurveyTemplate } from './../survey/survey.controller.spec';
+import { DeleteResult } from 'typeorm';
 
 export const mockOptionsData: string[] = exampleOptions.map((o) => o.text);
 
@@ -40,6 +41,12 @@ export const mockReturnedQuestion2: QuestionData = {
 
 export const mockQuestionService: Partial<QuestionService> = {
   getAllQuestions: jest.fn(() => Promise.resolve([mockReturnedQuestion1, mockReturnedQuestion2])),
+  deleteQuestion: jest.fn(() => Promise.resolve(mockDeleteResult)),
+};
+
+const mockDeleteResult: DeleteResult = {
+  raw: [],
+  affected: 1,
 };
 
 describe('QuestionController', () => {
@@ -71,5 +78,10 @@ describe('QuestionController', () => {
       ]);
       expect(mockQuestionService.getAllQuestions).toHaveBeenCalled();
     });
+  });
+
+  it('should delegate deleting questions to the question service', async () => {
+    expect.assertions(1);
+    expect(await controller.deleteQuestion(1)).toEqual(mockDeleteResult);
   });
 });
