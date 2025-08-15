@@ -42,10 +42,7 @@ export class QuestionService {
    * @returns A promise that resolves when the question is deleted.
    */
   async deleteQuestion(id: number): Promise<DeleteResult> {
-    const question = await this.questionRepository.findOne({
-      where: { id },
-      relations: ['options', 'sentence'],
-    });
+    const question = await this.questionRepository.findOne({ where: { id } });
     if (!question) {
       throw new BadRequestException(`Question id ${id} not found`);
     }
