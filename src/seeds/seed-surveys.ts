@@ -16,6 +16,7 @@ export default class CreateSurveys implements Seeder {
           creator: users[0],
           surveyTemplate: surveyTemplates[0],
           name: 'Demo Survey',
+          organizationName: 'Demo Organization',
         },
       ])
       .execute();

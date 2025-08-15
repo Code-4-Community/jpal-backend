@@ -1,5 +1,14 @@
 import { Option } from '../../option/types/option.entity';
-import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, OneToOne } from 'typeorm';
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  OneToOne,
+  JoinTable,
+  ManyToMany,
+} from 'typeorm';
 import { SurveyTemplate } from '../../surveyTemplate/types/surveyTemplate.entity';
 import { Sentence } from '../../sentence/types/sentence.entity';
 
@@ -7,9 +16,6 @@ import { Sentence } from '../../sentence/types/sentence.entity';
 export class Question {
   @PrimaryGeneratedColumn()
   id: number;
-
-  @ManyToOne(() => SurveyTemplate, (surveyTemplate) => surveyTemplate.questions)
-  surveyTemplate: SurveyTemplate;
 
   @Column()
   text: string;

@@ -19,11 +19,9 @@ import { YouthRoles } from '../youth/types/youthRoles';
 import { Question } from '../question/types/question.entity';
 import { SurveyData } from './dto/survey-assignment.dto';
 import { Youth as SurveyDataYouth } from './dto/survey-assignment.dto';
-import { Question as SurveyDataQuestion } from './dto/survey-assignment.dto';
 import { EmailService } from '../util/email/email.service';
 import { Role } from '../user/types/role';
 import { transformQuestionToSurveyDataQuestion } from '../util/transformQuestionToSurveryDataQuestion';
-import { SurveyTemplateData } from '../surveyTemplate/surveyTemplate.service';
 import { AWSS3Service } from '../aws/aws-s3.service';
 import * as process from 'process';
 import { s3Buckets } from '../aws/types/s3Buckets';
@@ -74,13 +72,13 @@ export class SurveyService {
   }
 
   async edit(
-    id: number,
+    uuid: string,
     surveyName?: string,
     organizationName?: string,
     imageData?: string,
     treatmentPercentage?: number,
   ): Promise<Survey> {
-    const survey = await this.getById(id);
+    const survey = await this.surveyRepository.findOne({ where: { uuid: uuid } });
     let validUpdate = false;
     if (surveyName) {
       survey.name = surveyName;

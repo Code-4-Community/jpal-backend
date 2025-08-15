@@ -19,12 +19,14 @@ const mockSurveyTemplate: SurveyTemplate = {
   id: 1,
   creator: mockUser,
   name: 'name',
+  greeting: 'Hello!',
+  paragraphs: [],
+  closing: 'Goodbye!',
   questions: [
     {
       id: 101,
       text: 'What is your favorite color?',
       sentence: mockSentence,
-      surveyTemplate: {} as SurveyTemplate,
       options: [
         {
           id: 201,
@@ -39,9 +41,6 @@ const mockSurveyTemplate: SurveyTemplate = {
       ],
     },
   ],
-  greeting: 'hello',
-  closing: 'goodbye',
-  paragraphs: [],
 };
 
 const mockSurveyNameData: SurveyNameData = {

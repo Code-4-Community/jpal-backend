@@ -14,11 +14,11 @@ import { Sentence } from '../sentence/types/sentence.entity';
 const mockSurveyTemplate: SurveyTemplate = {
   id: 1,
   creator: mockUser,
-  name: 'name',
-  questions: [],
   greeting: 'hello',
   closing: 'goodbye',
   paragraphs: [],
+  name: 'name',
+  questions: [],
 };
 
 const mockSurveyNameData: SurveyNameData = {

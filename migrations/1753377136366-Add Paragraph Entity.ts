@@ -8,7 +8,9 @@ export class AddParagraphEntity1753377136366 implements MigrationInterface {
         CREATE TABLE "paragraph" (
             "id" SERIAL NOT NULL,
             "order" INTEGER NOT NULL,
-            CONSTRAINT "PK_paragraph_id" PRIMARY KEY ("id")
+            "templateId" INTEGER,
+            CONSTRAINT "PK_paragraph_id" PRIMARY KEY ("id"),
+            CONSTRAINT "FK_paragraph_template" FOREIGN KEY ("templateId") REFERENCES "survey_template"("id") ON DELETE CASCADE ON UPDATE CASCADE
     )
     `);
 
