@@ -1,6 +1,6 @@
-import { Logger, Injectable } from '@nestjs/common';
+import { Logger, Injectable, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, DeleteResult } from 'typeorm';
 import { Question } from './types/question.entity';
 import { Sentence } from '../sentence/types/sentence.entity';
 import { Option } from '../option/types/option.entity';
@@ -34,5 +34,18 @@ export class QuestionService {
   async getAllQuestions(): Promise<QuestionData[]> {
     const result = await this.questionRepository.find({});
     return transformToQuestionData(result);
+  }
+
+  /**
+   * Deletes a question by ID.
+   * @param id The ID of the question to delete.
+   * @returns A promise that resolves when the question is deleted.
+   */
+  async deleteQuestion(id: number): Promise<DeleteResult> {
+    const question = await this.questionRepository.findOne({ where: { id } });
+    if (!question) {
+      throw new BadRequestException(`Question id ${id} not found`);
+    }
+    return await this.questionRepository.delete(id);
   }
 }

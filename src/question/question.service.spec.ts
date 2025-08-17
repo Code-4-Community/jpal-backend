@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { QuestionService } from './question.service';
-import { Repository } from 'typeorm';
+import { Repository, DeleteResult } from 'typeorm';
 import { SurveyTemplate } from './../surveyTemplate/types/surveyTemplate.entity';
 import { Sentence } from './../sentence/types/sentence.entity';
 import { Question } from './types/question.entity';
@@ -14,8 +14,15 @@ import { mock } from 'jest-mock-extended';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { mockSurveyTemplateRepository } from './../survey/survey.service.spec';
 
+const mockDeleteResult: DeleteResult = {
+  raw: [],
+  affected: 1,
+};
+
 const mockQuestionRepository = mock<Repository<Question>>();
 mockQuestionRepository.find.mockResolvedValue([mockQuestion1, mockQuestion2]);
+mockQuestionRepository.findOne.mockResolvedValue(mockQuestion1);
+mockQuestionRepository.delete.mockResolvedValue(mockDeleteResult);
 
 const mockSentenceRepository = mock<Repository<Sentence>>();
 
@@ -52,5 +59,10 @@ describe('QuestionService', () => {
     const questionDataReturned = await service.getAllQuestions();
     expect(questionDataReturned[0]).toEqual(mockReturnedQuestion1);
     expect(questionDataReturned[1]).toEqual(mockReturnedQuestion2);
+  });
+
+  it('should return a delete result', async () => {
+    const deleteRes = await service.deleteQuestion(1);
+    expect(deleteRes).toEqual(mockDeleteResult);
   });
 });
