@@ -72,9 +72,7 @@ export class QuestionService {
 
     if (invalidOptions.length > 0) {
       throw new BadRequestException(
-        `${contextInfo}: includeIfSelectedOptions contains invalid options: ${invalidOptions.join(
-          ', ',
-        )}`,
+        'Selections to determine sentence inclusion are not valid question options.',
       );
     }
   }

@@ -28,27 +28,22 @@ export class QuestionController {
   @Post()
   @Auth(Role.RESEARCHER)
   async create(@Body() uploadQuestionsDTO: UploadQuestionsDTO): Promise<UploadQuestionResponseDTO> {
-    const uploadQuestionData: UploadQuestionData[] = [];
+    const uploadQuestionData = uploadQuestionsDTO.questions.map((question) => ({
+      text: question.text,
+      options: question.options,
+      sentence_template: question.sentence_template,
+      include_if_selected_options: question.include_if_selected_options,
+    }));
 
-    uploadQuestionsDTO.questions.map((question) => {
-      uploadQuestionData.push({
-        text: question.text,
-        options: question.options,
-        sentence_template: question.sentence_template,
-        include_if_selected_options: question.include_if_selected_options,
-      });
-    });
-
-    const multiQuestionData: UploadMultiQuestionData[] = [];
-    uploadQuestionsDTO.multi_questions.map((question) => {
-      multiQuestionData.push({
+    const multiQuestionData: UploadMultiQuestionData[] = uploadQuestionsDTO.multi_questions.map(
+      (question) => ({
         sentence_template: question.sentence_template,
         fragment_texts: question.fragment_texts,
         question_texts: question.question_texts,
         options: question.options,
         include_if_selected_option: question.include_if_selected_option,
-      });
-    });
+      }),
+    );
 
     const numberOfQuestions = await this.questionService.batchCreateQuestions(uploadQuestionData);
 
