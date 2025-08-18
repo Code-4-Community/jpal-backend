@@ -1,8 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { QuestionService } from './question.service';
-import { Repository } from 'typeorm';
-import { SurveyTemplate } from '../surveyTemplate/types/surveyTemplate.entity';
-import { Sentence } from '../sentence/types/sentence.entity';
 import { Question } from './types/question.entity';
 import { BadRequestException } from '@nestjs/common';
 import {
@@ -21,6 +18,9 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { mockSurveyTemplateRepository } from '../survey/survey.service.spec';
 import { Option } from '../option/types/option.entity';
 import { Fragment } from '../fragment/types/fragment.entity';
+import { Sentence } from '../sentence/types/sentence.entity';
+import { SurveyTemplate } from '../surveyTemplate/types/surveyTemplate.entity';
+import { DeleteResult, Repository } from 'typeorm';
 
 const questionWithWrongOptions = {
   ...mockQuestion1,
@@ -52,9 +52,16 @@ const mockSaveImplementation = async (entityOrEntities: any) => {
   return entityOrEntities;
 };
 
+const mockDeleteResult: DeleteResult = {
+  raw: [],
+  affected: 1,
+};
+
 const mockQuestionRepository = mock<Repository<Question>>();
 mockQuestionRepository.find.mockResolvedValue([mockQuestion1, mockQuestion2]);
 mockQuestionRepository.save.mockImplementation(mockSaveImplementation);
+mockQuestionRepository.findOne.mockResolvedValue(mockQuestion1);
+mockQuestionRepository.delete.mockResolvedValue(mockDeleteResult);
 
 const mockSentenceRepository = mock<Repository<Sentence>>();
 mockSentenceRepository.save.mockImplementation(mockSaveImplementation);
@@ -135,5 +142,10 @@ describe('QuestionService', () => {
         BadRequestException,
       );
     });
+  });
+
+  it('should return a delete result', async () => {
+    const deleteRes = await service.deleteQuestion(1);
+    expect(deleteRes).toEqual(mockDeleteResult);
   });
 });

@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, Delete, Param } from '@nestjs/common';
 import {
   QuestionService,
   UploadMultiQuestionData,
@@ -8,6 +8,7 @@ import {
 import { Auth } from '../auth/decorators/auth.decorator';
 import { Role } from '../user/types/role';
 import { UploadQuestionResponseDTO, UploadQuestionsDTO } from './dto/upload-question.dto';
+import { DeleteResult } from 'typeorm';
 @Controller('question')
 export class QuestionController {
   constructor(private questionService: QuestionService) {}
@@ -59,5 +60,16 @@ export class QuestionController {
       multi_question_sentences: numberOfMultiQuestions,
       plain_text_sentences: numberOfPlainText,
     };
+  }
+
+  /**
+   * Deletes a question by ID.
+   * @param id The ID of the question to delete.
+   * @returns A promise that resolves when the question is deleted.
+   */
+  @Delete(':id')
+  @Auth(Role.RESEARCHER)
+  async deleteQuestion(@Param('id') id: number): Promise<DeleteResult> {
+    return await this.questionService.deleteQuestion(id);
   }
 }

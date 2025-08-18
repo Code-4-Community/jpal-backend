@@ -13,6 +13,8 @@ import { Question } from './types/question.entity';
 import { Sentence } from '../sentence/types/sentence.entity';
 import { QuestionService } from './question.service';
 import { QuestionData } from './question.service';
+import { mockSurveyTemplate } from './../survey/survey.controller.spec';
+import { DeleteResult } from 'typeorm';
 
 export const mockOptionsData: string[] = exampleOptions.map((o) => o.text);
 
@@ -108,6 +110,7 @@ export const mockQuestionService: Partial<QuestionService> = {
   batchCreateQuestions: jest.fn(() => Promise.resolve(2)),
   batchCreateMultiQuestions: jest.fn(() => Promise.resolve(3)),
   getAllQuestions: jest.fn(() => Promise.resolve([mockReturnedQuestion1, mockReturnedQuestion2])),
+  deleteQuestion: jest.fn(() => Promise.resolve(mockDeleteResult)),
 };
 
 export const mockReturnedQuestion2: QuestionData = {
@@ -115,6 +118,11 @@ export const mockReturnedQuestion2: QuestionData = {
   text: mockQuestion2.text,
   template: mockQuestion2.sentence.template,
   options: mockOptionsData,
+};
+
+const mockDeleteResult: DeleteResult = {
+  raw: [],
+  affected: 1,
 };
 
 describe('QuestionController', () => {
@@ -154,6 +162,10 @@ describe('QuestionController', () => {
       expect(mockQuestionService.batchCreateMultiQuestions).toHaveBeenCalled();
       expect(mockQuestionService.batchCreatePlainText).toHaveBeenCalled();
       expect(mockQuestionService.batchCreateQuestions).toHaveBeenCalled();
+    });
+    it('should delegate deleting questions to the question service', async () => {
+      expect.assertions(1);
+      expect(await controller.deleteQuestion(1)).toEqual(mockDeleteResult);
     });
   });
 });
