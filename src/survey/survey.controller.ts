@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, ParseUUIDPipe, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseUUIDPipe, Patch, Post, Req } from '@nestjs/common';
 import { Auth } from '../auth/decorators/auth.decorator';
 import { ReqUser } from '../auth/decorators/user.decorator';
 import { Role } from '../user/types/role';
@@ -52,9 +52,13 @@ export class SurveyController {
    */
   @Patch(':surveyUUID')
   @Auth(Role.RESEARCHER, Role.ADMIN)
-  async edit(@Body() editSurveyDTO: EditSurveyDto, @ReqUser() reqUser): Promise<Survey> {
+  async edit(
+    @Body() editSurveyDTO: EditSurveyDto,
+    @ReqUser() reqUser,
+    @Param('surveyUUID', ParseUUIDPipe) uuid: string,
+  ): Promise<Survey> {
     return this.surveyService.edit(
-      editSurveyDTO.id,
+      uuid,
       editSurveyDTO.surveyName,
       editSurveyDTO.organizationName,
       editSurveyDTO.imageData,

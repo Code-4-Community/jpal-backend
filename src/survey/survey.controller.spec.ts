@@ -12,11 +12,11 @@ export const UUID = '123e4567-e89b-12d3-a456-426614174000';
 export const mockSurveyTemplate: SurveyTemplate = {
   id: 1,
   creator: mockUser,
+  greeting: 'Hello!',
+  closing: 'Goodbye!',
+  paragraphs: [],
   name: 'name',
   questions: [],
-  greeting: 'hello',
-  closing: 'goodbye',
-  paragraphs: [],
 };
 
 export const mockSurvey: Survey = {
@@ -157,12 +157,12 @@ describe('SurveyController', () => {
 
   describe('editSurvey', () => {
     it('should edit the requested survey', async () => {
-      await expect(controller.edit({ id: 1, surveyName: 'new name' }, mockUser)).resolves.toEqual(
+      await expect(controller.edit({ surveyName: 'new name' }, mockUser, UUID)).resolves.toEqual(
         mockSurvey3,
       );
 
       expect(mockSurveyService.edit).toHaveBeenCalledWith(
-        1,
+        UUID,
         'new name',
         undefined,
         undefined,

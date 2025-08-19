@@ -1,4 +1,12 @@
-import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinTable,
+  ManyToOne,
+  ManyToMany,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { User } from '../../user/types/user.entity';
 import { Question } from '../../question/types/question.entity';
 import { Paragraph } from '../../paragraph/types/paragraph.entity';
@@ -11,9 +19,8 @@ export class SurveyTemplate {
   @ManyToOne(() => User)
   creator: User;
 
-  @OneToMany(() => Question, (question) => question.surveyTemplate, {
-    cascade: true,
-  })
+  @ManyToMany(() => Question)
+  @JoinTable({ name: 'question_surveytemplate' })
   questions: Question[];
 
   @Column()
