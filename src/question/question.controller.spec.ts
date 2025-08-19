@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { QuestionController } from './question.controller';
-import { QuestionData, QuestionService } from './question.service';
+import { QuestionData, QuestionService, QuestionTextData } from './question.service';
 import { Sentence } from './../sentence/types/sentence.entity';
 import { Question } from './types/question.entity';
 import { exampleOptions } from './question.examples';
@@ -14,6 +14,11 @@ export const mockQuestion1: Question = {
   surveyTemplate: mockSurveyTemplate,
   options: exampleOptions,
   sentence: new Sentence(),
+};
+
+export const mockQuestion1Return: QuestionTextData = {
+  id: 1,
+  text: 'How often is this student not responsible?',
 };
 
 export const mockReturnedQuestion1: QuestionData = {
@@ -40,6 +45,7 @@ export const mockReturnedQuestion2: QuestionData = {
 
 export const mockQuestionService: Partial<QuestionService> = {
   getAllQuestions: jest.fn(() => Promise.resolve([mockReturnedQuestion1, mockReturnedQuestion2])),
+  updateQuestionText: jest.fn(() => Promise.resolve(mockQuestion1Return)),
 };
 
 describe('QuestionController', () => {
@@ -70,6 +76,15 @@ describe('QuestionController', () => {
         mockReturnedQuestion2,
       ]);
       expect(mockQuestionService.getAllQuestions).toHaveBeenCalled();
+    });
+  });
+
+  describe('edit question text', () => {
+    it('should edit the question text', async () => {
+      await expect(
+        controller.editQuestionText(1, 'How often is this student not responsible?'),
+      ).resolves.toEqual(mockQuestion1Return);
+      expect(mockQuestionService.updateQuestionText).toHaveBeenCalled();
     });
   });
 });

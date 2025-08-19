@@ -12,7 +12,7 @@ export interface QuestionData {
   options: string[];
 }
 
-export interface QuestionTextData{
+export interface QuestionTextData {
   id: number;
   text: string;
 }
@@ -37,7 +37,7 @@ export class QuestionService {
   ) {}
 
   /**
-   * 
+   *
    * Gets all the questions
    */
   async getAllQuestions(): Promise<QuestionData[]> {
@@ -59,7 +59,7 @@ export class QuestionService {
 
     return {
       id: result.id,
-      text:result.text,
+      text: result.text,
     };
   }
 
@@ -77,5 +77,4 @@ export class QuestionService {
       text: question.text,
     };
   }
-
 }

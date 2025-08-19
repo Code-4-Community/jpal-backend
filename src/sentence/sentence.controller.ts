@@ -4,7 +4,7 @@ import { Role } from '../user/types/role';
 import { SentenceService, SentenceTemplateData } from './sentence.service';
 
 @Controller('sentence')
-export class SurveyTemplateController {
+export class SentenceController {
   constructor(private sentenceService: SentenceService) {}
 
   /**

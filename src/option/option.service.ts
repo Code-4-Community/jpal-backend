@@ -4,8 +4,8 @@ import { Repository } from 'typeorm';
 import { Option } from './types/option.entity';
 
 export interface OptionData {
-    id:number;
-    text:string;
+  id: number;
+  text: string;
 }
 
 @Injectable()
@@ -29,7 +29,7 @@ export class OptionService {
 
     return {
       id: result.id,
-      text:result.text,
+      text: result.text,
     };
   }
 

@@ -4,7 +4,7 @@ import { Role } from '../user/types/role';
 import { FragmentService, FragmentData } from './fragment.service';
 
 @Controller('fragment')
-export class FragmentControlelr {
+export class FragmentController {
   constructor(private fragmentService: FragmentService) {}
 
   /**

@@ -4,8 +4,8 @@ import { Repository } from 'typeorm';
 import { Sentence } from './types/sentence.entity';
 
 export interface SentenceTemplateData {
-    id:number;
-    sentenceTemplate:string;
+  id: number;
+  sentenceTemplate: string;
 }
 
 @Injectable()
@@ -29,7 +29,7 @@ export class SentenceService {
 
     return {
       id: result.id,
-      sentenceTemplate:result.template,
+      sentenceTemplate: result.template,
     };
   }
 
@@ -38,7 +38,10 @@ export class SentenceService {
    * @param id             id of the sentence to modify
    * @param sentenceTemplate   new template for the sentence
    */
-  async updateSentenceTemplate(id: number, sentenceTemplate: string): Promise<SentenceTemplateData> {
+  async updateSentenceTemplate(
+    id: number,
+    sentenceTemplate: string,
+  ): Promise<SentenceTemplateData> {
     const sentence = await this.getById(id);
     sentence.sentenceTemplate = sentenceTemplate;
     await this.sentenceRepository.save(sentence);

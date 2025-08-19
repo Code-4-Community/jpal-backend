@@ -4,8 +4,8 @@ import { Repository } from 'typeorm';
 import { Fragment } from './types/fragment.entity';
 
 export interface FragmentData {
-    id:number;
-    text:string;
+  id: number;
+  text: string;
 }
 
 @Injectable()
@@ -29,7 +29,7 @@ export class FragmentService {
 
     return {
       id: result.id,
-      text:result.text,
+      text: result.text,
     };
   }
 
