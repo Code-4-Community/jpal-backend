@@ -5,13 +5,14 @@ import {
   RARELY,
   OFTEN,
   ALWAYS,
+  exampleOptions,
 } from './question.examples';
 import { UploadQuestionsDTO, UploadQuestionResponseDTO } from './dto/upload-question.dto';
 import { QuestionController } from './question.controller';
-import { QuestionData, QuestionService, QuestionTextData } from './question.service';
-import { Sentence } from './../sentence/types/sentence.entity';
 import { Question } from './types/question.entity';
-import { exampleOptions } from './question.examples';
+import { Sentence } from '../sentence/types/sentence.entity';
+import { QuestionService, QuestionTextData } from './question.service';
+import { QuestionData } from './question.service';
 import { mockSurveyTemplate } from './../survey/survey.controller.spec';
 import { DeleteResult } from 'typeorm';
 
@@ -20,7 +21,13 @@ export const mockOptionsData: string[] = exampleOptions.map((o) => o.text);
 export const mockQuestion1: Question = {
   id: 1,
   text: 'How often is this student responsible?',
-  surveyTemplate: mockSurveyTemplate,
+  options: exampleOptions,
+  sentence: new Sentence(),
+};
+
+export const mockQuestion2: Question = {
+  id: 2,
+  text: 'How often did this student arrive on time for work?',
   options: exampleOptions,
   sentence: new Sentence(),
 };
@@ -103,14 +110,6 @@ export const mockUploadQuestionResponseDTO: UploadQuestionResponseDTO = {
   plain_text_sentences: 2,
 };
 
-
-export const mockQuestion2: Question = {
-  id: 2,
-  text: 'How often did this student arrive on time for work?',
-  surveyTemplate: mockSurveyTemplate,
-  options: exampleOptions,
-  sentence: new Sentence(),
-};
 
 export const mockReturnedQuestion2: QuestionData = {
   id: mockQuestion2.id,
