@@ -62,13 +62,13 @@ export class QuestionService {
     return transformToQuestionData(result);
   }
 
-   /**
+  /**
    * Validates that includeIfSelected options exist in the available options
    * @param includeIfSelected - Array of options that should be included
    * @param availableOptions - Array of all available options
    * @param contextInfo - Additional context for error messaging (e.g., question index)
    */
-   private validateIncludeIfSelectedOptions(
+  private validateIncludeIfSelectedOptions(
     includeIfSelected: string[],
     availableOptions: string[],
     contextInfo: string,

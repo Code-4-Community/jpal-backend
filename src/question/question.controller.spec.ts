@@ -110,7 +110,6 @@ export const mockUploadQuestionResponseDTO: UploadQuestionResponseDTO = {
   plain_text_sentences: 2,
 };
 
-
 export const mockReturnedQuestion2: QuestionData = {
   id: mockQuestion2.id,
   text: mockQuestion2.text,
@@ -122,7 +121,6 @@ const mockDeleteResult: DeleteResult = {
   raw: [],
   affected: 1,
 };
-
 
 export const mockQuestionService: Partial<QuestionService> = {
   getAllQuestions: jest.fn(() => Promise.resolve([mockReturnedQuestion1, mockReturnedQuestion2])),
