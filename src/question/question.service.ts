@@ -4,7 +4,7 @@ import { DeleteResult, Repository } from 'typeorm';
 import { Question } from './types/question.entity';
 import { Sentence } from '../sentence/types/sentence.entity';
 import { Option } from '../option/types/option.entity';
-import { Fragment } from 'src/fragment/types/fragment.entity';
+import { Fragment } from '..//fragment/types/fragment.entity';
 
 export interface QuestionData {
   id: number;
