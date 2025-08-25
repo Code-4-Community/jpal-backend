@@ -15,8 +15,11 @@ export class SentenceController {
   @Put(':id')
   @Auth(Role.ADMIN, Role.RESEARCHER)
   async editSentenceTemplate(
-    @Body() editSentenceTemplate: EditSentenceDto
-    ): Promise<SentenceTemplateData> {
-    return this.sentenceService.updateSentenceTemplate(editSentenceTemplate.id, editSentenceTemplate.sentenceTemplate);
+    @Body() editSentenceTemplate: EditSentenceDto,
+  ): Promise<SentenceTemplateData> {
+    return this.sentenceService.updateSentenceTemplate(
+      editSentenceTemplate.id,
+      editSentenceTemplate.sentenceTemplate,
+    );
   }
 }

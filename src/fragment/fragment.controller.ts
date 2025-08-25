@@ -15,9 +15,7 @@ export class FragmentController {
    */
   @Put(':id')
   @Auth(Role.ADMIN, Role.RESEARCHER)
-  async editFragmentText(
-    @Body() editFragmentText: EditDto)
-    : Promise<FragmentData> {
+  async editFragmentText(@Body() editFragmentText: EditDto): Promise<FragmentData> {
     return this.fragmentService.updateFragmentText(editFragmentText.id, editFragmentText.text);
   }
 }

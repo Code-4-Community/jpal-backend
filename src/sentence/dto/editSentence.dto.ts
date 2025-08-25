@@ -1,4 +1,4 @@
 export class EditSentenceDto {
-    id: number;
-    sentenceTemplate: string;
+  id: number;
+  sentenceTemplate: string;
 }

@@ -1,4 +1,4 @@
 export class EditDto {
-    id:number;
-    text:string;
+  id: number;
+  text: string;
 }

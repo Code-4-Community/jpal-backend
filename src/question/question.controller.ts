@@ -36,8 +36,7 @@ export class QuestionController {
    */
   @Put(':id')
   @Auth(Role.ADMIN, Role.RESEARCHER)
-  async editQuestionText(@Body() editQuestionText: EditDto)
-  : Promise<QuestionTextData> {
+  async editQuestionText(@Body() editQuestionText: EditDto): Promise<QuestionTextData> {
     return this.questionService.updateQuestionText(editQuestionText.id, editQuestionText.text);
   }
 

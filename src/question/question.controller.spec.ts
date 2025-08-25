@@ -170,9 +170,9 @@ describe('QuestionController', () => {
 
   describe('edit question text', () => {
     it('should edit the question text', async () => {
-      await expect(
-        controller.editQuestionText(mockQuestion1Dto),
-      ).resolves.toEqual(mockQuestion1Return);
+      await expect(controller.editQuestionText(mockQuestion1Dto)).resolves.toEqual(
+        mockQuestion1Return,
+      );
       expect(mockQuestionService.updateQuestionText).toHaveBeenCalled();
     });
   });

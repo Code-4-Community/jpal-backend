@@ -51,7 +51,9 @@ describe('FragmentController', () => {
 
   describe('edit fragment text', () => {
     it('should edit the fragment text', async () => {
-      await expect(controller.editFragmentText(mockFragmentDto)).resolves.toEqual(mockReturnedFragment);
+      await expect(controller.editFragmentText(mockFragmentDto)).resolves.toEqual(
+        mockReturnedFragment,
+      );
       expect(mockFragmentService.updateFragmentText).toHaveBeenCalled();
     });
   });
