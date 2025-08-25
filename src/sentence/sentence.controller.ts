@@ -2,7 +2,7 @@ import { Controller, Get, Param, ParseIntPipe, Post, Delete, Put, Body } from '@
 import { Auth } from '../auth/decorators/auth.decorator';
 import { Role } from '../user/types/role';
 import { SentenceService, SentenceTemplateData } from './sentence.service';
-
+import { EditSentenceDto } from './dto/editSentence.dto';
 @Controller('sentence')
 export class SentenceController {
   constructor(private sentenceService: SentenceService) {}
@@ -14,7 +14,9 @@ export class SentenceController {
    */
   @Put(':id')
   @Auth(Role.ADMIN, Role.RESEARCHER)
-  async editSentenceTemplate(id: number, sentenceTemplate: string): Promise<SentenceTemplateData> {
-    return this.sentenceService.updateSentenceTemplate(id, sentenceTemplate);
+  async editSentenceTemplate(
+    @Body() editSentenceTemplate: EditSentenceDto
+    ): Promise<SentenceTemplateData> {
+    return this.sentenceService.updateSentenceTemplate(editSentenceTemplate.id, editSentenceTemplate.sentenceTemplate);
   }
 }

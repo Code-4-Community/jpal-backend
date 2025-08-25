@@ -15,6 +15,7 @@ import { QuestionService, QuestionTextData } from './question.service';
 import { QuestionData } from './question.service';
 import { mockSurveyTemplate } from './../survey/survey.controller.spec';
 import { DeleteResult } from 'typeorm';
+import { EditDto } from '../util/dto/edit.dto';
 
 export const mockOptionsData: string[] = exampleOptions.map((o) => o.text);
 
@@ -33,6 +34,11 @@ export const mockQuestion2: Question = {
 };
 
 export const mockQuestion1Return: QuestionTextData = {
+  id: 1,
+  text: 'How often is this student not responsible?',
+};
+
+export const mockQuestion1Dto: EditDto = {
   id: 1,
   text: 'How often is this student not responsible?',
 };
@@ -165,7 +171,7 @@ describe('QuestionController', () => {
   describe('edit question text', () => {
     it('should edit the question text', async () => {
       await expect(
-        controller.editQuestionText(1, 'How often is this student not responsible?'),
+        controller.editQuestionText(mockQuestion1Dto),
       ).resolves.toEqual(mockQuestion1Return);
       expect(mockQuestionService.updateQuestionText).toHaveBeenCalled();
     });

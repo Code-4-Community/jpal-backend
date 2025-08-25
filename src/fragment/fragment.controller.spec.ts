@@ -4,6 +4,7 @@ import { Question } from './../question/types/question.entity';
 import { FragmentService, FragmentData } from './fragment.service';
 import { FragmentController } from './fragment.controller';
 import { Fragment } from './types/fragment.entity';
+import { EditDto } from 'src/util/dto/edit.dto';
 
 export const mockFragment: Fragment = {
   id: 1,
@@ -11,6 +12,11 @@ export const mockFragment: Fragment = {
   sentence: new Sentence(),
   question: new Question(),
   includeIfSelectedOption: 'yes',
+};
+
+export const mockFragmentDto: EditDto = {
+  id: 1,
+  text: 'none',
 };
 
 export const mockReturnedFragment: FragmentData = {
@@ -45,7 +51,7 @@ describe('FragmentController', () => {
 
   describe('edit fragment text', () => {
     it('should edit the fragment text', async () => {
-      await expect(controller.editFragmentText(1, 'none')).resolves.toEqual(mockReturnedFragment);
+      await expect(controller.editFragmentText(mockFragmentDto)).resolves.toEqual(mockReturnedFragment);
       expect(mockFragmentService.updateFragmentText).toHaveBeenCalled();
     });
   });

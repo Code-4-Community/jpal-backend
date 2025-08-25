@@ -15,6 +15,7 @@ import { Auth } from '../auth/decorators/auth.decorator';
 import { Role } from '../user/types/role';
 import { UploadQuestionResponseDTO, UploadQuestionsDTO } from './dto/upload-question.dto';
 import { DeleteResult } from 'typeorm';
+import { EditDto } from '../util/dto/edit.dto';
 @Controller('question')
 export class QuestionController {
   constructor(private questionService: QuestionService) {}
@@ -35,8 +36,9 @@ export class QuestionController {
    */
   @Put(':id')
   @Auth(Role.ADMIN, Role.RESEARCHER)
-  async editQuestionText(id: number, text: string): Promise<QuestionTextData> {
-    return this.questionService.updateQuestionText(id, text);
+  async editQuestionText(@Body() editQuestionText: EditDto)
+  : Promise<QuestionTextData> {
+    return this.questionService.updateQuestionText(editQuestionText.id, editQuestionText.text);
   }
 
   /**

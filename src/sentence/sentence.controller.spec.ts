@@ -13,6 +13,11 @@ export const mockSentence: Sentence = {
   question: new Question(),
 };
 
+export const mockSentenceDto: SentenceTemplateData = {
+  id: 1,
+  sentenceTemplate: 'none',
+};
+
 export const mockReturnedSentence: SentenceTemplateData = {
   id: 1,
   sentenceTemplate: 'none',
@@ -45,7 +50,7 @@ describe('SentenceController', () => {
 
   describe('edit survey template', () => {
     it('should edit the survey template', async () => {
-      await expect(controller.editSentenceTemplate(1, 'none')).resolves.toEqual(
+      await expect(controller.editSentenceTemplate(mockSentenceDto)).resolves.toEqual(
         mockReturnedSentence,
       );
       expect(mockSentenceService.updateSentenceTemplate).toHaveBeenCalled();
