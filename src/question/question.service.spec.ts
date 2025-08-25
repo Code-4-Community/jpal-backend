@@ -1,7 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { QuestionService } from './question.service';
+import { DeleteResult, Repository } from 'typeorm';
+import { SurveyTemplate } from './../surveyTemplate/types/surveyTemplate.entity';
+import { Sentence } from './../sentence/types/sentence.entity';
 import { Question } from './types/question.entity';
-import { BadRequestException } from '@nestjs/common';
 import {
   mockQuestion1,
   mockQuestion2,
@@ -12,15 +14,14 @@ import {
   mockReturnedQuestion1,
   mockReturnedQuestion2,
   multiQuestionDTO,
+  mockQuestion1Return,
 } from './question.controller.spec';
 import { mock } from 'jest-mock-extended';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { mockSurveyTemplateRepository } from '../survey/survey.service.spec';
+import { mockSurveyTemplateRepository } from './../survey/survey.service.spec';
 import { Option } from '../option/types/option.entity';
 import { Fragment } from '../fragment/types/fragment.entity';
-import { Sentence } from '../sentence/types/sentence.entity';
-import { SurveyTemplate } from '../surveyTemplate/types/surveyTemplate.entity';
-import { DeleteResult, Repository } from 'typeorm';
+import { BadRequestException } from '@nestjs/common';
 
 const questionWithWrongOptions = {
   ...mockQuestion1,
@@ -147,5 +148,18 @@ describe('QuestionService', () => {
   it('should return a delete result', async () => {
     const deleteRes = await service.deleteQuestion(1);
     expect(deleteRes).toEqual(mockDeleteResult);
+  });
+
+  it('should return expected question', async () => {
+    const question = await service.getById(1);
+    expect(question.text).toEqual('How often is this student responsible?');
+  });
+
+  it('should properly edit the question', async () => {
+    expect(async () => {
+      expect(
+        await service.updateQuestionText(1, 'How often is this student not responsible?'),
+      ).toEqual(mockQuestion1Return);
+    });
   });
 });

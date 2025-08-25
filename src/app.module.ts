@@ -16,6 +16,9 @@ import { AssignmentModule } from './assignment/assignment.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { ReviewerModule } from './reviewer/reviewer.module';
 import { QuestionModule } from './question/question.module';
+import { SentenceModule } from './sentence/sentence.module';
+import { FragmentModule } from './fragment/fragment.module';
+import { OptionModule } from './option/option.module';
 
 @Module({
   imports: [
@@ -32,6 +35,9 @@ import { QuestionModule } from './question/question.module';
     AssignmentModule,
     ReviewerModule,
     QuestionModule,
+    SentenceModule,
+    FragmentModule,
+    OptionModule,
     ScheduleModule.forRoot(),
   ],
   controllers: [AppController, UserController],
