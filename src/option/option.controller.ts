@@ -12,7 +12,7 @@ export class OptionController {
    * @param id   id of the option to be updated
    * @param text the new text of the option
    */
-  @Put('/option/:id')
+  @Put(':id')
   @Auth(Role.ADMIN, Role.RESEARCHER)
   async editOptionText(id: number, text: string): Promise<OptionData> {
     return this.optionService.updateOptionText(id, text);

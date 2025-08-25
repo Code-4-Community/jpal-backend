@@ -12,7 +12,7 @@ export class SentenceController {
    * @param id   id of the sentence to be updated
    * @param sentenceTemplate the new sentence template for the sentence
    */
-  @Put('/sentence/:id')
+  @Put(':id')
   @Auth(Role.ADMIN, Role.RESEARCHER)
   async editSentenceTemplate(id: number, sentenceTemplate: string): Promise<SentenceTemplateData> {
     return this.sentenceService.updateSentenceTemplate(id, sentenceTemplate);
