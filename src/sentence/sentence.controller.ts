@@ -10,7 +10,7 @@ export class SentenceController {
   /**
    * Updates the template of a sentence
    * @param id   id of the sentence to be updated
-   * @param sentenceTemplate the new sentence template for the sentence
+   * @param template the new sentence template for the sentence
    */
   @Put(':id')
   @Auth(Role.ADMIN, Role.RESEARCHER)
@@ -19,7 +19,7 @@ export class SentenceController {
   ): Promise<SentenceTemplateData> {
     return this.sentenceService.updateSentenceTemplate(
       editSentenceTemplate.id,
-      editSentenceTemplate.sentenceTemplate,
+      editSentenceTemplate.template,
     );
   }
 }

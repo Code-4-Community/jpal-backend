@@ -3,6 +3,7 @@ import { Sentence } from './../sentence/types/sentence.entity';
 import { Question } from './../question/types/question.entity';
 import { SentenceService, SentenceTemplateData } from './sentence.service';
 import { SentenceController } from './sentence.controller';
+import { EditSentenceDto } from './dto/editSentence.dto';
 
 export const mockSentence: Sentence = {
   id: 1,
@@ -13,14 +14,14 @@ export const mockSentence: Sentence = {
   question: new Question(),
 };
 
-export const mockSentenceDto: SentenceTemplateData = {
+export const mockSentenceDto: EditSentenceDto = {
   id: 1,
-  sentenceTemplate: 'none',
+  template: 'none',
 };
 
 export const mockReturnedSentence: SentenceTemplateData = {
   id: 1,
-  sentenceTemplate: 'none',
+  template: 'none',
 };
 
 export const mockSentenceService: Partial<SentenceService> = {

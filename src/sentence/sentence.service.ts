@@ -5,7 +5,7 @@ import { Sentence } from './types/sentence.entity';
 
 export interface SentenceTemplateData {
   id: number;
-  sentenceTemplate: string;
+  template: string;
 }
 
 @Injectable()
@@ -29,25 +29,25 @@ export class SentenceService {
 
     return {
       id: result.id,
-      sentenceTemplate: result.template,
+      template: result.template,
     };
   }
 
   /**
    * Update the template of a sentence
    * @param id             id of the sentence to modify
-   * @param sentenceTemplate   new template for the sentence
+   * @param template   new template for the sentence
    */
   async updateSentenceTemplate(
     id: number,
-    sentenceTemplate: string,
+    template: string,
   ): Promise<SentenceTemplateData> {
     const sentence = await this.getById(id);
-    sentence.sentenceTemplate = sentenceTemplate;
+    sentence.template = template;
     await this.sentenceRepository.save(sentence);
     return {
       id: sentence.id,
-      sentenceTemplate: sentence.sentenceTemplate,
+      template: sentence.template,
     };
   }
 }

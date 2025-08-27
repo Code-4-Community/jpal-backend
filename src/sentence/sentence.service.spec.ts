@@ -16,7 +16,7 @@ export const mockSentence: Sentence = {
 
 export const mockReturnedSentence: SentenceTemplateData = {
   id: 1,
-  sentenceTemplate: 'none',
+  template: 'none',
 };
 const mockSentenceRepository: Partial<Repository<Sentence>> = {
   async findOne(query: any): Promise<Sentence | undefined> {
@@ -50,7 +50,7 @@ describe('SentenceTemplateService', () => {
 
   it('should return expected sentence', async () => {
     const sentence = await service.getById(1);
-    expect(sentence.sentenceTemplate).toEqual('template');
+    expect(sentence.template).toEqual('template');
   });
 
   it('should error if trying to edit an id not in the table', async () => {
