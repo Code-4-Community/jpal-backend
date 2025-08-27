@@ -9,12 +9,12 @@ export default class CreateFragments implements Seeder {
     // Get sentences and questions for relationships
     const sentences = await connection.getRepository('sentence').find();
     const questions = await connection.getRepository('question').find();
-    
+
     // Helper functions to find entities
     const findSentenceByTemplate = (templatePart: string) => {
       return sentences.find((s: Sentence) => s.template.includes(templatePart));
     };
-    
+
     const findQuestionByText = (text: string) => {
       return questions.find((q: Question) => q.text === text);
     };
@@ -99,25 +99,33 @@ export default class CreateFragments implements Seeder {
           text: 'sometimes',
           includeIfSelectedOption: 'Sometimes',
           sentence: findSentenceByTemplate('completed work-related tasks'),
-          question: findQuestionByText('How often did {subject} complete work-related tasks in a timely manner?'),
+          question: findQuestionByText(
+            'How often did {subject} complete work-related tasks in a timely manner?',
+          ),
         },
         {
           text: 'usually',
           includeIfSelectedOption: 'Usually',
           sentence: findSentenceByTemplate('completed work-related tasks'),
-          question: findQuestionByText('How often did {subject} complete work-related tasks in a timely manner?'),
+          question: findQuestionByText(
+            'How often did {subject} complete work-related tasks in a timely manner?',
+          ),
         },
         {
           text: 'almost always',
           includeIfSelectedOption: 'Almost Always',
           sentence: findSentenceByTemplate('completed work-related tasks'),
-          question: findQuestionByText('How often did {subject} complete work-related tasks in a timely manner?'),
+          question: findQuestionByText(
+            'How often did {subject} complete work-related tasks in a timely manner?',
+          ),
         },
         {
           text: 'always',
           includeIfSelectedOption: 'Always',
           sentence: findSentenceByTemplate('completed work-related tasks'),
-          question: findQuestionByText('How often did {subject} complete work-related tasks in a timely manner?'),
+          question: findQuestionByText(
+            'How often did {subject} complete work-related tasks in a timely manner?',
+          ),
         },
 
         // Communication effectiveness fragments
@@ -201,7 +209,9 @@ export default class CreateFragments implements Seeder {
           text: 'is good at responding to constructive criticism',
           includeIfSelectedOption: 'Yes',
           sentence: findSentenceByTemplate('{qualities}'),
-          question: findQuestionByText('Was {subject} good at responding to constructive criticism?'),
+          question: findQuestionByText(
+            'Was {subject} good at responding to constructive criticism?',
+          ),
         },
         {
           text: 'is responsible',
@@ -215,13 +225,17 @@ export default class CreateFragments implements Seeder {
           text: 'hire',
           includeIfSelectedOption: 'Yes',
           sentence: findSentenceByTemplate('{recommendation}'),
-          question: findQuestionByText('Given enough resources, would you hire {subject} as a regular employee?'),
+          question: findQuestionByText(
+            'Given enough resources, would you hire {subject} as a regular employee?',
+          ),
         },
         {
           text: 'not hire',
           includeIfSelectedOption: 'No',
           sentence: findSentenceByTemplate('{recommendation}'),
-          question: findQuestionByText('Given enough resources, would you hire {subject} as a regular employee?'),
+          question: findQuestionByText(
+            'Given enough resources, would you hire {subject} as a regular employee?',
+          ),
         },
 
         // Reference willingness fragments
@@ -229,13 +243,17 @@ export default class CreateFragments implements Seeder {
           text: 'would be happy',
           includeIfSelectedOption: 'Yes',
           sentence: findSentenceByTemplate('{willingness}'),
-          question: findQuestionByText('Would you be willing to act as a reference for {subject}? We will include your email address as contact information if you respond \'Yes\'.'),
+          question: findQuestionByText(
+            "Would you be willing to act as a reference for {subject}? We will include your email address as contact information if you respond 'Yes'.",
+          ),
         },
         {
           text: 'would prefer not',
           includeIfSelectedOption: 'No',
           sentence: findSentenceByTemplate('{willingness}'),
-          question: findQuestionByText('Would you be willing to act as a reference for {subject}? We will include your email address as contact information if you respond \'Yes\'.'),
+          question: findQuestionByText(
+            "Would you be willing to act as a reference for {subject}? We will include your email address as contact information if you respond 'Yes'.",
+          ),
         },
 
         // Contact information fragments
@@ -243,13 +261,17 @@ export default class CreateFragments implements Seeder {
           text: 'I can be reached at {contactEmail} for further information.',
           includeIfSelectedOption: 'Yes',
           sentence: findSentenceByTemplate('{contact}'),
-          question: findQuestionByText('Would you be willing to act as a reference for {subject}? We will include your email address as contact information if you respond \'Yes\'.'),
+          question: findQuestionByText(
+            "Would you be willing to act as a reference for {subject}? We will include your email address as contact information if you respond 'Yes'.",
+          ),
         },
         {
           text: 'Please contact me if you need additional information.',
           includeIfSelectedOption: 'No',
           sentence: findSentenceByTemplate('{contact}'),
-          question: findQuestionByText('Would you be willing to act as a reference for {subject}? We will include your email address as contact information if you respond \'Yes\'.'),
+          question: findQuestionByText(
+            "Would you be willing to act as a reference for {subject}? We will include your email address as contact information if you respond 'Yes'.",
+          ),
         },
       ])
       .execute();

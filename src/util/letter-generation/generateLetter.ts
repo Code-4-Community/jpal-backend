@@ -1,5 +1,7 @@
-import { SurveyResponseDto } from 'src/assignment/dto/survey-response.dto';
+import { SurveyResponseDto } from '../../assignment/dto/survey-response.dto';
 import { Assignment } from '../../assignment/types/assignment.entity';
+import { Survey } from '../../survey/types/survey.entity';
+import { SurveyTemplate } from '../../surveyTemplate/types/surveyTemplate.entity';
 
 export type Letter = {
   shouldBeSent: boolean;
@@ -30,12 +32,20 @@ export type AssignmentMetaData = {
   };
   organization: string;
   dateOfLetterGeneration: Date;
+  survey: Survey;
+  surveyTemplate: SurveyTemplate;
 };
 
 export type LetterGenerationRules = {
-  greeting: string;
-  paragraphs: Paragraph[];
-  closing: string;
+  greeting: (params: { metaData: AssignmentMetaData }) => string;
+  paragraphs: ({
+    metaData,
+    responses,
+  }: {
+    metaData: AssignmentMetaData;
+    responses: SurveyResponseDto[];
+  }) => string[];
+  closing: (params: { metaData: AssignmentMetaData }) => string;
 };
 
 type Paragraph = {
@@ -77,72 +87,18 @@ export default function generateLetter(
   metadata: AssignmentMetaData,
   rules: LetterGenerationRules,
 ): Letter {
-  const generatedParagraphs = rules.paragraphs
-    .map((paragraphRules) => generateParagraph(paragraphRules, responses, metadata))
-    .filter((paragraph) => paragraph !== undefined);
+  const generatedParagraphs = rules.paragraphs({ metaData: metadata });
   return {
     shouldBeSent: generatedParagraphs.length >= 3,
     date: metadata.dateOfLetterGeneration,
-    greeting: rules.greeting,
+    greeting: rules.greeting({ metaData: metadata }),
     paragraphs: generatedParagraphs,
-    closing: rules.closing,
+    closing: rules.closing({ metaData: metadata }),
     signature: {
       fullName: getFullName(metadata.reviewer.firstName, metadata.reviewer.lastName),
       organization: metadata.organization,
     },
   };
-}
-
-function generateParagraph(
-  paragraphRules: Paragraph,
-  responses: SurveyResponseDto[],
-  metadata: AssignmentMetaData,
-): string | undefined {
-  const sentences: string[] = paragraphRules.sentences
-    .map((sentence) => generateSentence(sentence, responses, metadata))
-    .filter((sentence) => sentence !== undefined);
-
-  return sentences.length > 0 ? sentences.join(' ') : undefined;
-}
-
-/**
- * @param sentence May be a literal sentence or a collection of rules to create one, if the latter, then generates the sentence
- * @returns The sentence, or undefined if the sentence should not be included
- */
-function generateSentence(
-  sentence: Sentence,
-  responses: SurveyResponseDto[],
-  metadata: AssignmentMetaData,
-): string | undefined {
-  if (typeof sentence === 'function') {
-    return sentence(metadata);
-  } else if (isSingleResponseSentence(sentence)) {
-    const response = sentence.selectResponse(responses);
-    // TODO: log if no response is found
-    if (response === undefined) {
-      return undefined;
-    } else if (response && sentence.shouldIncludeSentence(response)) {
-      return sentence.toSentence(response.selectedOption.toLowerCase(), metadata);
-    }
-  } else {
-    const fragments = sentence.fragments
-      .map((fragment) => {
-        const response = fragment.selectResponse(responses);
-        if (response && fragment.shouldIncludeFragment(response)) {
-          return fragment.toFragment(response.selectedOption.toLowerCase(), metadata);
-        } else {
-          return undefined;
-        }
-      })
-      .filter((fragment) => fragment !== undefined);
-
-    if (fragments.length === 0) {
-      // TODO: log if no response is found
-      return undefined;
-    } else {
-      return sentence.composeFragments(fragments, metadata);
-    }
-  }
 }
 
 export function extractMetaData(assignment: Assignment, currentDate: Date): AssignmentMetaData {
@@ -160,6 +116,8 @@ export function extractMetaData(assignment: Assignment, currentDate: Date): Assi
     },
     organization: assignment.survey.organizationName,
     dateOfLetterGeneration: currentDate,
+    survey: assignment.survey,
+    surveyTemplate: assignment.survey.surveyTemplate,
   };
 }
 
