@@ -6,11 +6,11 @@ import { Repository } from 'typeorm';
 import { Option } from '../option/types/option.entity';
 import { Question } from '../question/types/question.entity';
 import { Response } from '../response/types/response.entity';
-import DEFAULT_LETTER_GENERATION_RULES from '../util/letter-generation/defaultLetterGenerationRules';
 import generateLetter, {
   AssignmentMetaData,
   extractMetaData,
   Letter,
+  LetterGenerationRules,
 } from '../util/letter-generation/generateLetter';
 import { SurveyResponseDto } from './dto/survey-response.dto';
 import { Assignment } from './types/assignment.entity';
@@ -20,6 +20,23 @@ import { YouthRoles } from '../youth/types/youthRoles';
 import { letterToPdf } from '../util/letter-generation/letter-to-pdf';
 import { AWSS3Service } from '../aws/aws-s3.service';
 import { s3Buckets } from '../aws/types/s3Buckets';
+
+// Utility functions (outside of class)
+function aOrAn(word: string, capitalize = false): string {
+  const AN = capitalize ? 'An' : 'an';
+  const A = capitalize ? 'A' : 'a';
+  const VOWELS = ['a', 'e', 'i', 'o', 'u'];
+  return (VOWELS.includes(word[0].toLowerCase()) ? AN : A) + ' ' + word;
+}
+
+/**
+ * Produces a predicate that returns true if the selection option text matches one of the given words.
+ * Not case sensitive.
+ */
+function ifOneOfTheseWords(validOptions: string[]): (response: SurveyResponseDto) => boolean {
+  return (response: SurveyResponseDto) =>
+    validOptions.map((str) => str.toLowerCase()).includes(response.selectedOption.toLowerCase());
+}
 
 @Injectable()
 export class AssignmentService {
@@ -57,7 +74,18 @@ export class AssignmentService {
   }
 
   async complete(uuid: string, responses: SurveyResponseDto[]): Promise<Assignment> {
-    let assignment = await this.getByUuid(uuid);
+    let assignment = await this.getByUuid(uuid, [
+      'responses',
+      'responses.question',
+      'responses.option',
+      'youth',
+      'reviewer',
+      'survey',
+      'survey.surveyTemplate',
+      'survey.surveyTemplate.paragraphs',
+      'survey.surveyTemplate.paragraphs.sentences',
+      'survey.surveyTemplate.paragraphs.sentences.question',
+    ]);
 
     if (assignment.responses === null) {
       assignment.status = AssignmentStatus.COMPLETED;
@@ -99,7 +127,21 @@ export class AssignmentService {
     );
 
     await this.responseRepository.save(responsesToSave);
-    assignment = await this.getByUuid(uuid, ['youth', 'survey', 'reviewer']);
+    assignment = await this.assignmentRepository.findOne({
+      where: { uuid },
+      relations: [
+        'responses',
+        'responses.question', 
+        'responses.option',
+        'youth',
+        'reviewer',
+        'survey',
+        'survey.surveyTemplate',
+        'survey.surveyTemplate.paragraphs',
+        'survey.surveyTemplate.paragraphs.sentences',
+        'survey.surveyTemplate.paragraphs.sentences.question',
+      ],
+    });
     assignment.status = AssignmentStatus.COMPLETED;
 
     const letter = await this.generateLetterFromCompletedAssignment(
@@ -138,7 +180,8 @@ export class AssignmentService {
     responses: SurveyResponseDto[],
     metadata: AssignmentMetaData,
   ): Promise<Letter> {
-    return generateLetter(responses, metadata, DEFAULT_LETTER_GENERATION_RULES);
+    const dynamicRules = this.buildDynamicLetterRules(metadata);
+    return generateLetter(responses, metadata, dynamicRules);
   }
 
   async generateLetterFromCompletedAssignment(
@@ -158,7 +201,59 @@ export class AssignmentService {
       selectedOption: response.option.text,
     }));
 
-    return generateLetter(responseDTO, metadata, DEFAULT_LETTER_GENERATION_RULES);
+    const dynamicRules = this.buildDynamicLetterRules(metadata);
+    return generateLetter(responseDTO, metadata, dynamicRules);
+  }
+
+  private buildDynamicLetterRules(metadata: AssignmentMetaData): LetterGenerationRules {
+    return {
+      greeting: ({ metaData }) => {
+        return metaData.surveyTemplate.greeting || `Dear ${metaData.youth.firstName},`;
+      },
+
+      paragraphs: ({ metaData, responses }) => {
+        return metaData.surveyTemplate.paragraphs
+          .map((paragraph) => {
+            const sentences = paragraph.sentences
+              .map((sentence) => {
+                if (sentence.isPlainText) {
+                  return sentence.template
+                    .replace('{subject_first_name}', metaData.youth.firstName)
+                    .replace('{subject_last_name}', metaData.youth.lastName)
+                    .replace('{organization_name}', metaData.organization);
+                } else if (sentence.isMultiQuestion) {
+                  // Handle multi-question logic
+                  return '';
+                } else {
+                  // single question sentence
+                  const relevantResponse = responses.find(
+                    (response) => response.question === sentence.question.text,
+                  );
+
+                  if (relevantResponse) {
+                    const selectedOption = relevantResponse.selectedOption;
+                    if (ifOneOfTheseWords(sentence.includeIfSelectedOptions)(relevantResponse)) {
+                      return sentence.template
+                        .replace('{subject_first_name}', metaData.youth.firstName)
+                        .replace('{subject_last_name}', metaData.youth.lastName)
+                        .replace('{organization_name}', metaData.organization)
+                        .replace('{rating}', aOrAn(selectedOption));
+                    }
+                  }
+                  return '';
+                }
+              })
+              .filter((sentence) => sentence !== '');
+
+            return sentences.join(' ');
+          })
+          .filter((paragraph) => paragraph !== '');
+      },
+
+      closing: ({ metaData }) => {
+        return metaData.surveyTemplate.closing || 'Sincerely,';
+      },
+    };
   }
 
   youthEmailSubject(reviewerFirstName: string, reviewerLastName: string) {

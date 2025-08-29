@@ -87,7 +87,7 @@ export default function generateLetter(
   metadata: AssignmentMetaData,
   rules: LetterGenerationRules,
 ): Letter {
-  const generatedParagraphs = rules.paragraphs({ metaData: metadata });
+  const generatedParagraphs = rules.paragraphs({ metaData: metadata, responses });
   return {
     shouldBeSent: generatedParagraphs.length >= 3,
     date: metadata.dateOfLetterGeneration,
