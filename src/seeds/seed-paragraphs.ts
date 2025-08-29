@@ -10,13 +10,13 @@ export default class CreateParagraphs implements Seeder {
 
     const sentences = await connection
       .getRepository(Sentence)
-      .findByIds([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+      .findByIds([1, 2, 3, 4, 5, 6, 7, 8]);
 
     await connection.getRepository(Paragraph).save([
       {
         surveyTemplate: surveyTemplate,
         order: 1,
-        sentences: [sentences[8], sentences[0]],
+        sentences: [sentences[0], sentences[1]],
       },
       {
         surveyTemplate: surveyTemplate,
@@ -36,7 +36,7 @@ export default class CreateParagraphs implements Seeder {
       {
         surveyTemplate: surveyTemplate,
         order: 5,
-        sentences: [sentences[6], sentences[9], sentences[7]],
+        sentences: [sentences[6], sentences[7]],
       },
     ]);
   }

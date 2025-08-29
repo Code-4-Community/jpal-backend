@@ -217,10 +217,7 @@ export class AssignmentService {
             const sentences = paragraph.sentences
               .map((sentence) => {
                 if (sentence.isPlainText) {
-                  return sentence.template
-                    .replace('{subject_first_name}', metaData.youth.firstName)
-                    .replace('{subject_last_name}', metaData.youth.lastName)
-                    .replace('{organization_name}', metaData.organization);
+                  return this.replaceVariables(sentence.template, metaData);
                 } else if (sentence.isMultiQuestion) {
                   // Handle multi-question logic
                   return '';
@@ -233,11 +230,7 @@ export class AssignmentService {
                   if (relevantResponse) {
                     const selectedOption = relevantResponse.selectedOption;
                     if (ifOneOfTheseWords(sentence.includeIfSelectedOptions)(relevantResponse)) {
-                      return sentence.template
-                        .replace('{subject_first_name}', metaData.youth.firstName)
-                        .replace('{subject_last_name}', metaData.youth.lastName)
-                        .replace('{organization_name}', metaData.organization)
-                        .replace('{rating}', aOrAn(selectedOption));
+                      return this.replaceVariables(sentence.template, metaData, selectedOption);
                     }
                   }
                   return '';
@@ -259,6 +252,17 @@ export class AssignmentService {
   youthEmailSubject(reviewerFirstName: string, reviewerLastName: string) {
     return `New letter of recommendation from ${reviewerFirstName} ${reviewerLastName}`;
   }
+
+  replaceVariables = (template: string, metaData: AssignmentMetaData, selectedOption?: string): string => {
+    const selectedOptionRep = selectedOption ? selectedOption.toLowerCase() : '';
+    return template
+      .replace('{subject_first_name}', metaData.youth.firstName)
+      .replace('{subject_last_name}', metaData.youth.lastName)
+      .replace('{organization_name}', metaData.organization)
+      .replace('{rating}', selectedOptionRep)
+      .replace('{article_rating}', selectedOption ? aOrAn(selectedOptionRep) : '')
+      .replace('{contact}', metaData.reviewer.email);
+  };
 
   async sendToYouth(assignment: Assignment): Promise<void> {
     try {

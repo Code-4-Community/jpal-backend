@@ -48,40 +48,6 @@ export type LetterGenerationRules = {
   closing: (params: { metaData: AssignmentMetaData }) => string;
 };
 
-type Paragraph = {
-  sentences: Sentence[];
-};
-
-type Sentence = SentenceFactory | SingleResponseSentence | MultiResponseSentence;
-
-type SentenceFactory = (metadata: AssignmentMetaData) => string;
-
-type SingleResponseSentence = {
-  toSentence: (selectedOption: string, metadata: AssignmentMetaData) => string;
-  selectResponse: (responses: SurveyResponseDto[]) => SurveyResponseDto | undefined;
-  shouldIncludeSentence: (response: SurveyResponseDto) => boolean;
-};
-
-function isSingleResponseSentence(expr): expr is SingleResponseSentence {
-  return (expr as SingleResponseSentence).toSentence !== undefined;
-}
-
-type MultiResponseSentence = {
-  composeFragments: (fragments: string[], metadata: AssignmentMetaData) => string;
-  fragments: Fragment[];
-};
-
-type Fragment = {
-  toFragment: (selectedOption: string, metadata: AssignmentMetaData) => string;
-  selectResponse: (responses: SurveyResponseDto[]) => SurveyResponseDto | undefined;
-  shouldIncludeFragment: (response: SurveyResponseDto) => boolean;
-};
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-function isMultiResponseSentence(expr): expr is MultiResponseSentence {
-  return (expr as MultiResponseSentence).composeFragments !== undefined;
-}
-
 export default function generateLetter(
   responses: SurveyResponseDto[],
   metadata: AssignmentMetaData,

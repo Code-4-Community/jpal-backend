@@ -14,6 +14,8 @@ export default class CreateSurveyTemplates implements Seeder {
       creator: users[0],
       name: 'Default Survey Template',
       questions: savedQuestions,
+      greeting: "To Whom It May Concern:",
+      closing: "Sincerely,"
     });
 
     return surveyTemplate;
