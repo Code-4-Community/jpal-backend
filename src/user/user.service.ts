@@ -12,7 +12,19 @@ export class UserService {
     private awsCreateUser: AwsCreateUserService,
   ) {}
 
-  async create(email: string, firstName: string, lastName: string, role: Role): Promise<User> {
+  async create(
+    email: string,
+    firstName: string,
+    lastName: string,
+    role: Role,
+    isPlatformAdmin: boolean,
+  ): Promise<User> {
+    if ((role === Role.PLATFORM_ADMIN || role === Role.RESEARCHER) && !isPlatformAdmin) {
+      throw new ConflictException(
+        'Only platform admins can create researcher and platform admin users',
+      );
+    }
+
     const emailNotUnique = await this.userRepository.findOne({ email });
     if (!!emailNotUnique) throw new ConflictException('Email already exists');
     try {

@@ -17,6 +17,15 @@ export const mockUser: User = {
   createdDate: new Date('2023-09-24'),
 };
 
+const mockUserPlatformAdmin: User = {
+  id: 1,
+  email: 'test@test.com',
+  firstName: 'test',
+  lastName: 'user',
+  role: Role.PLATFORM_ADMIN,
+  createdDate: new Date('2023-09-24'),
+};
+
 export const mockResearcher: User = {
   id: 2,
   email: 'test@test.com',
@@ -72,7 +81,13 @@ describe('UserService', () => {
 
   it('should fail to create a user whose email is already claimed', async () => {
     await expect(
-      service.create('already@exists.com', mockUser.firstName, mockUser.lastName, mockUser.role),
+      service.create(
+        'already@exists.com',
+        mockUser.firstName,
+        mockUser.lastName,
+        mockUser.role,
+        false,
+      ),
     ).rejects.toThrow(new ConflictException('Email already exists'));
   });
 
@@ -82,6 +97,7 @@ describe('UserService', () => {
       mockUser.firstName,
       mockUser.lastName,
       mockUser.role,
+      false,
     );
     expect(goodResponse).toEqual({
       id: 1,
@@ -97,5 +113,39 @@ describe('UserService', () => {
     const goodResponse = await service.getAllAdmins();
     expect.assertions(1);
     expect(goodResponse).toEqual(listMockUsers);
+  });
+
+  it('should create a platform admin user', async () => {
+    const goodResponse = await service.create(
+      mockUserPlatformAdmin.email,
+      mockUserPlatformAdmin.firstName,
+      mockUserPlatformAdmin.lastName,
+      mockUserPlatformAdmin.role,
+      true,
+    );
+    expect(goodResponse).toEqual({
+      id: 1,
+      email: mockUserPlatformAdmin.email,
+      firstName: mockUserPlatformAdmin.firstName,
+      lastName: mockUserPlatformAdmin.lastName,
+      role: mockUserPlatformAdmin.role,
+    });
+    expect(mockAwsCreateUserService.adminCreateUser).toHaveBeenCalledWith(
+      mockUserPlatformAdmin.email,
+    );
+  });
+
+  it('should not create an admin user if the requester is not a platform admin', async () => {
+    await expect(
+      service.create(
+        mockUserPlatformAdmin.email,
+        mockUserPlatformAdmin.firstName,
+        mockUserPlatformAdmin.lastName,
+        Role.RESEARCHER,
+        false,
+      ),
+    ).rejects.toThrow(
+      new ConflictException('Only platform admins can create researcher and platform admin users'),
+    );
   });
 });

@@ -4,6 +4,7 @@ import { User } from './types/user.entity';
 import { Auth } from '../auth/decorators/auth.decorator';
 import { CreateUserRequestDto } from './dto/create-user.dto';
 import { UserService } from './user.service';
+import { ReqUser } from '../auth/decorators/user.decorator';
 
 @Controller('user')
 export class UserController {
@@ -14,12 +15,13 @@ export class UserController {
    */
   @Post()
   @Auth(Role.RESEARCHER)
-  create(@Body() createUserRequestDto: CreateUserRequestDto): Promise<User> {
+  create(@Body() createUserRequestDto: CreateUserRequestDto, @ReqUser() user: User): Promise<User> {
     return this.userService.create(
       createUserRequestDto.email,
       createUserRequestDto.firstName,
       createUserRequestDto.lastName,
       createUserRequestDto.role,
+      user.role === Role.PLATFORM_ADMIN,
     );
   }
 
