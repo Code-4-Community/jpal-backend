@@ -2,6 +2,7 @@ import { CanActivate, ExecutionContext, mixin } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { Role } from '../../user/types/role';
 import { PossiblyAuthorizedRequest } from '../types/authorized-request';
+import { ROLE_HIERARCHY } from '../../user/types/role';
 
 /**
  * Returns a Guard that only allows Users with the given roles to access the route.
@@ -13,7 +14,10 @@ const RolesGuard = (roles: Role[]): any => {
     canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
       const req = context.switchToHttp().getRequest<PossiblyAuthorizedRequest>();
       if (!req.user) return false;
-      return roles.includes(req.user.role);
+
+      const userPermissions = ROLE_HIERARCHY[req.user.role] || [req.user.role];
+
+      return roles.some((role) => userPermissions.includes(role));
     }
   }
 
