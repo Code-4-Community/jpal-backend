@@ -26,17 +26,14 @@ export interface SurveyNameData {
 export class SurveyTemplateService {
   async getByCreator(creator: User): Promise<SurveyNameData[]> {
     const result = await this.surveyTemplateRepository.find({
-      where: { creator },
+      where: [{ creator }, { id: 1 }],
     });
-
-    if (!result) {
-      throw new BadRequestException(`Creator ${creator.id} not found`);
-    }
 
     return result.map((surveyTemp) => {
       return { name: surveyTemp.name, id: surveyTemp.id };
     });
   }
+
   constructor(
     @InjectRepository(SurveyTemplate)
     private surveyTemplateRepository: Repository<SurveyTemplate>,
