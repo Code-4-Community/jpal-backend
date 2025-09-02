@@ -8,9 +8,7 @@ export default class CreateParagraphs implements Seeder {
   public async run(factory: Factory, connection: Connection): Promise<any> {
     const surveyTemplate = await connection.getRepository(SurveyTemplate).findOneOrFail(1);
 
-    const sentences = await connection
-      .getRepository(Sentence)
-      .findByIds([1, 2, 3, 4, 5, 6, 7, 8]);
+    const sentences = await connection.getRepository(Sentence).findByIds([1, 2, 3, 4, 5, 6, 7, 8]);
 
     await connection.getRepository(Paragraph).save([
       {

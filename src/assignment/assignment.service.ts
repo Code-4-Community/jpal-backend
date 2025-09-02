@@ -20,6 +20,7 @@ import { YouthRoles } from '../youth/types/youthRoles';
 import { letterToPdf } from '../util/letter-generation/letter-to-pdf';
 import { AWSS3Service } from '../aws/aws-s3.service';
 import { s3Buckets } from '../aws/types/s3Buckets';
+import { Fragment } from 'src/fragment/types/fragment.entity';
 
 // Utility functions (outside of class)
 function aOrAn(word: string, capitalize = false): string {
@@ -36,6 +37,18 @@ function aOrAn(word: string, capitalize = false): string {
 function ifOneOfTheseWords(validOptions: string[]): (response: SurveyResponseDto) => boolean {
   return (response: SurveyResponseDto) =>
     validOptions.map((str) => str.toLowerCase()).includes(response.selectedOption.toLowerCase());
+}
+
+/**
+ * Joins a list of strings by commas, and adds an 'and' to the end if there are more than one item.
+ * Omits the oxford comma.
+ * @example joinEndingWithAnd(['a', 'b', 'c']) => 'a, b and c'
+ */
+function joinEndingWithAnd(list: string[]): string {
+  if (list.length === 1) {
+    return list[0];
+  }
+  return list.slice(0, -1).join(', ') + ' and ' + list.slice(-1)[0];
 }
 
 @Injectable()
@@ -85,6 +98,8 @@ export class AssignmentService {
       'survey.surveyTemplate.paragraphs',
       'survey.surveyTemplate.paragraphs.sentences',
       'survey.surveyTemplate.paragraphs.sentences.question',
+      'survey.surveyTemplate.paragraphs.sentences.fragments',
+      'survey.surveyTemplate.paragraphs.sentences.fragments.question',
     ]);
 
     if (assignment.responses === null) {
@@ -131,7 +146,7 @@ export class AssignmentService {
       where: { uuid },
       relations: [
         'responses',
-        'responses.question', 
+        'responses.question',
         'responses.option',
         'youth',
         'reviewer',
@@ -140,6 +155,8 @@ export class AssignmentService {
         'survey.surveyTemplate.paragraphs',
         'survey.surveyTemplate.paragraphs.sentences',
         'survey.surveyTemplate.paragraphs.sentences.question',
+        'survey.surveyTemplate.paragraphs.sentences.fragments',
+        'survey.surveyTemplate.paragraphs.sentences.fragments.question',
       ],
     });
     assignment.status = AssignmentStatus.COMPLETED;
@@ -212,6 +229,7 @@ export class AssignmentService {
       },
 
       paragraphs: ({ metaData, responses }) => {
+        metaData.surveyTemplate.paragraphs.sort((a, b) => a.order - b.order);
         return metaData.surveyTemplate.paragraphs
           .map((paragraph) => {
             const sentences = paragraph.sentences
@@ -219,8 +237,42 @@ export class AssignmentService {
                 if (sentence.isPlainText) {
                   return this.replaceVariables(sentence.template, metaData);
                 } else if (sentence.isMultiQuestion) {
-                  // Handle multi-question logic
-                  return '';
+                  if (!sentence.fragments || sentence.fragments.length === 0) {
+                    return '';
+                  }
+
+                  const fragmentResults = sentence.fragments
+                    .map((fragment: Fragment) => {
+                      const relevantResponse = responses.find(
+                        (response) => response.question === fragment.question.text,
+                      );
+
+                      if (!relevantResponse) {
+                        return null;
+                      }
+
+                      // Check if the selected option matches the fragment's include condition
+                      if (
+                        relevantResponse.selectedOption.toLowerCase() ===
+                        fragment.includeIfSelectedOption.toLowerCase()
+                      ) {
+                        return fragment.text;
+                      }
+
+                      return null;
+                    })
+                    .filter((result) => result !== null);
+
+                  if (fragmentResults.length === 0) {
+                    return '';
+                  }
+
+                  const template = sentence.template;
+
+                  return this.replaceVariables(template, metaData).replace(
+                    '{qualities}',
+                    joinEndingWithAnd(fragmentResults),
+                  );
                 } else {
                   // single question sentence
                   const relevantResponse = responses.find(
@@ -253,15 +305,19 @@ export class AssignmentService {
     return `New letter of recommendation from ${reviewerFirstName} ${reviewerLastName}`;
   }
 
-  replaceVariables = (template: string, metaData: AssignmentMetaData, selectedOption?: string): string => {
+  replaceVariables = (
+    template: string,
+    metaData: AssignmentMetaData,
+    selectedOption?: string,
+  ): string => {
     const selectedOptionRep = selectedOption ? selectedOption.toLowerCase() : '';
     return template
-      .replace('{subject_first_name}', metaData.youth.firstName)
-      .replace('{subject_last_name}', metaData.youth.lastName)
-      .replace('{organization_name}', metaData.organization)
-      .replace('{rating}', selectedOptionRep)
-      .replace('{article_rating}', selectedOption ? aOrAn(selectedOptionRep) : '')
-      .replace('{contact}', metaData.reviewer.email);
+      .replace(/{subject_first_name}/g, metaData.youth.firstName)
+      .replace(/{subject_last_name}/g, metaData.youth.lastName)
+      .replace(/{organization_name}/g, metaData.organization)
+      .replace(/{rating}/g, selectedOptionRep)
+      .replace(/{article_rating}/g, selectedOption ? aOrAn(selectedOptionRep) : '')
+      .replace(/{contact}/g, metaData.reviewer.email);
   };
 
   async sendToYouth(assignment: Assignment): Promise<void> {
