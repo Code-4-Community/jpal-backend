@@ -61,7 +61,7 @@ export default class CreateFragments implements Seeder {
           includeIfSelectedOption: 'Yes',
           sentence: findSentenceByTemplate('{qualities}'),
           question: findQuestionByText('Was {subject} responsible?'),
-        }
+        },
       ])
       .execute();
   }

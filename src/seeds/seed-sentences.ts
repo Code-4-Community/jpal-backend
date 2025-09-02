@@ -63,12 +63,13 @@ export default class CreateSentences implements Seeder {
           question: findQuestionByText('How was {subject} at following instructions?'),
         },
         {
-          template: "In addition to {subject_first_name}'s other strengths, {subject_first_name} {qualities}.",
+          template:
+            "In addition to {subject_first_name}'s other strengths, {subject_first_name} {qualities}.",
           isPlainText: false,
           isMultiQuestion: true,
           includeIfSelectedOptions: ['Yes'],
           question: findQuestionByText('Did {subject} take initiative?'),
-          fragments: fragments
+          fragments: fragments,
         },
         {
           template: 'Given the resources, I would hire {subject_first_name} as a regular employee.',
