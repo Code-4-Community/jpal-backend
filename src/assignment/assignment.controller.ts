@@ -98,6 +98,12 @@ export class AssignmentController {
       'youth',
       'reviewer',
       'survey',
+      'survey.surveyTemplate',
+      'survey.surveyTemplate.paragraphs',
+      'survey.surveyTemplate.paragraphs.sentences',
+      'survey.surveyTemplate.paragraphs.sentences.question',
+      'survey.surveyTemplate.paragraphs.sentences.fragments',
+      'survey.surveyTemplate.paragraphs.sentences.fragments.question',
     ]);
     if (!assignment) {
       throw new BadRequestException('This assignment does not exist.');
