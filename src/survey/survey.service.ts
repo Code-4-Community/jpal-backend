@@ -298,7 +298,7 @@ export class SurveyService {
 
     const assignmentsForReviewer = survey.assignments.filter(
       (assignment) =>
-        assignment.reviewer.id === reviewer.id && assignment.status === AssignmentStatus.INCOMPLETE,
+        assignment.reviewer.id === reviewer.id && assignment.status !== AssignmentStatus.COMPLETED,
     );
 
     if (assignmentsForReviewer.length === 0) {

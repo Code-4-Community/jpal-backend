@@ -10,7 +10,6 @@ import { Role } from '../user/types/role';
 import { BadRequestException } from '@nestjs/common';
 import { Sentence } from '../sentence/types/sentence.entity';
 import { Paragraph } from '../paragraph/types/paragraph.entity';
-import { mock } from 'jest-mock-extended';
 
 const mockSentence = new Sentence();
 const mockSentence2 = new Sentence();
@@ -55,7 +54,9 @@ const mockSurveyTemplateRepository: Partial<Repository<SurveyTemplate>> = {
     return undefined;
   },
   async find(query: any): Promise<SurveyTemplate[] | undefined> {
-    if (query.where.creator.id === 1) return [mockSurveyTemplate];
+    if (Array.isArray(query.where)) {
+      return [mockSurveyTemplate];
+    }
     return undefined;
   },
   save: jest.fn().mockImplementation(async (template) => template),
@@ -153,17 +154,18 @@ describe('SurveyTemplateService', () => {
     expect(surveyTemplate.questions[0].options.map((o) => o)).toEqual(['Red', 'Blue']);
   });
 
-  it('should error if the requested user does not exist', async () => {
+  it('should return the default survey template even if the user is not the creator', async () => {
     expect(async () => {
-      await service.getByCreator({
-        id: -2,
+      const surveyTemplates = await service.getByCreator({
+        id: 4,
         email: 'test@test.com',
         firstName: 'Random',
         lastName: 'user',
         role: Role.RESEARCHER,
         createdDate: new Date('2023-09-24'),
       });
-    }).rejects.toThrow();
+      expect(surveyTemplates[0]).toEqual(mockSurveyNameData);
+    });
   });
 
   it('should return expected list of survey name data objects if creator exists', async () => {

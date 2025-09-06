@@ -6,11 +6,11 @@ import { Repository } from 'typeorm';
 import { Option } from '../option/types/option.entity';
 import { Question } from '../question/types/question.entity';
 import { Response } from '../response/types/response.entity';
-import DEFAULT_LETTER_GENERATION_RULES from '../util/letter-generation/defaultLetterGenerationRules';
 import generateLetter, {
   AssignmentMetaData,
   extractMetaData,
   Letter,
+  LetterGenerationRules,
 } from '../util/letter-generation/generateLetter';
 import { SurveyResponseDto } from './dto/survey-response.dto';
 import { Assignment } from './types/assignment.entity';
@@ -20,6 +20,36 @@ import { YouthRoles } from '../youth/types/youthRoles';
 import { letterToPdf } from '../util/letter-generation/letter-to-pdf';
 import { AWSS3Service } from '../aws/aws-s3.service';
 import { s3Buckets } from '../aws/types/s3Buckets';
+import { Fragment } from 'src/fragment/types/fragment.entity';
+
+// Utility functions (outside of class)
+function aOrAn(word: string, capitalize = false): string {
+  const AN = capitalize ? 'An' : 'an';
+  const A = capitalize ? 'A' : 'a';
+  const VOWELS = ['a', 'e', 'i', 'o', 'u'];
+  return (VOWELS.includes(word[0].toLowerCase()) ? AN : A) + ' ' + word;
+}
+
+/**
+ * Produces a predicate that returns true if the selection option text matches one of the given words.
+ * Not case sensitive.
+ */
+function ifOneOfTheseWords(validOptions: string[]): (response: SurveyResponseDto) => boolean {
+  return (response: SurveyResponseDto) =>
+    validOptions.map((str) => str.toLowerCase()).includes(response.selectedOption.toLowerCase());
+}
+
+/**
+ * Joins a list of strings by commas, and adds an 'and' to the end if there are more than one item.
+ * Omits the oxford comma.
+ * @example joinEndingWithAnd(['a', 'b', 'c']) => 'a, b and c'
+ */
+function joinEndingWithAnd(list: string[]): string {
+  if (list.length === 1) {
+    return list[0];
+  }
+  return list.slice(0, -1).join(', ') + ' and ' + list.slice(-1)[0];
+}
 
 @Injectable()
 export class AssignmentService {
@@ -57,7 +87,20 @@ export class AssignmentService {
   }
 
   async complete(uuid: string, responses: SurveyResponseDto[]): Promise<Assignment> {
-    let assignment = await this.getByUuid(uuid);
+    let assignment = await this.getByUuid(uuid, [
+      'responses',
+      'responses.question',
+      'responses.option',
+      'youth',
+      'reviewer',
+      'survey',
+      'survey.surveyTemplate',
+      'survey.surveyTemplate.paragraphs',
+      'survey.surveyTemplate.paragraphs.sentences',
+      'survey.surveyTemplate.paragraphs.sentences.question',
+      'survey.surveyTemplate.paragraphs.sentences.fragments',
+      'survey.surveyTemplate.paragraphs.sentences.fragments.question',
+    ]);
 
     if (assignment.responses === null) {
       assignment.status = AssignmentStatus.COMPLETED;
@@ -99,7 +142,23 @@ export class AssignmentService {
     );
 
     await this.responseRepository.save(responsesToSave);
-    assignment = await this.getByUuid(uuid, ['youth', 'survey', 'reviewer']);
+    assignment = await this.assignmentRepository.findOne({
+      where: { uuid },
+      relations: [
+        'responses',
+        'responses.question',
+        'responses.option',
+        'youth',
+        'reviewer',
+        'survey',
+        'survey.surveyTemplate',
+        'survey.surveyTemplate.paragraphs',
+        'survey.surveyTemplate.paragraphs.sentences',
+        'survey.surveyTemplate.paragraphs.sentences.question',
+        'survey.surveyTemplate.paragraphs.sentences.fragments',
+        'survey.surveyTemplate.paragraphs.sentences.fragments.question',
+      ],
+    });
     assignment.status = AssignmentStatus.COMPLETED;
 
     const letter = await this.generateLetterFromCompletedAssignment(
@@ -138,7 +197,8 @@ export class AssignmentService {
     responses: SurveyResponseDto[],
     metadata: AssignmentMetaData,
   ): Promise<Letter> {
-    return generateLetter(responses, metadata, DEFAULT_LETTER_GENERATION_RULES);
+    const dynamicRules = this.buildDynamicLetterRules(metadata);
+    return generateLetter(responses, metadata, dynamicRules);
   }
 
   async generateLetterFromCompletedAssignment(
@@ -158,12 +218,107 @@ export class AssignmentService {
       selectedOption: response.option.text,
     }));
 
-    return generateLetter(responseDTO, metadata, DEFAULT_LETTER_GENERATION_RULES);
+    const dynamicRules = this.buildDynamicLetterRules(metadata);
+    return generateLetter(responseDTO, metadata, dynamicRules);
+  }
+
+  private buildDynamicLetterRules(metadata: AssignmentMetaData): LetterGenerationRules {
+    return {
+      greeting: ({ metaData }) => {
+        return metaData.surveyTemplate.greeting || `Dear ${metaData.youth.firstName},`;
+      },
+
+      paragraphs: ({ metaData, responses }) => {
+        metaData.surveyTemplate.paragraphs.sort((a, b) => a.order - b.order);
+        return metaData.surveyTemplate.paragraphs
+          .map((paragraph) => {
+            const sentences = paragraph.sentences
+              .map((sentence) => {
+                if (sentence.isPlainText) {
+                  return this.replaceVariables(sentence.template, metaData);
+                } else if (sentence.isMultiQuestion) {
+                  if (!sentence.fragments || sentence.fragments.length === 0) {
+                    return '';
+                  }
+
+                  const fragmentResults = sentence.fragments
+                    .map((fragment: Fragment) => {
+                      const relevantResponse = responses.find(
+                        (response) => response.question === fragment.question.text,
+                      );
+
+                      if (!relevantResponse) {
+                        return null;
+                      }
+
+                      // Check if the selected option matches the fragment's include condition
+                      if (
+                        relevantResponse.selectedOption.toLowerCase() ===
+                        fragment.includeIfSelectedOption.toLowerCase()
+                      ) {
+                        return fragment.text;
+                      }
+
+                      return null;
+                    })
+                    .filter((result) => result !== null);
+
+                  if (fragmentResults.length === 0) {
+                    return '';
+                  }
+
+                  const template = sentence.template;
+
+                  return this.replaceVariables(template, metaData).replace(
+                    '{qualities}',
+                    joinEndingWithAnd(fragmentResults),
+                  );
+                } else {
+                  // single question sentence
+                  const relevantResponse = responses.find(
+                    (response) => response.question === sentence.question.text,
+                  );
+
+                  if (relevantResponse) {
+                    const selectedOption = relevantResponse.selectedOption;
+                    if (ifOneOfTheseWords(sentence.includeIfSelectedOptions)(relevantResponse)) {
+                      return this.replaceVariables(sentence.template, metaData, selectedOption);
+                    }
+                  }
+                  return '';
+                }
+              })
+              .filter((sentence) => sentence !== '');
+
+            return sentences.join(' ');
+          })
+          .filter((paragraph) => paragraph !== '');
+      },
+
+      closing: ({ metaData }) => {
+        return metaData.surveyTemplate.closing || 'Sincerely,';
+      },
+    };
   }
 
   youthEmailSubject(reviewerFirstName: string, reviewerLastName: string) {
     return `New letter of recommendation from ${reviewerFirstName} ${reviewerLastName}`;
   }
+
+  replaceVariables = (
+    template: string,
+    metaData: AssignmentMetaData,
+    selectedOption?: string,
+  ): string => {
+    const selectedOptionRep = selectedOption ? selectedOption.toLowerCase() : '';
+    return template
+      .replace(/{subject_first_name}/g, metaData.youth.firstName)
+      .replace(/{subject_last_name}/g, metaData.youth.lastName)
+      .replace(/{organization_name}/g, metaData.organization)
+      .replace(/{rating}/g, selectedOptionRep)
+      .replace(/{article_rating}/g, selectedOption ? aOrAn(selectedOptionRep) : '')
+      .replace(/{contact}/g, metaData.reviewer.email);
+  };
 
   async sendToYouth(assignment: Assignment): Promise<void> {
     try {

@@ -13,6 +13,15 @@ const mockUser: User = {
   createdDate: new Date('2023-09-24'),
 };
 
+const mockUserResearcher: User = {
+  id: 1,
+  email: 'test@test.com',
+  firstName: 'test',
+  lastName: 'user',
+  role: Role.RESEARCHER,
+  createdDate: new Date('2023-09-24'),
+};
+
 const listMockUsers: User[] = [mockUser];
 
 const serviceMock: Partial<UserService> = {
@@ -40,18 +49,22 @@ describe('UsersController', () => {
   it('should delegate user creation to the users service', async () => {
     expect.assertions(2);
     expect(
-      await controller.create({
-        email: mockUser.email,
-        firstName: mockUser.firstName,
-        lastName: mockUser.lastName,
-        role: mockUser.role,
-      }),
+      await controller.create(
+        {
+          email: mockUser.email,
+          firstName: mockUser.firstName,
+          lastName: mockUser.lastName,
+          role: mockUser.role,
+        },
+        mockUserResearcher,
+      ),
     ).toEqual(mockUser);
     expect(serviceMock.create).toHaveBeenCalledWith(
       mockUser.email,
       mockUser.firstName,
       mockUser.lastName,
       mockUser.role,
+      false,
     );
   });
 
