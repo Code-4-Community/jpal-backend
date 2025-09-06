@@ -1,5 +1,4 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { QuestionController } from './question.controller';
 import {
   FIVE_SENTIMENT_OPTIONS,
   NEVER,
@@ -9,12 +8,14 @@ import {
   exampleOptions,
 } from './question.examples';
 import { UploadQuestionsDTO, UploadQuestionResponseDTO } from './dto/upload-question.dto';
+import { QuestionController } from './question.controller';
 import { Question } from './types/question.entity';
 import { Sentence } from '../sentence/types/sentence.entity';
-import { QuestionService } from './question.service';
+import { QuestionService, QuestionTextData } from './question.service';
 import { QuestionData } from './question.service';
 import { mockSurveyTemplate } from './../survey/survey.controller.spec';
 import { DeleteResult } from 'typeorm';
+import { EditDto } from '../util/dto/edit.dto';
 
 export const mockOptionsData: string[] = exampleOptions.map((o) => o.text);
 
@@ -30,6 +31,16 @@ export const mockQuestion2: Question = {
   text: 'How often did this student arrive on time for work?',
   options: exampleOptions,
   sentence: new Sentence(),
+};
+
+export const mockQuestion1Return: QuestionTextData = {
+  id: 1,
+  text: 'How often is this student not responsible?',
+};
+
+export const mockQuestion1Dto: EditDto = {
+  id: 1,
+  text: 'How often is this student not responsible?',
 };
 
 export const mockReturnedQuestion1: QuestionData = {
@@ -105,14 +116,6 @@ export const mockUploadQuestionResponseDTO: UploadQuestionResponseDTO = {
   plain_text_sentences: 2,
 };
 
-export const mockQuestionService: Partial<QuestionService> = {
-  batchCreatePlainText: jest.fn(() => Promise.resolve(2)),
-  batchCreateQuestions: jest.fn(() => Promise.resolve(2)),
-  batchCreateMultiQuestions: jest.fn(() => Promise.resolve(3)),
-  getAllQuestions: jest.fn(() => Promise.resolve([mockReturnedQuestion1, mockReturnedQuestion2])),
-  deleteQuestion: jest.fn(() => Promise.resolve(mockDeleteResult)),
-};
-
 export const mockReturnedQuestion2: QuestionData = {
   id: mockQuestion2.id,
   text: mockQuestion2.text,
@@ -123,6 +126,15 @@ export const mockReturnedQuestion2: QuestionData = {
 const mockDeleteResult: DeleteResult = {
   raw: [],
   affected: 1,
+};
+
+export const mockQuestionService: Partial<QuestionService> = {
+  getAllQuestions: jest.fn(() => Promise.resolve([mockReturnedQuestion1, mockReturnedQuestion2])),
+  updateQuestionText: jest.fn(() => Promise.resolve(mockQuestion1Return)),
+  batchCreatePlainText: jest.fn(() => Promise.resolve(2)),
+  batchCreateQuestions: jest.fn(() => Promise.resolve(2)),
+  batchCreateMultiQuestions: jest.fn(() => Promise.resolve(3)),
+  deleteQuestion: jest.fn(() => Promise.resolve(mockDeleteResult)),
 };
 
 describe('QuestionController', () => {
@@ -153,6 +165,15 @@ describe('QuestionController', () => {
         mockReturnedQuestion2,
       ]);
       expect(mockQuestionService.getAllQuestions).toHaveBeenCalled();
+    });
+  });
+
+  describe('edit question text', () => {
+    it('should edit the question text', async () => {
+      await expect(controller.editQuestionText(mockQuestion1Dto)).resolves.toEqual(
+        mockQuestion1Return,
+      );
+      expect(mockQuestionService.updateQuestionText).toHaveBeenCalled();
     });
   });
 

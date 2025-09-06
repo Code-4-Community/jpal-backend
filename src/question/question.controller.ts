@@ -1,14 +1,21 @@
-import { Body, Controller, Get, Post, Delete, Param } from '@nestjs/common';
 import {
-  QuestionService,
-  UploadMultiQuestionData,
-  UploadQuestionData,
-  QuestionData,
-} from './question.service';
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseUUIDPipe,
+  Patch,
+  Post,
+  Put,
+} from '@nestjs/common';
+import { UploadMultiQuestionData, UploadQuestionData } from './question.service';
+import { QuestionData, QuestionService, QuestionTextData } from './question.service';
 import { Auth } from '../auth/decorators/auth.decorator';
 import { Role } from '../user/types/role';
 import { UploadQuestionResponseDTO, UploadQuestionsDTO } from './dto/upload-question.dto';
 import { DeleteResult } from 'typeorm';
+import { EditDto } from '../util/dto/edit.dto';
 @Controller('question')
 export class QuestionController {
   constructor(private questionService: QuestionService) {}
@@ -20,6 +27,17 @@ export class QuestionController {
   @Auth(Role.ADMIN, Role.RESEARCHER)
   async getAllQuestions(): Promise<QuestionData[]> {
     return await this.questionService.getAllQuestions();
+  }
+
+  /**
+   * Updates the text of a fragment
+   * @param id   id of the fragment to be updated
+   * @param text the new text of the fragment
+   */
+  @Put()
+  @Auth(Role.ADMIN, Role.RESEARCHER)
+  async editQuestionText(@Body() editQuestionText: EditDto): Promise<QuestionTextData> {
+    return this.questionService.updateQuestionText(editQuestionText.id, editQuestionText.text);
   }
 
   /**

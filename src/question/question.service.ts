@@ -1,16 +1,21 @@
 import { Logger, Injectable, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, DeleteResult } from 'typeorm';
+import { DeleteResult, Repository } from 'typeorm';
 import { Question } from './types/question.entity';
 import { Sentence } from '../sentence/types/sentence.entity';
 import { Option } from '../option/types/option.entity';
-import { Fragment } from '../fragment/types/fragment.entity';
+import { Fragment } from '..//fragment/types/fragment.entity';
 
 export interface QuestionData {
   id: number;
   text: string;
   template: string;
   options: string[];
+}
+
+export interface QuestionTextData {
+  id: number;
+  text: string;
 }
 
 export interface UploadQuestionData {
@@ -48,6 +53,10 @@ export class QuestionService {
     @InjectRepository(Fragment) private fragmentRepository: Repository<Fragment>,
   ) {}
 
+  /**
+   *
+   * Gets all the questions
+   */
   async getAllQuestions(): Promise<QuestionData[]> {
     const result = await this.questionRepository.find({});
     return transformToQuestionData(result);
@@ -222,5 +231,38 @@ export class QuestionService {
       throw new BadRequestException(`Question id ${id} not found`);
     }
     return await this.questionRepository.delete(id);
+  }
+
+  /**
+   * Gets the question corresponding to the given id.
+   */
+  async getById(id: number): Promise<QuestionTextData> {
+    const result = await this.questionRepository.findOne({
+      where: { id },
+    });
+
+    if (!result) {
+      throw new BadRequestException(`Question id ${id} not found`);
+    }
+
+    return {
+      id: result.id,
+      text: result.text,
+    };
+  }
+
+  /**
+   * Update the text of a question
+   * @param id             id of the question to modify
+   * @param text   new text for the question
+   */
+  async updateQuestionText(id: number, text: string): Promise<QuestionTextData> {
+    const question = await this.getById(id);
+    question.text = text;
+    await this.questionRepository.save(question);
+    return {
+      id: question.id,
+      text: question.text,
+    };
   }
 }
