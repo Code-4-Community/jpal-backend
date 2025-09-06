@@ -38,10 +38,7 @@ export class SentenceService {
    * @param id             id of the sentence to modify
    * @param template   new template for the sentence
    */
-  async updateSentenceTemplate(
-    id: number,
-    template: string,
-  ): Promise<SentenceTemplateData> {
+  async updateSentenceTemplate(id: number, template: string): Promise<SentenceTemplateData> {
     const sentence = await this.getById(id);
     sentence.template = template;
     await this.sentenceRepository.save(sentence);

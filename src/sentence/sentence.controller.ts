@@ -12,7 +12,7 @@ export class SentenceController {
    * @param id   id of the sentence to be updated
    * @param template the new sentence template for the sentence
    */
-  @Put(':id')
+  @Put()
   @Auth(Role.ADMIN, Role.RESEARCHER)
   async editSentenceTemplate(
     @Body() editSentenceTemplate: EditSentenceDto,

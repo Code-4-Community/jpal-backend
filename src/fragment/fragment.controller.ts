@@ -13,7 +13,7 @@ export class FragmentController {
    * @param id   id of the fragment to be updated
    * @param text the new text of the fragment
    */
-  @Put(':id')
+  @Put()
   @Auth(Role.ADMIN, Role.RESEARCHER)
   async editFragmentText(@Body() editFragmentText: EditDto): Promise<FragmentData> {
     return this.fragmentService.updateFragmentText(editFragmentText.id, editFragmentText.text);

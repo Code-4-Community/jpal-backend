@@ -34,7 +34,7 @@ export class QuestionController {
    * @param id   id of the fragment to be updated
    * @param text the new text of the fragment
    */
-  @Put(':id')
+  @Put()
   @Auth(Role.ADMIN, Role.RESEARCHER)
   async editQuestionText(@Body() editQuestionText: EditDto): Promise<QuestionTextData> {
     return this.questionService.updateQuestionText(editQuestionText.id, editQuestionText.text);

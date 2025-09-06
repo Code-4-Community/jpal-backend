@@ -12,6 +12,7 @@ export const mockSentence: Sentence = {
   isMultiQuestion: false,
   includeIfSelectedOptions: [],
   question: new Question(),
+  fragments: [],
 };
 
 export const mockSentenceDto: EditSentenceDto = {
